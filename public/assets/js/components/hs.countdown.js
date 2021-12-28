@@ -81,8 +81,9 @@
       var self = this;
 
       this.collection.each(function (i, el) {
-
+        console.log(el)
         var $this = $(el),
+
 
           options = {
             endDate: $this.data('end-date') ? new Date($this.data('end-date')) : new Date(),

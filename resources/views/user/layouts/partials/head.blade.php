@@ -1,5 +1,5 @@
 <!-- Title -->
-<title>Home-v4 | Electro - Responsive Website Template</title>
+<title>Alotech</title>
 
 <!-- Required Meta Tags Always Come First -->
 <meta charset="utf-8">
