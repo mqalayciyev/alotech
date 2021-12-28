@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data>
+	<products>
+		<product product_code="1" product_name="numune" measurement="1" stok_piece="10" retail_price="5" category_id="126" brand_id="69">
+			<colors>red,green,blue</colors>
+			<sizes>size1,size2</sizes>
+		</product>
+		<product product_code="2" product_name="numune 2" measurement="1" stok_piece="10" retail_price="5" category_id="127" brand_id="69">
+			<colors>red,green,blue</colors>
+			<sizes>size1,size2</sizes>
+		</product>
+	</products>
+  
+	<categories>
+		<category category_id="300" category_name="katqoriya 1"/>
+		<category category_id="301" category_name="katqoriya 2" top_id="300"/>
+	</categories>
+	<brands>
+		<brand brand_id="1" brand_name="brend 1"/>
+		<brand brand_id="2" brand_name="brend 2"/>
+	</brands>
+</data>

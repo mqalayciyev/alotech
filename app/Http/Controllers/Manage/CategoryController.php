@@ -1,0 +1,174 @@
+<?php
+
+namespace App\Http\Controllers\Manage;
+
+use App\Http\Controllers\Controller;
+use App\Models\Category;
+use App\Models\CategoryImage;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
+use Image;
+use Yajra\DataTables\Facades\DataTables;
+
+class CategoryController extends Controller
+{
+    public function index()
+    {
+        $entry = new Category;
+        $categories = Category::all();
+        return view('manage.pages.category.index', compact('categories', 'entry'));
+    }
+
+    public function index_data()
+    {
+        $rows = Category::select(['id', 'top_id', 'category_name', 'slug', 'created_at', 'updated_at']);
+        return DataTables::eloquent($rows)
+            ->addColumn('parent_category', function ($row) {
+                return $row->top_category->category_name;
+            })
+            ->addColumn('image', function ($row) {
+                return $row->image->image_name ? "<img style='width: 50px;' src='".asset('assets/img/category/'. $row->image->image_name)."' alt='".$row->image->image_name."'>" : "<img src='http://via.placeholder.com/50x50' alt='catgory_image'>";
+            })
+            ->addColumn('action', function ($row) {
+                if(auth('manage')->user()->is_manage == 2){
+                    $disabled = 'none';
+                }
+                else{
+                    $disabled = '';
+                }
+                return '<div>
+                <a href="javascript:void(0);" class="btn btn-xs btn-primary edit" id="' . $row->id . '"> <i class="fa fa-edit"></i> ' . __('admin.Edit') . '</a>
+                <a href="javascript:void(0);" class="btn btn-xs btn-danger delete" style="display: ' . $disabled .'" id="' . $row->id . '"> <i class="fa fa-remove"></i> ' . __('admin.Delete') . '</a>
+                </div>';
+            })
+            ->addColumn('checkbox', '<input type="checkbox" name="checkbox[]" id="checkbox" class="checkbox" value="{{$id}}" />')
+            ->orderColumn('parent_category', '-top_id $1')
+            ->rawColumns(['checkbox', 'image', 'action'])
+            ->toJson();
+    }
+
+    public function post_data(Request $request)
+    {
+
+        $validation = Validator::make($request->all(), [
+            'category_name' => 'required'
+        ]);
+
+
+        $error_array = array();
+        $success_output = '';
+
+        $data = request()->only('category_name', 'category_view', 'slug', 'top_id');
+        if(request('top_id')){
+            $name = Category::find(request('top_id'));
+
+            $data['slug'] =  str_slug($name->category_name) . '-' . str_slug(request('category_name'));
+        }
+        else{
+            $data['slug'] = str_slug(request('category_name'));
+        }
+
+        request()->merge(['slug' => $data['slug']]);
+
+        if ($validation->fails()) {
+            foreach ($validation->messages()->getMessages() as $messages) {
+                $error_array[] = $messages;
+            }
+        } else {
+            if ($request->get('button_action') == "insert") {
+                $entry = Category::create($data);
+                $success_output = '<div class="alert alert-success">' . __('admin.Data Inserted') . '</div>';
+            }
+
+            if ($request->get('button_action') == "update") {
+
+                $entry = Category::where('id', $request->get('id'))->firstOrFail();
+                $entry->update($data);
+                $success_output = '<div class="alert alert-success">' . __('admin.Data Updated') . '</div>';
+            }
+
+        }
+        if(request()->has('category_image_delete')){
+            $image = CategoryImage::where('category_id', $entry->id)->first();
+            $image_path = 'assets/img/category/' . $image->image_name;
+
+            if(file_exists($image_path))
+            {
+                unlink($image_path);
+            }
+
+            CategoryImage::where('category_id', $entry->id)->delete();
+        }
+        if(request()->hasFile('category_image')){
+            $file = $request->file('category_image');
+
+            $filename = $data['slug'] . '_' . time().'.'.request()->file('category_image')->getClientOriginalName();
+
+            $destinationPath = 'assets/img/category/';
+            $file->move($destinationPath, $filename);
+
+            $image = CategoryImage::where('category_id', $entry->id)->first();
+
+            if($image){
+                CategoryImage::where('category_id', $entry->id)->update([
+                    'image_name' => $filename
+                ]);
+            }
+            else{
+                CategoryImage::create([
+                    'category_id' => $entry->id,
+                    'image_name' => $filename
+                ]);
+            }
+        }
+        $output = array(
+            'error' => $error_array,
+            'success' => $success_output
+        );
+
+        echo json_encode($output);
+    }
+
+    public function fetch_data(Request $request)
+    {
+        $id = $request->input('id');
+        $rows = Category::find($id);
+        $image = CategoryImage::where('category_id', $id)->first();
+        if($image){
+            $img = asset('assets/img/category/' . $image->image_name);
+        }
+        else{
+            $img = asset('assets/img/woocommerce-placeholder-300x300.png');
+        }
+        $output = array(
+            'category_name' => $rows->category_name,
+            'category_view' => $rows->category_view,
+            'category_image_view' => $img,
+            'slug' => $rows->slug,
+            'top_id' => $rows->top_id,
+        );
+        echo json_encode($output);
+    }
+
+    public function delete_data(Request $request)
+    {
+        $rows = Category::find($request->input('id'));
+        if ($rows->delete()) {
+            echo __('admin.Data Deleted');
+        }
+    }
+
+    public function mass_remove(Request $request)
+    {
+        $id_array = $request->input('id');
+        $rows = Category::whereIn('id', $id_array);
+        if ($rows->delete()) {
+            echo __('admin.Data Deleted');
+        }
+    }
+    public function delete_all(Request $request)
+    {
+        Category::query()->delete();
+        return back();
+    }
+}
