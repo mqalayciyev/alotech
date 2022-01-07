@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\DB;
 
 class CartProduct extends Model
 {
-    use SoftDeletes;
+    // use SoftDeletes;
     protected $table = 'cart_product';
     protected $guarded = [];
 

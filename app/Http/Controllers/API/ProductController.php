@@ -49,6 +49,7 @@ class ProductController extends Controller
         // Log::create([
         //     "content" => json_encode($products)
         // ]);
+        // return 'ok';
 
         $errors = array();
         foreach ($products as $product) {
@@ -66,16 +67,16 @@ class ProductController extends Controller
             if ($validation->fails()) {
                 // return $validation->messages()->getMessages();
                 foreach ($validation->messages()->getMessages() as $messages) {
-
-                    $error_array[] = $messages[0];
-
+                    $errors[] = $messages[0];
                 }
-                $errors[$product['product_code']] = $error_array;
+                $error_array[$product['product_code']] = $errors;
             }
             else{
                 $data = array(
                     'product_name' => $product['product_name'],
-                    'deleted_at' => null
+                    'deleted_at' => null,
+                    'discount_date' => $product['discount_date'],
+                    'discount' => $product['discount']
                 );
                 $data_detail = array(
                     'measurement' => $product['measurement']
@@ -84,12 +85,13 @@ class ProductController extends Controller
                 if(isset($product['product_description'])){
                     $data['product_description'] = $product['product_description'];
                 }
-                if(isset($product['discount'])){
-                    $data['discount'] = $product['discount'];
-                }
-                if(isset($product['discount_date'])){
-                    $data['discount_date'] = $product['discount_date'];
-                }
+                // if(isset($product['discount'])){
+                //     $data['discount'] = $product['discount'];
+                // }
+                // if(isset($product['discount_date'])){
+                //     $data['discount_date'] = $product['discount_date'];
+                // }
+                // return $product;
         //         $data_detail = request()->only('measurement', 'show_new_collection', 'show_hot_deal', 'show_best_seller', 'show_latest_products', 'show_deals_of_the_day', 'show_picked_for_you');
         // $data_price = request()->only('sale_price', 'wholesale_count', 'wholesale_price');
 
@@ -125,15 +127,17 @@ class ProductController extends Controller
                 $entry->detail()->updateOrCreate($data_detail);
                 $entry->categories()->sync($category);
                 $entry->brands()->sync($brands);
-
-                if (isset($product['colors'])) {
+                
+                if (isset($product['colors']) && $product['colors'] != null) {
                     $colors = $product['colors'];
                     foreach ($colors as $color) {
-                        $add = Color::updateOrCreate(['name' => $color['color_name']], ['title' => $color['color_title'] ]);
-                        ColorProduct::updateOrcreate([
-                            'color_id' => $add->id,
-                            'product_id' => $entry->id,
-                        ]);
+                        if($color['color_name']){
+                            $add = Color::updateOrCreate(['name' => $color['color_name']], ['title' => $color['color_title'] ]);
+                            ColorProduct::updateOrcreate([
+                                'color_id' => $add->id,
+                                'product_id' => $entry->id,
+                            ]);
+                        }
                     }
                 }
                 else{
@@ -145,14 +149,16 @@ class ProductController extends Controller
                 }
 
 
-                if (isset($product['sizes'])) {
+                if (isset($product['sizes']) && $product['sizes'] != null) {
                     $sizes = $product['sizes'];
                     foreach ($sizes as $size) {
-                        $add = Size::updateOrCreate(['name' => $size], ['name' => $size]);
-                        SizeProduct::updateOrcreate([
-                            'size_id' => $add->id,
-                            'product_id' => $entry->id,
-                        ]);
+                        if($size){
+                            $add = Size::updateOrCreate(['name' => $size]);
+                            SizeProduct::updateOrcreate([
+                                'size_id' => $add->id,
+                                'product_id' => $entry->id,
+                            ]);
+                        }
                     }
                 }
 
@@ -237,28 +243,30 @@ class ProductController extends Controller
                     }
 
 
-                    $data_stock['product_id'] = $entry->id;
-                    $data_stock['stock_piece'] = $stock['stock_piece'];
+                    $stock_piece = $stock['stock_piece'];
                     if(!$stock['stock_piece'] ){
-                        $data_stock['stock_piece'] = 0;
+                        $stock_piece = 0;
                     }
+                    
 
-
-                    $data_stock['color_id'] = $color_id;
-                    $data_stock['size_id'] = $size_id;
-                    StockList::updateOrCreate($data_stock);
+                    // StockList::updateOrCreate($data_stock);
+                    
+                    // if($product['product_code'] == 29){
+                    //     return $data_stock;
+                    // }
+                    StockList::updateOrCreate(['product_id' => $entry->id, 'color_id' => $color_id, 'size_id' => $size_id], ['stock_piece' => $stock_piece]);
                 }
 
             }
         }
 
-        if(count($errors)){
+        if(count($error_array)){
             Log::create([
-                "content" => json_encode($errors)
+                "content" => json_encode($error_array)
             ]);
         }
 
-        return response()->json(['status' => 'success', 'errors'=> $errors]);
+        return response()->json(['status' => 'success', 'errors'=> $error_array]);
 
     }
 

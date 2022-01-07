@@ -288,6 +288,9 @@
                                                                             width="100%">
                                                                             <tbody>
                                                                                 <tr>
+                                                                                    <td>
+                                                                                        Sifariş statusu
+                                                                                    </td>
                                                                                     <td align="left"
                                                                                         style="border-collapse: collapse;font-size: 0px;padding: 10px 25px;padding-top: 0px;padding-bottom: 0px;word-break: break-word;">
                                                                                         <div style="font-family:Open sans, arial, sans-serif;font-size:16px;font-weight:600;line-height:25px;text-align:left;color:#363A41;"
@@ -361,4 +364,7 @@
                                         </tbody>
                                     </table>
                                 
-                                    <h2 style="text-transform: uppercase">Ümumi Mebleg : {{  $data['order_amount'] }} AZN</h2>
+                                        <h3 style="text-transform: uppercase">Məbləğ: {{ number_format( $data['order_amount'] - $data['shipping'] + $data['bonus_amount'], 2) }} AZN </h3>
+                                        <h3 style="text-transform: uppercase"> Bonusla ödənilən: {{ $data['bonus_amount'] }} AZN </h3>
+                                        <h3 style="text-transform: uppercase">Çatdırılma:  {{ $data['shipping'] }} AZN</h3>
+                                        <h3 style="text-transform: uppercase"> Yekun məbləğ: {{ $data['order_amount'] }} AZN </h3>

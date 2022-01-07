@@ -129,7 +129,8 @@ class CartController extends Controller
 
         
         $cart = Cart::get($rowID);
-        $price = $cart->options->sale_price;
+        
+        
         $priceList = PriceList::find($cart->options->price_id);
         $wholesale_count = $priceList->wholesale_count;
         $wholesale_price = $priceList->wholesale_price;
@@ -143,7 +144,7 @@ class CartController extends Controller
             $sale_price = $wholesale_price;
         }
         else{
-            $sale_price = $price;
+            $sale_price = $priceList->sale_price;
 
         }
         if($piece <= 0){
@@ -218,6 +219,10 @@ class CartController extends Controller
     {
         
         $piece = request()->get('piece');
+        
+        if($piece < 1){
+            $piece = 1;
+        }
         $priceId = request()->get('priceId');
         if(!$priceId){
             $priceId = PriceList::where('product_id', request()->get('id'))->where('default_price', 1)->first()->id;
@@ -231,13 +236,13 @@ class CartController extends Controller
         $product = Product::find(request()->get('id'));
         
         $stock = StockList::where('product_id', $product->id)->where('color_id', $color)->where('size_id', $size)->first();
-
+        // return request()->all();
         if(!$stock){
             return response()->json(['status' => 'error', 'message' => 'Məhsul stokda yoxdur']);
         }
         else{
             if($piece > $stock->stock_piece){
-                return response()->json(['status' => 'error', 'message' => 'Seçilən say stok sayından çoxdur']);
+                return response()->json(['status' => 'error', 'message' => 'Seçilən say anbar sayından çoxdur']);
             }
         }
         // return session()->get('cart');
@@ -254,7 +259,7 @@ class CartController extends Controller
                 }
             }
             if($qty + $piece > $stock->stock_piece){
-                return response()->json(['status' => 'error', 'message' => 'Bu məhsul üçün maksimum səbət sayı ' . $stock->stock_piece . ' ola bilər']);
+                return response()->json(['status' => 'error', 'message' => 'Seçilən say anbar sayından çoxdur']);
             }
         }
 

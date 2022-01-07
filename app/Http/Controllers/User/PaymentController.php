@@ -6,7 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Mail\InvoiceSend;
 use App\Mail\OrderStatus;
 use App\Models\Order;
+use App\Models\Info;
 use App\Models\User;
+use App\Models\StockList;
 use DB;
 use App\Models\Cart as CartModel;
 use App\Models\CartProduct;
@@ -20,6 +22,7 @@ class PaymentController extends Controller
 {
     public function index()
     {
+        $info = Info::find(1);
         if (!auth()->check()) {
             return redirect()->route('user.sign_in')
                 ->with('message_type', 'info')
@@ -29,13 +32,74 @@ class PaymentController extends Controller
                 ->with('message_type', 'info')
                 ->with('message', __('content.You must have a product in your cart for payment.'));
         }
+        
+    
+        
+        $no_order_amount = [];
+        
+        $cartProducts = CartProduct::where('cart_id', session('active_cart_id'))->get();
+        
+        foreach($cartProducts as $cartProduct){
+            if(!isset($cartProduct->product->categories[0]->top_category->no_order_amount)){
+                if(!in_array($cartProduct->product->categories[0]->no_order_amount, $no_order_amount)){
+                    $no_order_amount[] = $cartProduct->product->categories[0]->no_order_amount;
+                }
+            }
+            else{
+                if(!in_array($cartProduct->product->categories[0]->top_category->no_order_amount, $no_order_amount)){
+                    $no_order_amount[] = $cartProduct->product->categories[0]->top_category->no_order_amount;
+                }
+            }
+            
+            
+        }
+        $method = 1;
+        
+        if(!in_array(0, $no_order_amount)){
+            $method = 1;
+        }
+        else{
+            if (Cart::total() < $info->min_order_amount){
+                return back()->with('message_type', 'warning')->with('message', 'Minimum sifariş məbləği ' . $info->min_order_amount . 'AZN-dir');
+            }
+        }
+        
+    
+        
+
 
         $user_detail = auth()->user()->detail;
+        
 
-        return view('user.pages.payment', compact('user_detail'));
+        return view('user.pages.payment', compact('user_detail', 'method'));
     }
     public function pay()
     {
+        $active_cart_id = session('active_cart_id');
+        
+        
+        $cartProduct = CartProduct::where('cart_id', $active_cart_id)->get();
+        foreach ($cartProduct as $value) {
+            
+            $product = Product::where('id', $value->product_id)->first();
+            if($product){
+                $stock = StockList::where('product_id', $product->id)->where('color_id', $value->color_id)->where('size_id', $value->size_id)->first();
+                
+                if($stock->stock_piece == 0){
+                    return redirect()->route('cart')
+                    ->with('message_type', 'warning')
+                    ->with('message', $product->product_name . ' anbarda qalmayıb. Zəhmət olmasa məhsulu səbətdən silin');
+                }
+                elseif($stock->stock_piece < $value->piece){
+                    return redirect()->route('cart')
+                    ->with('message_type', 'warning')
+                    ->with('message', $product->product_name . ' maksimum ' . $stock->stock_piece . ' ' . $product->detail->measurement . ' sifariş edə bilərsiniz. Zəhmət olmasa məhsulun səbət sayını azaldın');
+                }
+            }
+        }
+        
+        
+        
         $messages = [
             'first_name.required' => 'Ad qeyd edilməyib.',
             'first_name.min' => 'Ad minimum 3 simvol olmalıdır.',
@@ -54,16 +118,46 @@ class PaymentController extends Controller
             'email' => 'required',
             'mobile' => 'required',
             'address' => 'required',
-            'country' => 'required',
             'city' => 'required',
             'payment_method' => 'required',
         ], $messages);
+        
+        $info = Info::find(1);
+        
+        $bonus_amount = 0;
+        $bonus = auth()->user()->bonus;
+        if(request()->has('with_bonus')){
+            $bonus_amount = request('bonus_amount');
+            $bonus = 0;
+        }
+        
+        if(request('delivery_method') == 1){
+            $shipping = request('standart_delivery_amount');
+        }
+        else{
+            $shipping = request('fast_delivery_amount');
+        }
+        
+        $amount = number_format((Cart::subtotal() + $shipping - $bonus_amount), 2);
+
+        if($amount < 0){
+            $bonus = abs($amount) / $info->bonus_amount;
+            $amount = 0;
+        }
+        
+        
 
         $paymentMethod =  request('payment_method');
         $order = request()->except(['payment_method', '_token']);
         $order['cart_id'] = session('active_cart_id');
-        $order['order_amount'] = Cart::subtotal();
+        $order['order_amount'] = $amount;
+        $order['bonus_amount'] = $bonus_amount;
+        $order['shipping'] = $shipping;
         $order['status'] = 'Your order has been received';
+        
+        // User::find(auth()->id())->update([
+        //     'bonus' => $bonus
+        // ]);
 
 
         foreach (Cart::content() as $item) {
@@ -71,32 +165,53 @@ class PaymentController extends Controller
             
             $product->update(['best_selling' => $product->best_selling + 1]);
             // return $product->best_selling;
-            if($product->bonus_comment){
-                $bonus = auth()->user()->bonus + $product->bonus_comment;
-                User::find(auth()->id())->update([
+            if($product->other_count > 0 && $item->qty >= $product->other_count){
+                $bonus += $product->other_bonus;
+                User::where('id', auth()->id())->update([
+                    'bonus' => $bonus
+                ]);
+            }
+            elseif($product->one_or_more > 0){
+                $bonus += $product->one_or_more;
+                User::where('id', auth()->id())->update([
                     'bonus' => $bonus
                 ]);
             }
         }
+        
 
         $ordercreated = Order::create($order);
         
-        $active_cart_id = session('active_cart_id');
+        
         Cart::destroy();
         session()->forget('active_cart_id');
-
+        
+        
         if($paymentMethod == 1){
             Order::where('id', $ordercreated->id)->update([
                 'bank' => 'Qapıda Ödəmə',
                 'order_status' => 'PAYMENT_DOOR',
             ]);
+            
+            $cartProduct = CartProduct::where('cart_id', $active_cart_id)->get();
+            foreach ($cartProduct as $value) {
+                $product = Product::where('id', $value->product_id)->first();
+                if($product){
+                    $stock = StockList::where('product_id', $product->id)->where('color_id', $value->color_id)->where('size_id', $value->size_id)->first();
+                    $stock->update([
+                        'stock_piece' => $stock->stock_piece - $value->piece
+                    ]);
+                }
+            }
 
 
 
 
             $cart = CartModel::where('id', $active_cart_id)->first();
             $data =[
-                'total_amount' => $ordercreated['order_amount'],
+                'order_amount' => $ordercreated['order_amount'],
+                'bonus_amount' => $ordercreated['bonus_amount'],
+                'shipping' => $ordercreated['shipping'],
                 'payment_type' => 'Qapıda ödəmə',
                 'order_status' => 'Sifariş qəbul edildi',
                 'card_number' => '',
@@ -184,13 +299,7 @@ class PaymentController extends Controller
 
 
         	$response = xmlRequest($input_xml);
-        // 	echo "<pre>";
-        // 	print_r($response);
-        // 	print_r($input_xml);
         	
-        	
-        // 	exit;
-        // 	return $response;
 
             $url = $response['Response']['Order']['URL'] . '?ORDERID=' . $response['Response']['Order']['OrderID'] . '&SESSIONID=' . $response['Response']['Order']['SessionID'];
 
@@ -287,10 +396,23 @@ class PaymentController extends Controller
                 'brand' => $msg['Brand'],
                 'card' => $msg['PAN'],
             ]);
+            
+            $cartProduct = CartProduct::where('cart_id', $order->cart_id)->get();
+            foreach ($cartProduct as $value) {
+                $product = Product::where('id', $value->product_id)->first();
+                if($product){
+                    $stock = StockList::where('product_id', $product->id)->where('color_id', $value->color_id)->where('size_id', $value->size_id)->first();
+                    $stock->update([
+                        'stock_piece' => $stock->stock_piece - $value->piece
+                    ]);
+                }
+            }
 
 
             $data =[
-                'total_amount' => $order['order_amount'],
+                'order_amount' => $order['order_amount'],
+                'bonus_amount' => $order['bonus_amount'],
+                'shipping' => $order['shipping'],
                 'payment_type' => 'Bank kartı',
                 'order_status' => 'ÖDƏNİŞ TAMAMLANIB',
                 'card_number' => $msg['PAN'],
@@ -320,7 +442,9 @@ class PaymentController extends Controller
 
 
             $data =[
-                'total_amount' => $order['order_amount'],
+                'order_amount' => $order['order_amount'],
+                'bonus_amount' => $order['bonus_amount'],
+                'shipping' => $order['shipping'],
                 'payment_type' => 'Bank kartı',
                 'order_status' => 'ÖDƏNİŞ GÖZLƏNİLİR',
                 'card_number' => '',
@@ -347,7 +471,9 @@ class PaymentController extends Controller
 
 
             $data =[
-                'total_amount' => $order['order_amount'],
+                'order_amount' => $order['order_amount'],
+                'bonus_amount' => $order['bonus_amount'],
+                'shipping' => $order['shipping'],
                 'payment_type' => 'Bank kartı',
                 'order_status' => 'ÖDƏNİŞ GÖZLƏNİLİR',
                 'card_number' => '',
@@ -373,7 +499,9 @@ class PaymentController extends Controller
         else{
 
             $data =[
-                'total_amount' => $order['order_amount'],
+                'order_amount' => $order['order_amount'],
+                'bonus_amount' => $order['bonus_amount'],
+                'shipping' => $order['shipping'],
                 'payment_type' => 'Bank kartı',
                 'order_status' => 'ÖDƏNİŞ GÖZLƏNİLİR',
                 'card_number' => '',

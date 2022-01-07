@@ -10,7 +10,11 @@
             </ul>
         </div>
     </div>
+    <div class="container">
+        @include('common.alert')
+    </div>
     <div class="ps-section--shopping ps-shopping-cart">
+        
         <div class="container my_cart">
 
         </div>

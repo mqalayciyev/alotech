@@ -100,13 +100,29 @@
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label for="delivery">Çatdırılma şərtləri:</label>
-                                <textarea name="delivery" class="form-control" id="delivery" placeholder="Çatdırılma şərtləri">{{ old('delivery', $website_info->delivery) }}</textarea>
+                                <label for="payment_door">Qapıda ödəniş:</label>
+                                <textarea name="payment_door" class="form-control" id="payment_door" placeholder="Qapıda ödəniş">{{ old('payment_door', $website_info->payment_door) }}</textarea>
                             </div>
-                            <!--<div class="form-group">-->
-                            <!--    <label for="terms">İstifadəçi şərtləri:</label>-->
-                            <!--    <textarea name="terms" class="form-control" id="terms" placeholder="İstifadəçi şərtləri">{{ old('terms', $website_info->terms) }}</textarea>-->
-                            <!--</div>-->
+                            <div class="form-group">
+                                <label for="delivery">Çatdırılma şərti:</label>
+                                <input type="text" class="form-control" placeholder="Çatdırılma şərti" id="delivery" name="delivery" value="{{ old('delivery', $website_info->delivery) }}">
+                            </div>
+                            <div class="form-group">
+                                <label for="standart_delivery_amount">Standart çatdırılma məbləği:</label>
+                                <input type="text" class="form-control" placeholder="Standart çatdırılma məbləği" id="standart_delivery_amount" name="standart_delivery_amount" value="{{ old('standart_delivery_amount', $website_info->standart_delivery_amount) }}">
+                            </div>
+                            <div class="form-group">
+                                <label for="fast_delivery_amount">Sürətli çatdırılma məbləği:</label>
+                                <input type="text" class="form-control" placeholder="Sürətli çatdırılma məbləği" id="fast_delivery_amount" name="fast_delivery_amount" value="{{ old('fast_delivery_amount', $website_info->fast_delivery_amount) }}">
+                            </div>
+                            <div class="form-group">
+                                <label for="min_order_amount">Minimum sifariş məbləği:</label>
+                                <input type="text" class="form-control" placeholder="Minimum sifariş məbləği" id="min_order_amount" name="min_order_amount" value="{{ old('min_order_amount', $website_info->min_order_amount) }}">
+                            </div>
+                            <div class="form-group">
+                                <label for="bonus_amount">1 bonusun dəyəri AZN:</label>
+                                <input type="text" class="form-control" placeholder="1 bonusun dəyəri AZN" id="bonus_amount" name="bonus_amount" value="{{ old('bonus_amount', $website_info->bonus_amount) }}">
+                            </div>
                         </div>
                     </div>
                 </div>

@@ -442,38 +442,45 @@
                         </td>
                     </tr>
                 @endif
-                @if($invoice->shipping_amount)
+                @php
+                $notes= json_decode($invoice->notes)
+                @endphp
                     <tr>
                         <td colspan="{{ $invoice->table_columns - 2 }}" class="border-0"></td>
-                        <td class="text-right pl-0">{{ __('invoices::invoice.shipping') }}</td>
+                        <td class="text-right pl-0">Məbləğ</td>
                         <td class="text-right pr-0">
-                            {{ $invoice->formatCurrency($invoice->shipping_amount) }}
+                            {{ $notes[0] }}
                         </td>
                     </tr>
-                @endif
                     <tr>
                         <td colspan="{{ $invoice->table_columns - 2 }}" class="border-0"></td>
-                        <td class="text-right pl-0">Ümumi Qiymət</td>
+                        <td class="text-right pl-0">Bonusla ödənilən</td>
+                        <td class="text-right pr-0">
+                            {{ $notes[1] }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="{{ $invoice->table_columns - 2 }}" class="border-0"></td>
+                        <td class="text-right pl-0">Çatdırılma</td>
+                        <td class="text-right pr-0">
+                            {{ $notes[2] }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="{{ $invoice->table_columns - 2 }}" class="border-0"></td>
+                        <td class="text-right pl-0">Yekun Qiymət</td>
                         <td class="text-right pr-0 total-amount">
-                            {{ $invoice->formatCurrency($invoice->total_amount) }}
+                            {{ $notes[3] }}
                         </td>
                     </tr>
             </tbody>
         </table>
 
-        @if($invoice->notes)
             <h4>Qeyd!</h4>
             <p>
-                {!! $invoice->notes !!}
+                Alınan məhsullar alış qəbzi əsasında satışa yararlı şəkildə 14 gün ərzində geri qaytarıla və ya dəyişdirilə bilər.
             </p>
-        @endif
 
-        {{-- <p>
-            {{ trans('invoices::invoice.amount_in_words') }}: {{ $invoice->getTotalAmountInWords() }}
-        </p>
-        <p>
-            {{ trans('invoices::invoice.pay_until') }}: {{ $invoice->getPayUntilDate() }}
-        </p> --}}
 
         <script type="text/php">
             if (isset($pdf) && $PAGE_COUNT > 1) {

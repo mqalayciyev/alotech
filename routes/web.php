@@ -25,6 +25,7 @@ use Illuminate\Support\Facades\Auth;
 
 Route::namespace('User')->group(function () {
     Route::get('/', 'HomeController@index')->name('home');
+    Route::get('/category-products', 'HomeController@categoryProducts')->name('homepage.category.products');
     Route::get('/products', 'HomeController@products')->name('homepage.products');
     Route::get('/get_product', 'HomeController@get_product')->name('get_product');
     Route::get('/insert_ratings', 'HomeController@insert_ratings')->name('homepage.insert_ratings');
@@ -372,6 +373,10 @@ Route::namespace('Manage')->prefix('manage')->group(function () {
             Route::post('/invoice_print', 'OrderController@invoice_print')->name('manage.order.invoice_print');
             Route::get('/mass_remove', 'OrderController@mass_remove')->name('manage.order.mass_remove');
             Route::get('/exported/{id}', 'OrderController@exported')->name('manage.order.exported');
+        });
+        
+        Route::group(["prefix" => "raports"], function () {
+            Route::get('/export/{type}', 'OrderController@export')->name('manage.raports.export');
         });
     });
 

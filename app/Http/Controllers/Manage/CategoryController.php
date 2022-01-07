@@ -21,7 +21,7 @@ class CategoryController extends Controller
 
     public function index_data()
     {
-        $rows = Category::select(['id', 'top_id', 'category_name', 'slug', 'created_at', 'updated_at']);
+        $rows = Category::select(['id', 'top_id', 'third_id', 'category_name', 'category_view', 'slug', 'created_at', 'updated_at']);
         return DataTables::eloquent($rows)
             ->addColumn('parent_category', function ($row) {
                 return $row->top_category->category_name;
@@ -29,21 +29,18 @@ class CategoryController extends Controller
             ->addColumn('image', function ($row) {
                 return $row->image->image_name ? "<img style='width: 50px;' src='".asset('assets/img/category/'. $row->image->image_name)."' alt='".$row->image->image_name."'>" : "<img src='http://via.placeholder.com/50x50' alt='catgory_image'>";
             })
+            ->addColumn('category_view', function ($row) {
+                return $row->category_view ? "Ana səhifədə göstərilir" : null;
+            })
             ->addColumn('action', function ($row) {
-                if(auth('manage')->user()->is_manage == 2){
-                    $disabled = 'none';
-                }
-                else{
-                    $disabled = '';
-                }
                 return '<div>
                 <a href="javascript:void(0);" class="btn btn-xs btn-primary edit" id="' . $row->id . '"> <i class="fa fa-edit"></i> ' . __('admin.Edit') . '</a>
-                <a href="javascript:void(0);" class="btn btn-xs btn-danger delete" style="display: ' . $disabled .'" id="' . $row->id . '"> <i class="fa fa-remove"></i> ' . __('admin.Delete') . '</a>
+                <a href="javascript:void(0);" class="btn btn-xs btn-danger delete" id="' . $row->id . '"> <i class="fa fa-remove"></i> ' . __('admin.Delete') . '</a>
                 </div>';
             })
             ->addColumn('checkbox', '<input type="checkbox" name="checkbox[]" id="checkbox" class="checkbox" value="{{$id}}" />')
             ->orderColumn('parent_category', '-top_id $1')
-            ->rawColumns(['checkbox', 'image', 'action'])
+            ->rawColumns(['checkbox', 'image', 'action', 'category_view'])
             ->toJson();
     }
 
@@ -58,7 +55,7 @@ class CategoryController extends Controller
         $error_array = array();
         $success_output = '';
 
-        $data = request()->only('category_name', 'category_view', 'slug', 'top_id');
+        $data = request()->only('category_name', 'category_view', 'slug', 'top_id', 'no_order_amount');
         if(request('top_id')){
             $name = Category::find(request('top_id'));
 
@@ -143,6 +140,7 @@ class CategoryController extends Controller
         $output = array(
             'category_name' => $rows->category_name,
             'category_view' => $rows->category_view,
+            'no_order_amount' => $rows->no_order_amount,
             'category_image_view' => $img,
             'slug' => $rows->slug,
             'top_id' => $rows->top_id,

@@ -67,7 +67,7 @@ return [
     |
     */
 
-    'timezone' => 'UTC',
+    'timezone' => 'Asia/Baku',
 
     /*
     |--------------------------------------------------------------------------
@@ -179,6 +179,8 @@ return [
         Intervention\Image\ImageServiceProvider::class,
         Gloudemans\Shoppingcart\ShoppingcartServiceProvider::class,
         LaravelDaily\Invoices\InvoiceServiceProvider::class,
+        
+        Maatwebsite\Excel\ExcelServiceProvider::class,
 
 
     ],
@@ -241,6 +243,10 @@ return [
 
         'JWTAuth' => Tymon\JWTAuth\Facades\JWTAuth::class,
         'JWTFactory' => Tymon\JWTAuth\Facades\JWTFactory::class,
+        
+        'Carbon' => Illuminate\Support\Carbon::class,
+        
+        'Excel' => Maatwebsite\Excel\Facades\Excel::class,
 
     ],
 

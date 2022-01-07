@@ -95,6 +95,12 @@
                         $( this ).css('display', 'inline-block')
                     }
                 });
+                
+                $('.quick-view-slider').slick('slickUnfilter');
+                let filterClass = '.image-color-' + $(target).data('id')
+                if($('.quick-view-slider ' + filterClass).length > 0){
+                    $('.quick-view-slider').slick('slickFilter', filterClass);
+                }
 
                 
                 
@@ -226,6 +232,17 @@
                     success: function(data) {
                         priceList(id, "ps-product--quickview");
                         $("#product-quickview .modal-content").html(data);
+                        $('.quick-view-slider').slick({
+                            dots: false,
+                            slidesToShow: 1,
+                            centerMode: true,
+                            infinite: true,
+                            speed: 500,
+                            fade: true,
+                            cssEase: 'linear',
+                            prevArrow: "<a href='#'><i class='fa fa-angle-left'></i></a>",
+                            nextArrow: "<a href='#'><i class='fa fa-angle-right'></i></a>",
+                        });
                     }
                 })
             })
@@ -341,8 +358,8 @@
         $(document).on('click', '.ProductQuantity-Minus',  function(){
                 let id = $(this).data('id')
                 var piece = parseInt($('.ProductQuantity-Input-' + id).val())
-                if(piece == 1){
-                    return false;
+                if(piece <= 0){
+                    piece = 1;
                 }
                 $('.ProductQuantity-Input-' + id).val(--piece);
             })

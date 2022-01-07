@@ -69,6 +69,8 @@
         $(function () {
             
             $('#index_table').DataTable({
+                aLengthMenu: [[25, 50, 75, 100, 150, 200], [25, 50, 75, 100, 150, 200]],
+                iDisplayLength: 25,
                 order: [[6, "desc"]],
                 processing: true,
                 serverSide: true,

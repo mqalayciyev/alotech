@@ -33945,26 +33945,7 @@ blockquote:not(.blockquote) p {
   }
 }
 
-@media (min-width: 768px) {
-  .product-item__title a {
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-}
 
-@media (min-width: 1200px) {
-  .product-item__title a {
-    min-height: 2.25rem;
-  }
-}
-
-@media (min-width: 1200px) {
-  .product-item__list .product-item__title a {
-    min-height: 100%;
-  }
-}
 
 @media (min-width: 1200px) {
   .products-group-4-1-4 .products-group-1__body,
@@ -34854,7 +34835,7 @@ blockquote:not(.blockquote) p {
 }
 
 .font-size-20 {
-  font-size: 1.25038rem;
+  font-size: 1.2rem;
 }
 
 .font-size-22 {
@@ -37463,3 +37444,23 @@ blockquote:not(.blockquote) p {
 /*------------------------------------
   File for your custom SCSS style
 ------------------------------------*/
+
+
+.line-clamp-1 {
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+.line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+.line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}

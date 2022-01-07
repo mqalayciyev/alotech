@@ -111,14 +111,14 @@
                                                     $price[] = $object->toArray();
                                                 }
                                                 
-
+                                                
                                                 $filter_1 = array_filter($price, function ($item) {
-                                                    if ($item['color_id'] != null && $item['size_id'] != null) {
+                                                    if ($item['color_id'] > 1 && $item['size_id'] != null) {
                                                         return true;
                                                     }
                                                 });
                                                 $filter_2 = array_filter($price, function ($item) {
-                                                    if ($item['color_id'] != null || $item['size_id'] != null) {
+                                                    if ($item['color_id'] > 1 || $item['size_id'] != null) {
                                                         return true;
                                                     }
                                                 });
@@ -164,50 +164,23 @@
                                 </div>
                                 <div class="ps-product__shopping d-block">
                                     <figure>
-                                        <h4 style="color: rgba(173,51,53,255)">
+                                        
                                             
-                                            @if (count($filter_1))
-                                                @foreach ($filter_1 as $item)
-                                                    @if ($item)
-                                                        @php
+                                        @foreach ($price as $item)
+                                            <h4 style="color: rgba(173,51,53,255)">
+                                                @if ($item)
+                                                    @php
                                                         $item_color = App\Models\Color::find($item['color_id']);
                                                         $item_size = App\Models\Size::find($item['size_id']);
-                                                        $color_name = $item_color ? '<span style="background-color: ' . $item_color->name . '">' .$item_color->title . '</span>' : '';
+                                                        $color_name = $item_color && $item_color->id > 1 ? $item_color->title : '';
                                                         $size_name = $item_size ? $item_size->name : '';
-                                                        @endphp
-                                                        {!! $item['wholesale_count'] ? '*' . $product->product_name . ' ' . $color_name . ' ' . $size_name . $item['wholesale_count'] . ' ' . $product->detail->measurement . ' yuxarı topdan satış qiməti ' . $item['wholesale_price'] . '₼' : '' !!}
-                                                        @break
-                                                    @endif
-                                                @endforeach
-                                            @elseif (count($filter_2))
-                                                @foreach ($filter_2 as $item)
-                                                    @if ($item)
-                                                        @php
-                                                        $item_color = App\Models\Color::find($item['color_id']);
-                                                        $item_size = App\Models\Size::find($item['size_id']);
-                                                        $color_name = $item_color ? '<span style="background-color: ' . $item_color->name . '">' .$item_color->title . '</span>' : '';
-                                                        $size_name = $item_size ? $item_size->name : '';
-                                                        @endphp
-                                                        {!! $item['wholesale_count'] ? '*' . $product->product_name . ' ' . $color_name . ' ' . $size_name . $item['wholesale_count'] . ' ' . $product->detail->measurement . ' yuxarı topdan satış qiməti ' . $item['wholesale_price'] . '₼' : '' !!}
-                                                        @break
-                                                    @endif
-                                                @endforeach
-                                            @else
-                                                @foreach ($filter_3 as $item)
-                                                    @if ($item)
-                                                        @php
-                                                        $item_color = App\Models\Color::find($item['color_id']);
-                                                        $item_size = App\Models\Size::find($item['size_id']);
-                                                        $color_name = $item_color ? '<span style="background-color: ' . $item_color->name . '">' .$item_color->title . '</span>' : '';
-                                                        $size_name = $item_size ? $item_size->name : '';
-                                                        @endphp
-                                                        {!! $item['wholesale_count'] ? '*' . $product->product_name . ' ' . $color_name . ' ' . $size_name . $item['wholesale_count'] . ' ' . $product->detail->measurement . ' yuxarı topdan satış qiməti ' . $item['wholesale_price'] . '₼' : '' !!}
-                                                        @break
-                                                    @endif
-                                                @endforeach
-                                            @endif
+                                                    @endphp
+                                                    {!! $item['wholesale_count'] ? '*' . $product->product_name . ' ' . $size_name . ' ' . $color_name .  ' ' . $item['wholesale_count'] . ' ' . $product->detail->measurement . ' çox aldıqda satış qiməti ' . $item['wholesale_price'] . '₼' : '' !!}
+                                                @endif
+                                            </h4>
+                                        @endforeach
                                             
-                                        </h4>
+                                        
                                     </figure>
                                     <figure>
                                         <h4 style="color: rgba(173,51,53,255)">
@@ -528,14 +501,25 @@
                         $( this ).css('display', 'inline-block')
                     }
                 });
-
-                $('.ps-product__gallery').slick('slickUnfilter');
-                $('.ps-product__variants ').slick('slickUnfilter');
-                let filterClass = '.image-color-' + $(target).data('id')
-                if($('.ps-product__gallery ' + filterClass).length > 0){
-                    $('.ps-product__gallery').slick('slickFilter', filterClass);
-                    $('.ps-product__variants ').slick('slickFilter', filterClass);
+                
+                if(type == "ps-product--quickview"){
+                    $('.quick-view-slider').slick('slickUnfilter');
+                    let filterClass = '.image-color-' + $(target).data('id')
+                    if($('.quick-view-slider ' + filterClass).length > 0){
+                        $('.quick-view-slider').slick('slickFilter', filterClass);
+                    }
                 }
+                else{
+                    $('.ps-product__gallery').slick('slickUnfilter');
+                    $('.ps-product__variants ').slick('slickUnfilter');
+                    let filterClass = '.image-color-' + $(target).data('id')
+                    if($('.ps-product__gallery ' + filterClass).length > 0){
+                        $('.ps-product__gallery').slick('slickFilter', filterClass);
+                        $('.ps-product__variants ').slick('slickFilter', filterClass);
+                    }
+                }
+                
+                
                 
                 
                 $("." + type + " .size-element:checked").prop('checked', false);
@@ -667,6 +651,18 @@
                     success: function(data) {
                         priceList(id, "ps-product--quickview");
                         $("#product-quickview .modal-content").html(data);
+                        
+                        $('.quick-view-slider').slick({
+                            dots: false,
+                            slidesToShow: 1,
+                            centerMode: true,
+                            infinite: true,
+                            speed: 500,
+                            fade: true,
+                            cssEase: 'linear',
+                            prevArrow: "<a href='#'><i class='fa fa-angle-left'></i></a>",
+                            nextArrow: "<a href='#'><i class='fa fa-angle-right'></i></a>",
+                        });
                     }
                 })
             })
@@ -837,8 +833,8 @@
             $(document).on('click', '.ProductQuantity-Minus', function() {
                 let id = $(this).data('id')
                 var piece = parseInt($('.ProductQuantity-Input-' + id).val())
-                if (piece == 1) {
-                    return false;
+                if(piece <= 0){
+                    piece = 1;
                 }
                 $('.ProductQuantity-Input-' + id).val(--piece);
             })

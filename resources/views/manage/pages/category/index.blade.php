@@ -74,14 +74,12 @@
                                                     value="{{ old('category_name') }}">
                                                 <input type="hidden" name="id" value="" id="id">
                                             </div>
-                                            {{-- <div class="form-group">
-                                                <label for="category_name">Ana Səhifədə</label> <br>
-
-                                                <select name="category_view" class="form-control" id="category_view" value="{{ old('category_view') }}">
-                                                    <option value="0">Göstərmə</option>
-                                                    <option value="1">Göstər</option>
-                                                </select>
-                                            </div> --}}
+                                            <div class="form-group">
+                                                <input type="checkbox" name="category_view" value="1" id="category_view"> <label for="category_view">Bu kategoriyanı ana səhifədə göstər</label>
+                                            </div>
+                                            <div class="form-group">
+                                                <input type="checkbox" name="no_order_amount" value="1" id="no_order_amount"> <label for="no_order_amount">Minimum sifariş məbləği aid edilməsin</label>
+                                            </div>
                                             <div class="form-group">
                                                 <img id="category_image_view" width="100" height="126"><br>
                                                 <div>
@@ -121,6 +119,7 @@
                                     <th>@lang('admin.Image')</th>
                                     <th>@lang('admin.Top Category')</th>
                                     <th>@lang('admin.Category Name')</th>
+                                    <th></th>
                                     <th>@lang('admin.Updated at')</th>
                                     <th>@lang('admin.Created at')</th>
                                     <th>@lang('admin.Action')</th>
@@ -149,6 +148,8 @@
         $(function() {
 
             $('#index_table').DataTable({
+                aLengthMenu: [[25, 50, 75, 100, 150, 200], [25, 50, 75, 100, 150, 200]],
+                iDisplayLength: 25,
                 order: [
                     [2, "desc"]
                 ],
@@ -163,6 +164,9 @@
                     },
                     {
                         data: 'category_name'
+                    },
+                    {
+                        data: 'category_view'
                     },
                     {
                         data: 'updated_at'
@@ -261,7 +265,18 @@
                     success: function(data) {
                         $('#top_id').val(data.top_id);
                         $('#category_name').val(data.category_name);
-                        $('#category_view').val(data.category_view);
+                        if(data.no_order_amount == 1){
+                            $('#no_order_amount').prop('checked', true);
+                        }
+                        else{
+                            $('#no_order_amount').prop('checked', false);
+                        }
+                        if(data.category_view == 1){
+                            $('#category_view').prop('checked', true);
+                        }
+                        else{
+                            $('#category_view').prop('checked', false);
+                        }
                         $('#category_image_view').attr('src', data.category_image_view);
                         $('#slug').val(data.slug);
                         $('#id').val(id);

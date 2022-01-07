@@ -15,6 +15,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Yajra\DataTables\Facades\DataTables;
+use App\Exports\Raports;
+use Maatwebsite\Excel\Facades\Excel;
 
 class OrderController extends Controller
 {
@@ -40,8 +42,9 @@ class OrderController extends Controller
             })
             ->editColumn('export', function ($row) {
                 $class = $row->exported == 1 ? 'primary' : 'default';
-                $name = $row->exported == 1 ? 'İxrac dilib' : 'İxrac edilməyib';
-                return '<a href="' . route("manage.order.exported", $row->id) . '" class="btn btn-xs btn-' . $class . '">' . $name . '</a>';
+                $name = $row->exported == 1 ? 'İxrac edilib' : 'İxrac edilməyib';
+                $link = $row->status == "Your order is canceled" ? "javascript:void(0)" : route("manage.order.exported", $row->id);
+                return '<a href="' . $link . '" class="btn btn-xs btn-' . $class . '">' . $name . '</a>';
 
             })
             ->editColumn('status', function ($row) {
@@ -88,36 +91,28 @@ class OrderController extends Controller
         $user = User::where('id', $user_id)->first();
 
         $data = request()->only('first_name', 'last_name', 'address', 'phone', 'mobile', 'status');
+        
         if ($id > 0) {
             $entry = Order::where('id', $id)->firstOrFail();
-            if(request('status') == 'Order completed'){
+            if(request('status') == 'Your order is canceled'){
                 $cartProduct = CartProduct::select('product_id', 'piece')->where('cart_id', $cart_id)->get();
                 foreach ($cartProduct as $value) {
                     $product = Product::where('id', $value->product_id)->first();
                     if($product){
                         $stock = StockList::where('product_id', $product->id)->where('color_id', $value->color_id)->where('size_id', $value->size_id)->first();
                         $stock->update([
-                            'stock_piece' => $stock->stok_piece - $value->piece
+                            'stock_piece' => $stock->stock_piece + $value->piece
                         ]);
                     }
                 }
+                $data['exported'] = 1;
             }
-            elseif($entry->status == 'Order completed' && request('status') == 'Your order is canceled'){
-                $cartProduct = CartProduct::select('product_id', 'piece')->where('cart_id', $cart_id)->get();
-                foreach ($cartProduct as $value) {
-                    $product = Product::where('id', $value->product_id)->first();
-                    if($product){
-                        $stock = StockList::where('product_id', $product->id)->where('color_id', $value->color_id)->where('size_id', $value->size_id)->first();
-                        $stock->update([
-                            'stock_piece' => $stock->stok_piece + $value->piece
-                        ]);
-                    }
-                }
-            }
-            $entry->update($data);
+            
+            Order::where('id',  $id)->update($data);
+            $order = Order::with('cart.cart_products.product')->find($id);
+            Mail::to($user->email)->send(new OrderStatus($order));
         }
-        $order = Order::with('cart.cart_products.product')->find($id);
-        Mail::to($user->email)->send(new OrderStatus($order));
+        
         return redirect()
             ->route('manage.order.edit', $entry->id)
             ->with('message_type', 'success')
@@ -128,19 +123,18 @@ class OrderController extends Controller
     {
         $order = Order::where('id', $id)->first();
         $cart_id = $order->cart_id;
-        if ($id > 0 && $order->status == "Order completed") {
-            $cartProduct = CartProduct::select('product_id', 'piece')->where('cart_id', $cart_id)->get();
-            foreach ($cartProduct as $value) {
-                $product = Product::where('id', $value->product_id)->first();
-                if($product){
-                    $stock = StockList::where('product_id', $product->id)->where('color_id', $value->color_id)->where('size_id', $value->size_id)->first();
-                    $stock->update([
-                        'stock_piece' => $stock->stok_piece + $value->piece
-                    ]);
-                }
-
-            }
-        }
+        // if ($id > 0 && $order->status == "Order completed") {
+        //     $cartProduct = CartProduct::select('product_id', 'piece')->where('cart_id', $cart_id)->get();
+        //     foreach ($cartProduct as $value) {
+        //         $product = Product::where('id', $value->product_id)->first();
+        //         if($product){
+        //             $stock = StockList::where('product_id', $product->id)->where('color_id', $value->color_id)->where('size_id', $value->size_id)->first();
+        //             $stock->update([
+        //                 'stock_piece' => $stock->stok_piece + $value->piece
+        //             ]);
+        //         }
+        //     }
+        // }
         Order::destroy($id);
 
         return redirect()
@@ -154,21 +148,21 @@ class OrderController extends Controller
         $id_array = $request->input('id');
         $order = Order::whereIn('id', $id_array)->first();
         $cart_id = $order->cart_id;
-        if ($request->input('id') > 0) {
-            $cartProduct = CartProduct::select('product_id', 'piece')->where('cart_id', $cart_id)->get();
-            if($cartProduct){
-                foreach ($cartProduct as $value) {
-                    $product = Product::where('id', $value->product_id)->first();
-                    if($product){
-                        $stock = StockList::where('product_id', $product->id)->where('color_id', $value->color_id)->where('size_id', $value->size_id)->first();
-                        $stock->update([
-                            'stock_piece' => $stock->stok_piece + $value->piece
-                        ]);
-                    }
-                }
-            }
-
-        }
+        // if ($request->input('id') > 0) {
+        //     $cartProduct = CartProduct::select('product_id', 'piece')->where('cart_id', $cart_id)->get();
+        //     if($cartProduct){
+        //         foreach ($cartProduct as $value) {
+        //             $product = Product::where('id', $value->product_id)->first();
+        //             if($product){
+        //                 $stock = StockList::where('product_id', $product->id)->where('color_id', $value->color_id)->where('size_id', $value->size_id)->first();
+        //                 $stock_piece = $stock->stok_piece + $value->piece;
+        //                 $stock->update([
+        //                     'stock_piece' => $stock_piece
+        //                 ]);
+        //             }
+        //         }
+        //     }
+        // }
 
         $rows = Order::whereIn('id', $id_array);
         if ($rows->forceDelete()) {
@@ -181,6 +175,7 @@ class OrderController extends Controller
         $user = User::where('id', $order->cart->user_id)->first();
         $data =[
             'total_amount' => $order->order_amount,
+            'bonus_amount' => $order->bonus_amount,
             'order_status' => $order->order_status,
             'order_date' => $order->created_at,
             'payment_date' => '',
@@ -207,5 +202,22 @@ class OrderController extends Controller
         }
         
         return back();
+    }
+    
+    public function export($type)
+    {
+        // $type = request('type');
+        if ($type == "products") {
+            $data = [
+                "type" => $type
+            ];
+            return (new Raports((array)$data))->download('products.xlsx');
+        } 
+        else if ($type == "orders") {
+            $data = [
+                "type" => $type
+            ];
+            return (new Raports((array)$data))->download('orders.xlsx');
+        }
     }
 }

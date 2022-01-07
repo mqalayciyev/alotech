@@ -88,20 +88,20 @@
                                         value="{{ old('city', $entry->city) }}">
                                 </div>
                             </div>
-                            <div class="col-md-4">
-                                <div class="form-group">
-                                    <label for="country">Ölkə</label>
-                                    <input type="text" class="form-control" id="country" placeholder="Ölkə" name="country"
-                                        value="{{ old('country', $entry->country) }}">
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="form-group">
-                                    <label for="zip_code">Poçt kodu</label>
-                                    <input type="text" class="form-control" id="zip_code" placeholder="Poçt kodu"
-                                        name="zip_code" value="{{ old('zip_code', $entry->zip_code) }}">
-                                </div>
-                            </div>
+                            <!--<div class="col-md-4">-->
+                            <!--    <div class="form-group">-->
+                            <!--        <label for="country">Ölkə</label>-->
+                            <!--        <input type="text" class="form-control" id="country" placeholder="Ölkə" name="country"-->
+                            <!--            value="{{ old('country', $entry->country) }}">-->
+                            <!--    </div>-->
+                            <!--</div>-->
+                            <!--<div class="col-md-4">-->
+                            <!--    <div class="form-group">-->
+                            <!--        <label for="zip_code">Poçt kodu</label>-->
+                            <!--        <input type="text" class="form-control" id="zip_code" placeholder="Poçt kodu"-->
+                            <!--            name="zip_code" value="{{ old('zip_code', $entry->zip_code) }}">-->
+                            <!--    </div>-->
+                            <!--</div>-->
                         </div>
                         <div class="row">
                             <div class="col-md-12">
@@ -151,6 +151,10 @@
                                             @lang('admin.Your order is canceled')
                                         </option>
                                     </select>
+                                    @if ($entry->id > 0)
+                                        <button type="submit" {{ $disabled }} class="btn btn-info" style="margin-top: 10px;"><i
+                                                class="fa fa-refresh"></i> @lang('admin.Update')</button>
+                                    @endif
                                 </div>
                             </div>
                             <div class="col-xs-12">
@@ -196,7 +200,10 @@
                                 <tr>
                                     <td style="widht:120px;">
                                         <a href="{{ route('product', $cart_product->product->slug) }}" target="_blank">
-                                            <img src="{{ $cart_product->product->image->image_name != null ? asset('assets/img/products/' . $cart_product->product->image->image_name) : 'http://via.placeholder.com/120x100?text=ProductPhoto' }}"
+                                            @php
+                                                $image = App\Models\ProductImage::where('product_id', $cart_product->product->id)->where('color_id', $cart_product->color_id)->first();
+                                            @endphp
+                                            <img src="{{ $image ? asset('assets/img/products/' . $image->image_name) : 'http://via.placeholder.com/120x100?text=ProductPhoto' }}"
                                                 class="img-responsive" style="width: 100px;">
                                         </a>
                                     </td>
@@ -208,21 +215,49 @@
                                     <td>{{ $cart_product->amount  }}</td>
                                     <td>
                                         {!! $cart_product->size ? '<p>Ölçü: <span>' . $cart_product->size->name . '</span></p>' : '' !!}
-                                        {!! $cart_product->color ? '<p>Rəng: <span style="background-color: ' . $cart_product->color->name . '">' . $cart_product->color->title . '</span></p>' : '' !!}
+                                        {!! $cart_product->color_id > 1 ? '<p>Rəng: <span style="background-color: ' . $cart_product->color->name . '">' . $cart_product->color->title . '</span></p>' : '' !!}
                                     </td>
                                     <td>{{ $cart_product->piece }}</td>
                                     <td>{{ $cart_product->amount * $cart_product->piece }} ₼</td>
-                                    <td>{{ $entry->status }}</td>
+                                    <td>
+                                        @if ($entry->status == 'Payment is expected')
+                                            @lang('content.Payment is expected')
+                                        @elseif($entry->status=='Your order has been received')
+                                            @lang('admin.Pending')
+                                        @elseif($entry->status=='Payment approved')
+                                            @lang('content.Payment approved')
+                                        @elseif($entry->status=='Cargoed')
+                                            @lang('content.Cargoed')
+                                        @elseif($entry->status=='Order completed')
+                                            @lang('content.Order completed')
+                                        @elseif($entry->status=='Your order is canceled')
+                                            @lang('content.Your order is canceled')
+                                        @else
+                                            {{ $entry->status }}
+                                        @endif
+                                    </td>
                                 </tr>
                             @endforeach
                             <tr>
-                                <th colspan="6" class="text-right">Ümumi məbləğ</th>
+                                <th colspan="6" class="text-right">Məbləğ</th>
+                                <td colspan="2">
+                                    {{ number_format( $entry->order_amount - $entry->shipping + $entry->bonus_amount, 2) }}₼
+                                </td>
+                            </tr>
+                            <tr>
+                                <th colspan="6" class="text-right">Bonusla ödənilən</th>
+                                <td colspan="2">{{ $entry->bonus_amount }} ₼</td>
+                            </tr>
+                            <tr>
+                                <th colspan="6" class="text-right">Çatdırılma</th>
+                                <td colspan="2">
+                                    {{ $entry->shipping }} ₼
+                                </td>
+                            </tr>
+                            <tr>
+                                <th colspan="6" class="text-right">Yekun məbləğ</th>
                                 <td colspan="2">{{ $entry->order_amount }} ₼</td>
                             </tr>
-                            {{-- <tr>
-                                <th colspan="4" class="text-right">Ümumi Məbləğ (ƏDV ilə)</th>
-                                <td colspan="2">{{ $entry->order_amount*((100+config('cart.tax'))/100) }} ₼</td>
-                            </tr> --}}
                             <tr>
                                 <th colspan="6" class="text-right">Ödəniş statusu</th>
                                 <td colspan="2">{{ $entry->bank }}</td>

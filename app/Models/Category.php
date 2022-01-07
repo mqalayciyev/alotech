@@ -28,6 +28,9 @@ class Category extends Model
     public function alt_category(){
         return $this->hasMany('App\Models\Category','top_id','id') ;
     }
+    public function third_category(){
+        return $this->hasMany('App\Models\Category','third_id','top_id') ;
+    }
     public function image()
     {
         return $this->hasOne('App\Models\CategoryImage')->withDefault();

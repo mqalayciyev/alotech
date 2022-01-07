@@ -2,7 +2,7 @@
 @section('title', __('admin.Order Manager'))
 @section('head')
     <!-- DataTables -->
-    <link rel="stylesheet" href="{{ asset('manager/bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('manager/bower_components/datatables/datatables.min.css') }}"/>
 @endsection
 @section('content')
 @if (@$manage == 2)
@@ -32,9 +32,13 @@
                 @include('common.errors.validate')
                 <div class="box box-primary">
                     <!-- /.box-header -->
+                    <div class="box-header">
+                            <!--<a href="{{ route('manage.raports.export', 'products') }}" class="btn btn-primary btn-export" data-type="products">Sifariş edilən məhsullar</a>-->
+                            <a href="{{ route('manage.raports.export', 'orders') }}" class="btn btn-primary btn-export" data-type="orders">Sifariş cədvəli Excel</a>
+                    </div>
                     <div class="box-body table-responsive">
-                        <table id="index_table" class="table table-bordered table-striped table-hover display"
-                               style="width:100%">
+                        
+                        <table id="index_table" class="table table-bordered table-striped table-hover display" style="width:100%">
                             <thead>
                                 <tr>
                                     <th>#</th>
@@ -63,12 +67,14 @@
 @endsection
 @section('footer')
     <!-- DataTables -->
-    <script src="{{ asset('manager/bower_components/datatables.net/js/jquery.dataTables.min.js') }}"></script>
-    <script src="{{ asset('manager/bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('manager/bower_components/datatables/datatables.min.js') }}"></script>
     <script>
         $(function () {
             // $.fn.dataTable.ext.errMode = 'throw';
-            $('#index_table').DataTable({
+            let table = $('#index_table').DataTable({
+                aLengthMenu: [[25, 50, 75, 100, 150, 200], [25, 50, 75, 100, 150, 200]],
+                iDisplayLength: 25,
+                // dom: 'Bfrtip',
                 order: [[0, "desc"]],
                 processing: true,
                 serverSide: true,
@@ -110,7 +116,7 @@
                     }
                 }
             });
-
+            
             
 
             $(document).on('click', '#bulk_delete', function () {
@@ -136,6 +142,24 @@
                     return false;
                 }
             });
+            // $(document).on('click', '.btn-export', function () {
+            //     let type = $(this).data('type')
+                
+            //     $.ajax({
+            //         url: "",
+            //         method: 'GET',
+            //         data: {type},
+            //         success: function (data) {
+            //             console.log(data);
+            //             const url = window.URL.createObjectURL(new Blob([data]));
+            //             console.log(url)
+            //             const link = document.createElement('a');
+            //             link.setAttribute('download', 'orders.xlsx');
+            //             document.body.appendChild(link);
+            //             link.click();
+            //         }
+            //     });
+            // });
 
             $("input[name=name]").change(function () {
                 var val = $(this).val();

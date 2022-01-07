@@ -42,9 +42,9 @@ class InvoiceController extends Controller
             'custom_fields' => [
                 'mobil' => $order->mobile,
                 'email' => $order->email,
-                'poçt kodu' => $order->zip_code,
+                // 'poçt kodu' => $order->zip_code,
                 'Şəhər' => $order->city,
-                'Ölkə' => $order->country,
+                // 'Ölkə' => $order->country,
                 'sifariş nömrəsi' => 'SP-' . request('id'),
                 'sifariş tarixi' => $order->created_at,
                 'Ödəniş növü' => $order->bank,
@@ -53,11 +53,15 @@ class InvoiceController extends Controller
         ]);
         $items = [];
         foreach ($order->cart->cart_products as $key => $item) {
-            $unit = $item->size ? 'Ölçü: ' . $item->size->name  : '';
-            $unit .= $item->color ? ', Rəng: ' . $item->color->title  : '';
-            $items[] = (new InvoiceItem())->title($item->product->product_name)->pricePerUnit($item->amount / $item->piece)->quantity($item->piece)->units($unit);
+            $unit = $item->size ? 'Ölçü: ' . $item->size->name  : null;
+            $unit .= $item->color_id > 1 ? ', Rəng: ' . $item->color->title  : null;
+            $items[] = (new InvoiceItem())->title($item->product->product_name)->pricePerUnit($item->amount)->quantity($item->piece)->units($unit);
         }
-
+        
+        
+        $amount = number_format( $order->order_amount - $order->shipping + $order->bonus_amount, 2);
+        $notes = [$amount, $order->bonus_amount, $order->shipping, $order->order_amount];
+        
         $invoice = Invoice::make('INVOICE')
             ->series('SP')
             ->sequence(request('id'))
@@ -74,7 +78,7 @@ class InvoiceController extends Controller
             ->currencyDecimalPoint(',')
             ->filename($client->name . ' ' . $customer->name)
             ->addItems($items)
-            ->notes('Alınan məhsullar alış qəbzi əsasında satışa yararlı şəkildə 14 gün ərzində geri qaytarıla və ya dəyişdirilə bilər.')
+            ->notes(json_encode($notes))
             ->logo('true')
             ->save('public');
 
@@ -103,9 +107,9 @@ class InvoiceController extends Controller
             'custom_fields' => [
                 'mobil' => $order->mobile,
                 'email' => $order->email,
-                'poçt kodu' => $order->zip_code,
+                // 'poçt kodu' => $order->zip_code,
                 'Şəhər' => $order->city,
-                'Ölkə' => $order->country,
+                // 'Ölkə' => $order->country,
                 'sifariş nömrəsi' => 'SP-' . request('id'),
                 'sifariş tarixi' => $order->created_at,
                 'Ödəniş növü' => $order->bank,
@@ -116,9 +120,12 @@ class InvoiceController extends Controller
         foreach ($order->cart->cart_products as $key => $item) {
             $unit = $item->size ? 'Ölçü: ' . $item->size->name  : '';
             $unit .= $item->color ? ', Rəng: ' . $item->color->title  : '';
-            $items[] = (new InvoiceItem())->title($item->product->product_name)->pricePerUnit($item->amount / $item->piece)->quantity($item->piece)->units($unit);
+            $items[] = (new InvoiceItem())->title($item->product->product_name)->pricePerUnit($item->amount)->quantity($item->piece)->units($unit);
         }
 
+        $amount = number_format( $order->order_amount - $order->shipping + $order->bonus_amount, 2);
+        $notes = [$amount, $order->bonus_amount, $order->shipping, $order->order_amount];
+        
         $invoice = Invoice::make('INVOICE')
             ->series('SP')
             ->sequence(request('id'))
@@ -135,7 +142,8 @@ class InvoiceController extends Controller
             ->currencyDecimalPoint(',')
             ->filename($client->name . ' ' . $customer->name)
             ->addItems($items)
-            ->notes('Alınan məhsullar alış qəbzi əsasında satışa yararlı şəkildə 14 gün ərzində geri qaytarıla və ya dəyişdirilə bilər.')
+            ->notes(json_encode($notes))
+            ->logo('true')
             ->save('public');
 
 
@@ -198,9 +206,9 @@ class InvoiceController extends Controller
             'custom_fields' => [
                 'mobil' => $order->mobile,
                 'email' => $order->email,
-                'poçt kodu' => $order->zip_code,
+                // 'poçt kodu' => $order->zip_code,
                 'Şəhər' => $order->city,
-                'Ölkə' => $order->country,
+                // 'Ölkə' => $order->country,
                 'sifariş nömrəsi' => 'SP-' . request('id'),
                 'sifariş tarixi' => $order->created_at,
                 'Ödəniş növü' => $order->bank,
@@ -211,9 +219,12 @@ class InvoiceController extends Controller
         foreach ($order->cart->cart_products as $key => $item) {
             $unit = $item->size ? 'Ölçü: ' . $item->size->name  : '';
             $unit .= $item->color ? ', Rəng: ' . $item->color->title  : '';
-            $items[] = (new InvoiceItem())->title($item->product->product_name)->pricePerUnit($item->amount / $item->piece)->quantity($item->piece)->units($unit);
+            $items[] = (new InvoiceItem())->title($item->product->product_name)->pricePerUnit($item->amount)->quantity($item->piece)->units($unit);
         }
 
+        $amount = number_format( $order->order_amount - $order->shipping + $order->bonus_amount, 2);
+        $notes = [$amount, $order->bonus_amount, $order->shipping, $order->order_amount];
+        
         $invoice = Invoice::make('INVOICE')
             ->series('SP')
             ->sequence(request('id'))
@@ -230,7 +241,8 @@ class InvoiceController extends Controller
             ->currencyDecimalPoint(',')
             ->filename($client->name . ' ' . $customer->name)
             ->addItems($items)
-            ->notes('Alınan məhsullar alış qəbzi əsasında satışa yararlı şəkildə 14 gün ərzində geri qaytarıla və ya dəyişdirilə bilər.')
+            ->notes(json_encode($notes))
+            ->logo('true')
             ->save('public');
 
 

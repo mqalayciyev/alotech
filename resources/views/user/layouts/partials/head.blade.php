@@ -16,7 +16,7 @@
 <!-- CSS Implementing Plugins -->
 <link rel="stylesheet" href="{{ asset('assets/vendor/fontawesome-5/css/all.min.css') }}">
 <link rel="stylesheet" href="{{ asset('assets/fonts/Linearicons/Linearicons/Font/demo-files/demo.css') }}">
-<link rel="stylesheet" href="{{ asset('assets/css/font-electro.css') }}">
+{{-- <link rel="stylesheet" href="{{ asset('assets/css/font-electro.css') }}"> --}}
 
 <link rel="stylesheet" href="{{ asset('assets/vendor/animate.css/animate.min.css') }}">
 <link rel="stylesheet" href="{{ asset('assets/vendor/hs-megamenu/src/hs.megamenu.css') }}">

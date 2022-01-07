@@ -27,6 +27,8 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Artisan;
+// use Illuminate\Support\Carbon;
+use Carbon;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -48,7 +50,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot()
     {
         // Artisan::call('route:cache');
-
+        
         Schema::defaultStringLength(191);
 
         View::composer(['manage.*'], function ($view) {
@@ -94,11 +96,12 @@ class AppServiceProvider extends ServiceProvider
             else{
                 $compare = 0;
             }
-            $discount = Product::select('product.discount_date')
+            $mytime = Carbon::now();
+            $product = Product::select('product.discount_date')
                 ->leftJoin('product_detail', 'product_detail.product_id', 'product.id')
                 ->where('product.discount', '!=', null)
-                ->where('product.discount_date', '>', date('Y-m-d h:i:sa'))
-                ->orderBy('updated_at', 'asc')
+                ->where('product.discount_date', '>', $mytime->toDateTimeString())
+                ->orderBy('product.discount_date', 'asc')
                 ->first();
 
             return $view->with([
@@ -107,17 +110,19 @@ class AppServiceProvider extends ServiceProvider
                 'shipping_return' => $shipping_return,
                 'wish_lists'=>$wish_lists,
                 'compare'=>$compare,
-                'discount'=>$discount,
+                'discount_date'=>$product ? $product->discount_date : null,
             ]);
         });
         if (Schema::hasTable('category')) {
             $global_categories_headermenu = Category::where('slug', 'kisi-geyimleri')->orWhere('slug', 'qadin-geyimleri')->get();
             $global_categories_sidemenu = Category::all();
             $all_global_categories = Category::all();
+            $home_categories = Category::take(3)->where('top_id', null)->where('category_view', 1)->get();
             View::share([
                 'global_categories_sidemenu' => $global_categories_sidemenu,
                 'global_categories_headermenu' => $global_categories_headermenu,
                 'all_global_categories' => $all_global_categories,
+                'home_categories' => $home_categories,
             ]);
         }
     }

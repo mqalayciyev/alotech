@@ -49,7 +49,7 @@ class OrderController extends Controller
             ->where('order.exported', 0)
             ;
         $response = $orders->get();
-        // $orders->update(['exported' => 1]);
+        $orders->update(['exported' => 1]);
         return $response;
     }
 

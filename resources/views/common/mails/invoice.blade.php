@@ -61,10 +61,6 @@
         </thead>
         <tbody>
             <tr>
-                <td>Ödenis meblegi </td>
-                <td>{{  $data['total_amount']}} AZN</td>
-            </tr>
-            <tr>
                 <td>Ödenis növü  </td>
                 <td>{{  $data['payment_type'] }} </td>
             </tr>
@@ -122,14 +118,18 @@
                             {!! $item->size_id > 0 ? '<p>Ölçü: ' . $size . '</p>' : '' !!}
                             {!! $item->color_id > 1 ? '<p>Rəng: ' . $color . '</p>' : '' !!}
                         </td>
-                        <td>{{ $item->amount / $item->piece }} AZN</td>
-                        <td>{{ $item->amount }} AZN</td>
+                        <td>{{ $item->amount  }} AZN</td>
+                        <td>{{ $item->amount * $item->piece }} AZN</td>
                     </tr>
                 @endforeach
         </tbody>
     </table>
 
-    <h2 style="text-transform: uppercase">Ümumi Mebleg : {{  $data['total_amount'] }} AZN</h2>
+                                        <h3 style="text-transform: uppercase">Məbləğ: {{ number_format( $data['order_amount'] - $data['shipping'] + $data['bonus_amount'], 2) }} AZN </h3>
+                                        <h3 style="text-transform: uppercase"> Bonusla ödənilən: {{ $data['bonus_amount'] }} AZN </h3>
+                                        <h3 style="text-transform: uppercase">Çatdırılma:  {{ $data['shipping'] }} AZN</h3>
+                                        <h3 style="text-transform: uppercase"> Yekun məbləğ: {{ $data['order_amount'] }} AZN </h3>
+                                        
     <h4>Qeyd</h4>
     <p>Alınan məhsullar alış qəbzi əsasında satışa yararlı şəkildə 14 gün ərzində geri qaytarıla və ya dəyişdirilə bilər.</p>
 </div>
