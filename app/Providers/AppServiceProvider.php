@@ -18,7 +18,6 @@ use App\Models\Product;
 use App\Models\Category;
 use App\Models\Customer;
 use App\Models\Supplier;
-use App\Models\Measurement;
 use App\Models\WishList;
 use App\Models\ShippingReturn;
 use Illuminate\Support\Facades\Auth;
@@ -28,7 +27,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Artisan;
 // use Illuminate\Support\Carbon;
-use Carbon;
+use Carbon\Carbon;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -50,7 +49,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot()
     {
         // Artisan::call('route:cache');
-        
+
         Schema::defaultStringLength(191);
 
         View::composer(['manage.*'], function ($view) {
