@@ -56,11 +56,16 @@
                                                             <option style="color:#000;" value="{{ $category->id }}"
                                                                 {{ $entry->top_category->id == $category->id ? 'selected' : '' }}>
                                                                 {{ $category->category_name }}</option>
-                                                            @foreach ($categories as $alt_category)
-                                                                @if ($alt_category->top_id == $category->id)
+                                                            @foreach ($category->alt_category as $alt_category)
+                                                                @if ($alt_category->second_id == null)
                                                                     <option value="{{ $alt_category->id }}"
                                                                         {{ $entry->top_category->id == $alt_category->id ? 'selected' : '' }}>
-                                                                        -- {{ $alt_category->category_name }}</option>
+                                                                        - - {{ $alt_category->category_name }}</option>
+                                                                        @foreach ($alt_category->second_category as $second_category)
+                                                                            <option value="{{ $alt_category->id }}"
+                                                                                {{ $entry->top_category->id == $alt_category->id ? 'selected' : '' }}>
+                                                                                - - - - {{ $second_category->category_name }}</option>
+                                                                        @endforeach
                                                                 @endif
                                                             @endforeach
                                                         @endif
@@ -119,7 +124,7 @@
                                     <th>@lang('admin.Image')</th>
                                     <th>@lang('admin.Top Category')</th>
                                     <th>@lang('admin.Category Name')</th>
-                                    <th></th>
+                                    <th>Ana Səhifədə</th>
                                     <th>@lang('admin.Updated at')</th>
                                     <th>@lang('admin.Created at')</th>
                                     <th>@lang('admin.Action')</th>

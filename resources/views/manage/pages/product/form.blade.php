@@ -165,10 +165,18 @@
                                         <option style="color:#000;"
                                                 value="{{ $category->id }}" {{ $entry_category->top_category->id == $category->id ? 'selected' : '' }}>
                                             {{ $category->category_name }}</option>
-                                        @foreach($categories as $alt_category)
-                                            @if($alt_category->top_id==$category->id)
-                                                <option value="{{ $alt_category->id }}" {{ $entry_category->top_category->id == $alt_category->id ? 'selected' : '' }}>
-                                                    -- {{ $alt_category->category_name }}</option>
+
+                                        @foreach ($category->alt_category as $alt_category)
+                                            @if ($alt_category->second_id == null)
+                                                <option value="{{ $alt_category->id }}"
+                                                        {{ $entry_category->top_category->id == $alt_category->id ? 'selected' : '' }}>
+                                                        - - {{ $alt_category->category_name }}</option>
+                                                        
+                                                    @foreach ($alt_category->second_category as $second_category)
+                                                        <option value="{{ $alt_category->id }}" 
+                                                            {{ $entry_category->top_category->id == $alt_category->id ? 'selected' : '' }}>
+                                                            - - - - {{ $second_category->category_name }}</option>
+                                                    @endforeach
                                             @endif
                                         @endforeach
                                     @endif
@@ -449,11 +457,17 @@
                                                             @if($category->top_id==null)
                                                                 <option class="text text-primary"
                                                                         value="{{ $category->id }}" {{ collect(old('categories', $product_categories))->contains($category->id) ? 'selected' : '' }}>{{ $category->category_name }}</option>
-                                                                @foreach($categories as $alt_category)
-                                                                    @if($alt_category->top_id==$category->id)
-                                                                        <option class="text text-primary"
-                                                                                value="{{ $alt_category->id }}" {{ collect(old('categories', $product_categories))->contains($alt_category->id) ? 'selected' : '' }}>
-                                                                            --{{ $alt_category->category_name }}</option>
+                                                                
+                                                                @foreach ($category->alt_category as $alt_category)
+                                                                    @if ($alt_category->second_id == null)
+                                                                        <option value="{{ $alt_category->id }}"
+                                                                            {{ collect(old('categories', $product_categories))->contains($alt_category->id) ? 'selected' : '' }}>
+                                                                            - - {{ $alt_category->category_name }}</option>
+                                                                            @foreach ($alt_category->second_category as $second_category)
+                                                                                <option value="{{ $alt_category->id }}"
+                                                                                    {{ collect(old('categories', $product_categories))->contains($second_category->id) ? 'selected' : '' }}>
+                                                                                    - - - - {{ $second_category->category_name }}</option>
+                                                                            @endforeach
                                                                     @endif
                                                                 @endforeach
                                                             @endif
@@ -867,6 +881,7 @@
                 url: "{{ route('manage.product.categories') }}",
                 type: "GET",
                 success: function(data){
+                    // console.log(data)
                     $("#category_modal").find("#top_id").html('');
                     $("#category_modal").find("#top_id").html('<option value="">{{ __('admin.Parent Category') }}</option>');
                     $("#category_modal").find("#top_id").append(data)

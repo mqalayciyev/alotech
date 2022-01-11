@@ -14,6 +14,9 @@
 <script src="{{ asset('assets/vendor/slick-carousel/slick/slick.js') }}"></script>
 <script src="{{ asset('assets/vendor/bootstrap-select/dist/js/bootstrap-select.min.js') }}"></script>
 
+<!-- Toastr -->
+<script src="{{ asset('assets/js/toastr.min.js') }}" type="text/javascript"></script>
+
 <!-- JS Electro -->
 <script src="{{ asset('assets/js/hs.core.js') }}"></script>
 <script src="{{ asset('assets/js/components/hs.countdown.js') }}"></script>
@@ -29,6 +32,45 @@
 <script src="{{ asset('assets/js/components/hs.show-animation.js') }}"></script>
 <script src="{{ asset('assets/js/components/hs.go-to.js') }}"></script>
 <script src="{{ asset('assets/js/components/hs.selectpicker.js') }}"></script>
+
+<script>
+    @if (Session::has('message'))
+
+        toastr.options =
+        {
+        "closeButton" : true,
+        "progressBar" : true
+        }
+        toastr.success("{{ session('message') }}");
+    @endif
+
+    @if (Session::has('error'))
+        toastr.options =
+        {
+        "closeButton" : true,
+        "progressBar" : true
+        }
+        toastr.error("{{ session('error') }}");
+    @endif
+
+    @if (Session::has('info'))
+        toastr.options =
+        {
+        "closeButton" : true,
+        "progressBar" : true
+        }
+        toastr.info("{{ session('info') }}");
+    @endif
+
+    @if (Session::has('warning'))
+        toastr.options =
+        {
+        "closeButton" : true,
+        "progressBar" : true
+        }
+        toastr.warning("{{ session('warning') }}");
+    @endif
+</script>
 
 <!-- JS Plugins Init. -->
 <script>
@@ -128,6 +170,21 @@
         // initialization of select picker
         $.HSCore.components.HSSelectPicker.init('.js-select');
     });
+
+    $(".top-category-item").hover(function(e){
+        $(".top-category-item").each((index, element) => {
+            $(element).find('.sub-menu').removeClass('show')
+        })
+        $(this).find('.sub-menu').addClass('show')
+    })
+    $(".menu-nav .category-menu-overlay").on('click', function(){
+        $(".menu-nav .category-menu-overlay").removeClass('active')
+        $(".menu-nav .category-menu-desktop").removeClass('active')
+    })
+    $("#sidebarHeaderInvokerMenu").on('click', function(){
+        $(".menu-nav .category-menu-overlay").toggleClass('active')
+        $(".menu-nav .category-menu-desktop").toggleClass('active')
+    })
 </script>
 
 

@@ -8,7 +8,7 @@
 
 </head>
 
-<body>
+<body class="@yield('bodyClass')">
 
     @include('user.layouts.partials.panel')
     @include('user.layouts.partials.header')
@@ -18,6 +18,7 @@
     @include('user.layouts.partials.footer')
 
     @include('user.layouts.partials.script')
+    @include('user.layouts.partials.javascript')
 </body>
 
 </html>

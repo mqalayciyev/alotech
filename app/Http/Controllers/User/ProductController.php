@@ -217,34 +217,26 @@ class ProductController extends Controller
         return back();
     }
     public function reviews(){
-        $page = request('page');
         $product_id = request('product_id');
-        $page = ($page -1)*3;
-        $reviews = Review::where('product_id', $product_id)->orderBy('created_at', 'desc')->offset($page)->limit(3)->get();
+        $reviews = Review::where('product_id', $product_id)->orderBy('created_at', 'desc')->get();
         $output = '';
         foreach ($reviews as $review) {
             $ratings = "";
             for ($i=1; $i <=5; $i++) {
                 if($i > $review->rating){
-                    $color = '-o empty';
+                    $color = 'r text-muted';
                 }
                 else{
-                    $color = '';
+                    $color = 's';
                 }
-                $ratings .= "<i title=". $i ." class='fa fa-star" . $color . "'></i>";
+                $ratings .= '<small class="fa' . $color . ' fa-star" title="'. $i .'"></small>';
             }
-            $output .= "<div class='single-review w-100'>
-            <div class='review-heading'>
-                <div><a href='javascript:void(0)'><i class='icon-user'></i> " . $review->name . " </a></div>
-                <div><a href='javascript:void(0)'><i class='fa fa-clock-o'></i> " . $review->created_at . " </a></div>
-                <div class='review-rating product-rating pull-right'>
-                " . $ratings . "
-                </div>
-            </div>
-            <div class='review-body'>
-                <p>" . $review->review . "</p>
-            </div>
-        </div>";
+            $output .= '<div class="border-bottom border-color-1 pb-4 mb-4"> <div class="d-flex justify-content-between align-items-center text-secondary font-size-1 mb-2">
+            <div class="text-warning text-ls-n2 font-size-16" style="width: 80px;">
+            ' . $ratings . '</div> </div>
+            <p class="text-gray-90">' . $review->review . '</p>
+            <div class="mb-2"><strong>' . $review->name . '</strong>
+            <span class="font-size-13 text-gray-23"> ' . $review->created_at . '</div></div>';
         }
         $reviews_count = Review::where('product_id', $product_id)->count();
         // echo $output;

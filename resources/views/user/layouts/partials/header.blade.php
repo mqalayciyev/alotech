@@ -33,7 +33,7 @@
                                 <!-- End Nav -->
 
                                 <!-- ========== HEADER SIDEBAR ========== -->
-                                <aside id="sidebarHeader1" class="u-sidebar u-sidebar--left"
+                                <aside id="sidebarHeader1" class="u-sidebar u-sidebar--left hide-desktop"
                                     aria-labelledby="sidebarHeaderInvokerMenu">
                                     <div class="u-sidebar__scroller">
                                         <div class="u-sidebar__container">
@@ -63,7 +63,8 @@
                                                         <!-- Logo -->
                                                         <a class="d-flex ml-0 navbar-brand u-header__navbar-brand u-header__navbar-brand-vertical"
                                                             href="{{ route('home') }}" aria-label="Electro">
-                                                            <img src="{{ asset('assets/img/' . $website_info->logo) }}" alt="">
+                                                            <img src="{{ asset('assets/img/' . $website_info->logo) }}"
+                                                                alt="">
                                                         </a>
                                                         <!-- End Logo -->
 
@@ -83,15 +84,30 @@
                                                                         <div id="{{ $category->slug }}"
                                                                             class="collapse pl-2"
                                                                             data-parent="#headerSidebarContent">
-                                                                            <a href="{{ route('category', $category->slug) }}">
-                                                                                <span class="u-header__sub-menu-title">{{ $category->category_name }}</span>
+                                                                            <a
+                                                                                href="{{ route('category', $category->slug) }}">
+                                                                                <span
+                                                                                    class="u-header__sub-menu-title">{{ $category->category_name }}</span>
                                                                             </a>
                                                                             <ul class="u-header-collapse__nav-list">
-                                                                                @foreach ($all_global_categories as $alt_category)
+                                                                                {{-- @foreach ($all_global_categories as $alt_category)
                                                                                     @if ($alt_category->top_id == $category->id)
                                                                                         <li>
                                                                                             <a class="u-header-collapse__submenu-nav-link"
                                                                                                 href="{{ route('category', $alt_category->slug) }}">{{ $alt_category->category_name }}</a>
+                                                                                        </li>
+                                                                                    @endif
+                                                                                @endforeach --}}
+                                                                                @foreach ($category->alt_category as $alt_category)
+                                                                                    @if ($alt_category->second_id == null)
+                                                                                        <li>
+                                                                                            <a class="u-header-collapse__submenu-nav-link"
+                                                                                                href="{{ route('category', $alt_category->slug) }}">{{ $alt_category->category_name }}</a>
+                                                                                            <ul style="list-style: none; padding: 0 0 0 15px;">
+                                                                                                @foreach ($alt_category->second_category as $second_category)
+                                                                                                    <li><a class="u-header-collapse__submenu-nav-link" href="{{ route('category', $second_category->slug) }}">{{ $second_category->category_name }}</a></li>
+                                                                                                @endforeach
+                                                                                            </ul>
                                                                                         </li>
                                                                                     @endif
                                                                                 @endforeach
@@ -173,23 +189,27 @@
                                             </a>
                                         </li> --}}
                                         <li class="col d-block">
-                                            <a href="{{ route('my_wish_list') }}" class="text-gray-90" data-toggle="tooltip"
-                                                data-placement="top" title="Seçilmişlər">
+                                            <a href="{{ route('my_wish_list') }}" class="text-gray-90"
+                                                data-toggle="tooltip" data-placement="top" title="Seçilmişlər">
                                                 <i class="font-size-22 far fa-heart"></i>
                                             </a>
                                         </li>
                                         <li class="col d-block px-2 px-sm-3">
-                                            <a href="{{ route('my_account') }}" class="text-gray-90" data-toggle="tooltip" data-placement="top" title="Hesabım">
+                                            <a href="{{ route('my_account') }}" class="text-gray-90"
+                                                data-toggle="tooltip" data-placement="top" title="Hesabım">
                                                 <i class="font-size-22 far fa-user"></i>
                                             </a>
 
                                         </li>
                                         <li class="col pr-xl-0 px-2 px-sm-3">
-                                            <a href="{{ route('cart') }}" class="text-gray-90 position-relative d-flex "
-                                                data-toggle="tooltip" data-placement="top" title="Səbət">
+                                            <a href="{{ route('cart') }}"
+                                                class="text-gray-90 position-relative d-flex " data-toggle="tooltip"
+                                                data-placement="top" title="Səbət">
                                                 <i class="font-size-22 icon-bag2"></i>
-                                                <span class="width-22 height-22 bg-dark position-absolute d-flex align-items-center justify-content-center rounded-circle left-12 top-8 font-weight-bold font-size-12 text-white show_cartCount">{{ Cart::count() }}</span>
-                                                <span class="d-none d-xl-block font-weight-bold font-size-16 text-gray-90 ml-3 show_cart_total">{{ Cart::total() > 0 ? Cart::total() . ' ₼' : '' }}</span>
+                                                <span
+                                                    class="width-22 height-22 bg-dark position-absolute d-flex align-items-center justify-content-center rounded-circle left-12 top-8 font-weight-bold font-size-12 text-white show_cartCount">{{ Cart::count() }}</span>
+                                                <span
+                                                    class="d-none d-xl-block font-weight-bold font-size-16 text-gray-90 ml-3 show_cart_total">{{ Cart::total() > 0 ? Cart::total() . ' ₼' : '' }}</span>
                                             </a>
                                         </li>
                                     </ul>
@@ -200,92 +220,58 @@
                     </div>
                 </div>
                 <!-- End Logo-Search-header-icons -->
+                <div class="position-relative menu-nav">
+                    <div class="category-menu-overlay"></div>
 
+                    <div class="category-menu-desktop">
+                        <div class="container">
+                            <ul class="top-category">
+                                @php $show=false; @endphp
+                                @foreach ($global_categories_sidemenu as $category)
+                                    @if ($category->top_id == null)
+                                        <li class="top-category-item">
+                                            <a class="top-category-item-link" href="javascript:void(0);">
+                                                <img class="icon-filter category-icon" style='width: 20px;'
+                                                    src='{{ $category->image->image_name ? asset('assets/img/category/' . $category->image->image_name) : asset('assets/img/category/product-category-icon.png') }}'
+                                                    alt='{{ $category->image->image_name }}'>
+                                                <span>{{ $category->category_name }}</span>
+                                                <i class="fas fa-chevron-right"></i>
+                                            </a>
+                                            <div class="sub-menu {{ !$show ? 'show' : null }}">
+                                                <a href="{{ route('category', $category->slug) }}">
+                                                    <h3>{{ $category->category_name }}</h3>
+                                                </a>
+                                                <ul class="sub-menu-items">
+                                                    @foreach ($category->alt_category as $alt_category)
+                                                        @if ($alt_category->second_id == null)
+                                                            <li class="px-2">
+                                                                <strong><a class="nav-link p-0"
+                                                                    href="{{ route('category', $alt_category->slug) }}">{{ $alt_category->category_name }}</a></strong>
+                                                                <ul>
+                                                                    @foreach ($alt_category->second_category as $second_category)
+                                                                        <li><a href="{{ route('category', $second_category->slug) }}">{{ $second_category->category_name }}</a></li>
+                                                                    @endforeach
+                                                                </ul>
+                                                            </li>
+                                                        @endif
+                                                    @endforeach
+                                                </ul>
+                                            </div>
+                                        </li>
+                                        @php $show=true; @endphp
+                                    @endif
+                                @endforeach
+                            </ul>
+                        </div>
+                    </div>
+                </div>
                 <!-- Vertical-and-secondary-menu -->
                 <div class="box-shadow-1 d-none d-xl-block">
-                    <div class="container">
+                    <div class="container position-relative">
                         <div class="row">
-                            <!-- Vertical Menu -->
-                            <div class="col-md-auto d-none d-xl-block align-self-center">
-                                <div class="max-width-200 min-width-200">
-                                    <!-- Basics Accordion -->
-                                    <div id="basicsAccordion">
-                                        <!-- Card -->
-                                        <div class="card border-0">
-                                            <div class="card-header card-collapse btn-remove-bg-hover border-0"
-                                                id="basicsHeadingOne">
-                                                <button type="button"
-                                                    class="btn-link btn-remove-bg-hover btn-block d-flex card-btn pyc-10 text-lh-1 pl-0 pr-4 shadow-none btn-primary bg-transparent rounded-top-lg border-0 font-weight-bold text-gray-90"
-                                                    data-toggle="collapse" data-target="#basicsCollapseOne"
-                                                    aria-expanded="true" aria-controls="basicsCollapseOne">
-                                                    <span class="text-gray-90">Kateqoriyalar</span>
-                                                    <span class="ml-2 text-gray-90">
-                                                        <i class="fas fa-chevron-down"></i>
-                                                    </span>
-                                                </button>
-                                            </div>
-                                            <div id="basicsCollapseOne" class="collapse vertical-menu v2"
-                                                aria-labelledby="basicsHeadingOne" data-parent="#basicsAccordion">
-                                                <div class="card-body p-0">
-                                                    <nav
-                                                        class="js-mega-menu navbar navbar-expand-xl u-header__navbar u-header__navbar--no-space hs-menu-initialized">
-                                                        <div id="navBar"
-                                                            class="collapse navbar-collapse u-header__navbar-collapse">
-                                                            <ul
-                                                                class="navbar-nav u-header__navbar-nav border-top-primary">
-                                                                @foreach ($global_categories_sidemenu as $category)
-                                                                    @if ($category->top_id == null)
-                                                                        <li class="nav-item hs-has-mega-menu u-header__nav-item"
-                                                                            data-event="hover"
-                                                                            data-animation-in="slideInUp"
-                                                                            data-animation-out="fadeOut"
-                                                                            data-position="left">
-                                                                            <a id="basicMegaMenu"
-                                                                                class="nav-link u-header__nav-link u-header__nav-link-toggle"
-                                                                                href="javascript:;" aria-haspopup="true"
-                                                                                aria-expanded="false">
-                                                                                {{ $category->category_name }}
-                                                                            </a>
-                                                                            <div class="hs-mega-menu vmm-tfw u-header__sub-menu "
-                                                                                aria-labelledby="basicMegaMenu"
-                                                                                style="height: max-content">
-                                                                                <div
-                                                                                    class="row u-header__mega-menu-wrapper">
-                                                                                    <div class="col mb-3 mb-sm-0">
-                                                                                        <a
-                                                                                            href="{{ route('category', $category->slug) }}">
-                                                                                            <span
-                                                                                                class="u-header__sub-menu-title">{{ $category->category_name }}</span>
-                                                                                        </a>
-                                                                                        <ul
-                                                                                            class="u-header__sub-menu-nav-group mb-3">
-                                                                                            @foreach ($all_global_categories as $alt_category)
-                                                                                                @if ($alt_category->top_id == $category->id)
-                                                                                                    <li>
-                                                                                                        <a class="nav-link u-header__sub-menu-nav-link"
-                                                                                                            href="{{ route('category', $alt_category->slug) }}">{{ $alt_category->category_name }}</a>
-                                                                                                    </li>
-                                                                                                @endif
-                                                                                            @endforeach
-                                                                                        </ul>
-                                                                                    </div>
-                                                                                </div>
-                                                                            </div>
-                                                                        </li>
-                                                                    @endif
-                                                                @endforeach
-                                                            </ul>
-                                                        </div>
-                                                    </nav>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <!-- End Card -->
-                                    </div>
-                                    <!-- End Basics Accordion -->
-                                </div>
-                            </div>
-                            <!-- End Vertical Menu -->
+
+
+
                             <!-- Secondary Menu -->
                             <div class="col secondary-menu">
                                 <!-- Nav -->
@@ -295,16 +281,19 @@
                                     <div id="navBar" class="collapse navbar-collapse u-header__navbar-collapse">
                                         <ul class="navbar-nav u-header__navbar-nav">
                                             <li class="nav-item u-header__nav-item">
-                                                <a class="nav-link u-header__nav-link" href="{{ route('brands') }}" aria-haspopup="true"
-                                                    aria-expanded="false" aria-labelledby="pagesSubMenu">Brendlər</a>
+                                                <a class="nav-link u-header__nav-link" href="{{ route('brands') }}"
+                                                    aria-haspopup="true" aria-expanded="false"
+                                                    aria-labelledby="pagesSubMenu">Brendlər</a>
                                             </li>
                                             <li class="nav-item u-header__nav-item">
-                                                <a class="nav-link u-header__nav-link" href="{{ route('compare') }}" aria-haspopup="true"
-                                                    aria-expanded="false" aria-labelledby="pagesSubMenu">Müqayisə</a>
+                                                <a class="nav-link u-header__nav-link" href="{{ route('compare') }}"
+                                                    aria-haspopup="true" aria-expanded="false"
+                                                    aria-labelledby="pagesSubMenu">Müqayisə</a>
                                             </li>
                                             <!-- Endirimli Məhsullar -->
                                             <li class="nav-item u-header__nav-item">
-                                                <a class="nav-link u-header__nav-link" href="{{ route('deal_of_day') }}" aria-haspopup="true"
+                                                <a class="nav-link u-header__nav-link"
+                                                    href="{{ route('deal_of_day') }}" aria-haspopup="true"
                                                     aria-expanded="false" aria-labelledby="pagesSubMenu">Endirimli
                                                     məhsullar</a>
                                             </li>
@@ -312,7 +301,8 @@
 
                                             <!-- Ən çox satılanlar -->
                                             <li class="nav-item u-header__nav-item">
-                                                <a class="nav-link u-header__nav-link" href="{{ route('best_selling') }}" aria-haspopup="true"
+                                                <a class="nav-link u-header__nav-link"
+                                                    href="{{ route('best_selling') }}" aria-haspopup="true"
                                                     aria-expanded="false" aria-labelledby="blogSubMenu">Ən çox
                                                     satılanlar</a>
                                             </li>
@@ -320,9 +310,17 @@
 
                                             <!-- Gift Cards -->
                                             <li class="nav-item u-header__nav-item">
-                                                <a class="nav-link u-header__nav-link" href="{{ route('last_view') }}" aria-haspopup="true" aria-expanded="false">Son baxılanlar</a>
+                                                <a class="nav-link u-header__nav-link"
+                                                    href="{{ route('last_view') }}" aria-haspopup="true"
+                                                    aria-expanded="false">Son baxılanlar</a>
                                             </li>
                                             <!-- End Gift Cards -->
+
+                                            <li class="nav-item u-header__nav-last-item">
+                                                <a class="text-gray-90" href="#" target="_blank">
+                                                    Anbar
+                                                </a>
+                                            </li>
 
                                         </ul>
                                     </div>

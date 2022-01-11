@@ -137,7 +137,7 @@ class HomeController extends Controller
                 ->where('category.slug', $category)
                 ->where('product.id', '!=', $product_id)
                 ->orderBy('updated_at', 'desc')
-                ->take(8)
+                ->take(6)
                 ->get();
             return view('user.pages.single_product', compact('products'));
         }

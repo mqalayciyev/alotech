@@ -16,21 +16,33 @@ class CategoryController extends Controller
     {
         $entry = new Category;
         $categories = Category::all();
+        
         return view('manage.pages.category.index', compact('categories', 'entry'));
     }
 
     public function index_data()
     {
-        $rows = Category::select(['id', 'top_id', 'third_id', 'category_name', 'category_view', 'slug', 'created_at', 'updated_at']);
+        $rows = Category::select(['id', 'top_id', 'second_id', 'category_name', 'category_view', 'slug', 'created_at', 'updated_at']);
         return DataTables::eloquent($rows)
             ->addColumn('parent_category', function ($row) {
-                return $row->top_category->category_name;
+                $name = '';
+                if($row->top_id == null && $row->second_id == null){
+                    $name = "Əsas Kateqoriya";
+                }
+                if($row->top_id != null && $row->second_id != null){
+                    $name = $row->second_top_category->category_name;
+                }
+                if($row->top_id != null && $row->second_id == null){
+                    $name = $row->top_category->category_name;
+                }
+                
+                return $name;
             })
             ->addColumn('image', function ($row) {
                 return $row->image->image_name ? "<img style='width: 50px;' src='".asset('assets/img/category/'. $row->image->image_name)."' alt='".$row->image->image_name."'>" : "<img src='http://via.placeholder.com/50x50' alt='catgory_image'>";
             })
             ->addColumn('category_view', function ($row) {
-                return $row->category_view ? "Ana səhifədə göstərilir" : null;
+                return $row->category_view ? "Göstərilir" : null;
             })
             ->addColumn('action', function ($row) {
                 return '<div>
@@ -56,16 +68,25 @@ class CategoryController extends Controller
         $success_output = '';
 
         $data = request()->only('category_name', 'category_view', 'slug', 'top_id', 'no_order_amount');
+        
         if(request('top_id')){
-            $name = Category::find(request('top_id'));
-
-            $data['slug'] =  str_slug($name->category_name) . '-' . str_slug(request('category_name'));
+            $category = Category::find(request('top_id'));
+            
+            if($category->top_id){
+                $data['top_id'] = $category->top_id;
+                $data['second_id'] = $category->id;
+                $data['slug'] =  str_slug($category->top_category->category_name) . '-' . str_slug($category->category_name) . '-' . str_slug(request('category_name'));
+            }
+            else{
+                $data['slug'] =  str_slug($category->category_name) . '-' . str_slug(request('category_name'));
+            }
         }
         else{
             $data['slug'] = str_slug(request('category_name'));
         }
 
         request()->merge(['slug' => $data['slug']]);
+
 
         if ($validation->fails()) {
             foreach ($validation->messages()->getMessages() as $messages) {

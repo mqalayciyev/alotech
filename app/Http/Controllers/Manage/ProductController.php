@@ -130,9 +130,12 @@ class ProductController extends Controller
 
             if ($category->top_id == null) {
                 $output .= '<option style="color:#000;" value="' . $category->id . '">' . $category->category_name . '</option>';
-                foreach ($categories as $alt_category) {
-                    if ($alt_category->top_id == $category->id) {
-                        $output .= '<option value="' . $alt_category->id . '"> -- ' . $alt_category->category_name . '</option>';
+                foreach ($category->alt_category as $alt_category) {
+                    if ($alt_category->second_id == null) {
+                        $output .= '<option value="' . $alt_category->id . '"> - - ' . $alt_category->category_name . '</option>';
+                        foreach ($alt_category->second_category as $second_category) {
+                            $output .= '<option value="' . $alt_category->id . '"> - - - -' . $second_category->category_name . '</option>';
+                        }
                     }
                 }
             }

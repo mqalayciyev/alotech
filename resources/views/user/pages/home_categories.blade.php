@@ -33,85 +33,51 @@
                                     foreach ($product->price as $object) {
                                         $price[] = $object->toArray();
                                     }
-                                    
+
                                     // echo "<pre>";
                                     //     print_r($price);
-                                    
-                                    $filter_1 = array_filter($price, function ($item) {
-                                        if ($item['color_id'] != null && $item['size_id'] != null) {
+
+                                    $filter = array_filter($price, function ($item) {
+                                        if ($item['color_id'] > 1 && $item['size_id'] != null) {
                                             return true;
                                         }
                                     });
-                                    $filter_2 = array_filter($price, function ($item) {
-                                        if ($item['color_id'] != null || $item['size_id'] != null) {
-                                            return true;
-                                        }
-                                    });
-                                    $filter_3 = array_filter($price, function ($item) {
-                                        if ($item['default_price'] == 1) {
-                                            return true;
-                                        }
-                                    });
-                                    
+                                    if(count($filter) == 0){
+                                        $filter = array_filter($price, function ($item) {
+                                            if ($item['color_id'] > 1 || $item['size_id'] != null) {
+                                                return true;
+                                            }
+                                        });
+                                    }
+                                    if(count($filter) == 0){
+                                        $filter = array_filter($price, function ($item) {
+                                            if ($item['default_price'] == 1) {
+                                                return true;
+                                            }
+                                        });
+                                    }
+
                                 @endphp
 
-                                @if (count($filter_1))
-                                @foreach ($filter_1 as $item)
-                                    @if ($item)
-                                        @if ($product->discount)
-                                        <small><del class="text-gray-100"><span class="product_amount"
-                                            data-price-id="{{ $item['id'] }}" data-color="{{ $item['color_id'] }}"
-                                            data-size="{{ $item['size_id'] }}">{{ $item['sale_price'] }}</span>₼</del></small>
-                                        <div class="text-gray-100 text-red"><span class="product_amount"
-                                            data-price-id="{{ $item['id'] }}" data-color="{{ $item['color_id'] }}"
-                                            data-size="{{ $item['size_id'] }}">{{ number_format($item['sale_price'] * ((100 - $product->discount) / 100), 2) }}</span>₼</div>
-                                            
-                                        @else
-                                            <div class="text-gray-100 text-red"><span class="product_amount"
+                                @if (count($filter))
+                                    @foreach ($filter as $item)
+                                        @if ($item)
+                                            @if ($product->discount)
+                                            <small><del class="product_amount currency_azn"
                                                 data-price-id="{{ $item['id'] }}" data-color="{{ $item['color_id'] }}"
-                                                data-size="{{ $item['size_id'] }}">{{ $item['sale_price'] }}</span>₼</div>
-                                        @endif
-                                        @break
-                                    @endif
-                                @endforeach
-                                @elseif (count($filter_2))
-                                @foreach ($filter_2 as $item)
-                                    @if ($item)
-                                        @if ($product->discount)
-                                        <small><del class="text-gray-100"><span class="product_amount"
-                                            data-price-id="{{ $item['id'] }}" data-color="{{ $item['color_id'] }}"
-                                            data-size="{{ $item['size_id'] }}">{{ $item['sale_price'] }}</span>₼</del></small>
-                                        <div class="text-gray-100 text-red"><span class="product_amount"
-                                            data-price-id="{{ $item['id'] }}" data-color="{{ $item['color_id'] }}"
-                                            data-size="{{ $item['size_id'] }}">{{ number_format($item['sale_price'] * ((100 - $product->discount) / 100), 2) }}</span>₼</div>
-                                            
-                                        @else
-                                            <div class="text-gray-100 text-red"><span class="product_amount"
+                                                data-size="{{ $item['size_id'] }}">{{ $item['sale_price'] }}</del></small>
+                                            <div class="text-gray-100 text-red product_amount currency_azn"
                                                 data-price-id="{{ $item['id'] }}" data-color="{{ $item['color_id'] }}"
-                                                data-size="{{ $item['size_id'] }}">{{ $item['sale_price'] }}</span>₼</div>
+                                                data-size="{{ $item['size_id'] }}">{{ number_format($item['sale_price'] * ((100 - $product->discount) / 100), 2) }}</div>
+
+                                            @else
+                                                <div class="text-gray-100 text-red product_amount currency_azn"
+                                                    data-price-id="{{ $item['id'] }}" data-color="{{ $item['color_id'] }}"
+                                                    data-size="{{ $item['size_id'] }}">{{ $item['sale_price'] }}</div>
+                                            @endif
+                                            @break
                                         @endif
-                                        @break
-                                    @endif
-                                @endforeach
-                                @else
-                                @foreach ($filter_3 as $item)
-                                    @if ($item)
-                                        @if ($product->discount)
-                                        <small><del class="text-gray-100"><span class="product_amount"
-                                            data-price-id="{{ $item['id'] }}" data-color="{{ $item['color_id'] }}"
-                                            data-size="{{ $item['size_id'] }}">{{ $item['sale_price'] }}</span>₼</del></small>
-                                        <div class="text-gray-100 text-red"><span class="product_amount"
-                                            data-price-id="{{ $item['id'] }}" data-color="{{ $item['color_id'] }}"
-                                            data-size="{{ $item['size_id'] }}">{{ number_format($item['sale_price'] * ((100 - $product->discount) / 100), 2) }}</span>₼</div>
-                                            
-                                        @else
-                                            <div class="text-gray-100 text-red"><span class="product_amount"
-                                                data-price-id="{{ $item['id'] }}" data-color="{{ $item['color_id'] }}"
-                                                data-size="{{ $item['size_id'] }}">{{ $item['sale_price'] }}</span>₼</div>
-                                        @endif
-                                        @break
-                                    @endif
-                                @endforeach
+                                    @endforeach
                                 @endif
                                 </div>
                                 <div class="d-none d-xl-block prodcut-add-cart">
@@ -125,8 +91,8 @@
                         <div class="product-item__footer">
                             <div class="border-top pt-2 flex-center-between flex-wrap">
                                 <input type="hidden" name="id" value="{{ $product->id }}">
-                                <a href="javascript:void(0)" class="text-gray-6 font-size-13"><i class="fa fa-retweet font-size-15"></i> Müqayisə</a>
-                                <a href="javascript:void(0)" class="text-gray-6 font-size-13"><i class="fa fa-heart font-size-15 mr-1"></i> Seçilmişlər</a>
+                                <a href="javascript:void(0)" class="text-gray-6 font-size-13 add-to-compare"><i class="fa fa-retweet font-size-15"></i> Müqayisə</a>
+                                <a href="javascript:void(0)" class="text-gray-6 font-size-13 add-wish-list"><i class="fa fa-heart font-size-15 mr-1"></i> Seçilmişlər</a>
                             </div>
                         </div>
                     </div>
@@ -171,10 +137,10 @@
                                                     foreach ($product->price as $object) {
                                                         $price[] = $object->toArray();
                                                     }
-                                                    
+
                                                     // echo "<pre>";
                                                     //     print_r($price);
-                                                    
+
                                                     $filter_1 = array_filter($price, function ($item) {
                                                         if ($item['color_id'] != null && $item['size_id'] != null) {
                                                             return true;
@@ -190,7 +156,7 @@
                                                             return true;
                                                         }
                                                     });
-                                                    
+
                                                 @endphp
 
                                                 @if (count($filter_1))
@@ -203,7 +169,7 @@
                                                         <div class="text-gray-100 text-red"><span class="product_amount"
                                                             data-price-id="{{ $item['id'] }}" data-color="{{ $item['color_id'] }}"
                                                             data-size="{{ $item['size_id'] }}">{{ number_format($item['sale_price'] * ((100 - $product->discount) / 100), 2) }}</span>₼</div>
-                                                            
+
                                                         @else
                                                             <div class="text-gray-100 text-red"><span class="product_amount"
                                                                 data-price-id="{{ $item['id'] }}" data-color="{{ $item['color_id'] }}"
@@ -222,7 +188,7 @@
                                                         <div class="text-gray-100 text-red"><span class="product_amount"
                                                             data-price-id="{{ $item['id'] }}" data-color="{{ $item['color_id'] }}"
                                                             data-size="{{ $item['size_id'] }}">{{ number_format($item['sale_price'] * ((100 - $product->discount) / 100), 2) }}</span>₼</div>
-                                                            
+
                                                         @else
                                                             <div class="text-gray-100 text-red"><span class="product_amount"
                                                                 data-price-id="{{ $item['id'] }}" data-color="{{ $item['color_id'] }}"
@@ -241,7 +207,7 @@
                                                         <div class="text-gray-100 text-red"><span class="product_amount"
                                                             data-price-id="{{ $item['id'] }}" data-color="{{ $item['color_id'] }}"
                                                             data-size="{{ $item['size_id'] }}">{{ number_format($item['sale_price'] * ((100 - $product->discount) / 100), 2) }}</span>₼</div>
-                                                            
+
                                                         @else
                                                             <div class="text-gray-100 text-red"><span class="product_amount"
                                                                 data-price-id="{{ $item['id'] }}" data-color="{{ $item['color_id'] }}"

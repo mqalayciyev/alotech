@@ -1,111 +1,92 @@
 @if (count($products))
-    <div class="ps-carousel--nav owl-slider" data-owl-auto="false" data-owl-loop="true" data-owl-speed="3000"
-        data-owl-gap="30" data-owl-nav="true" data-owl-dots="true" data-owl-item="5" data-owl-item-xs="2"
-        data-owl-item-sm="3" data-owl-item-md="4" data-owl-item-lg="4" data-owl-item-xl="5" data-owl-duration="1000"
-        data-owl-mousedrag="on">
 
         @foreach ($products as $array => $product)
-            <div class="ps-product" style="max-width: 250px">
-                <div class="ps-product__thumbnail">
-                    <a href="{{ route('product', $product->slug) }}" style="min-height: 200px; display: flex; justify-content: center; align-items: center;">
-                        <img src="{{ $product->image->image_name ? asset('assets/img/products/' . $product->image->image_name) : asset('assets/img/'  . old('logo', $website_info->logo)) }}" alt="{{ $product->product_name }}">
-                    </a>
-                    {!! $product->discount != 0.0 ? '<div class="ps-product__badge">-' . $product->discount . '%</div>' : null !!}
-                    <ul class="ps-product__actions">
-                        <input type="hidden" name="id" value="{{ $product->id }}">
-                        <li><a href="javascript:void(0)" class="quick-view" data-id="{{ $product->id }}"
-                                data-placement="top" title="Bax" data-toggle="modal" data-target="#product-quickview"><i
-                                    class="icon-eye"></i></a></li>
-                        <li><a href="javascript:void(0)" data-toggle="tooltip" data-placement="top"
-                                    data-id="{{ $product->id }}" class="add-wish-list" title="Add to Whishlist"><i
-                                        class="icon-heart"></i></a></li>
-                        <li><a href="javascript:void(0)" data-toggle="tooltip" data-placement="top"
-                                data-id="{{ $product->id }}" class="add-to-compare" title="Compare"><i
-                                    class="fa fa-retweet"></i></a></li>
-                    </ul>
-                </div>
-                <div class="ps-product__container ps-product__amount_parent">
-                    <div class="ps-product__content">
-                        <p class="ps-product__price sale">
-                            @php
+        <li class="col-6 col-md-3 col-xl-2gdot4-only col-wd-2 product-item">
+            <div class="product-item__outer h-100">
+                <div class="product-item__inner px-xl-4 p-3">
+                    <div class="product-item__body pb-xl-2">
+                        <div class="mb-2">
+                            <a href="{{ route('category', $product->categories[0]->slug) }}"
+                                class="font-size-12 text-gray-5 line-clamp-1"
+                                title="{{ $product->categories[0]->category_name }}">{{ $product->categories[0]->category_name }}</a>
+                            </div>
+                        <h5 class="mb-1 product-item__title">
+                            <a href="{{ route('product', $product->slug) }}"
+                                class="text-blue font-weight-bold line-clamp-1"
+                                title="{{ $product->product_name }}">{{ $product->product_name }}</a>
+                            </h5>
+                        <div class="mb-2">
+                            <a href="{{ route('product', $product->slug) }}" class="d-block text-center">
+                                <img class="img-fluid"
+                                    src="{{ $product->image->image_name ? asset('assets/img/products/' . $product->image->image_name) : asset('assets/img/' . old('logo', $website_info->logo)) }}"
+                                    alt="{{ $product->product_name }}">
+                            </a>
+                        </div>
+                        <div class="flex-center-between mb-1">
+                            <div class="prodcut-price">
+                                @php
+                                    $price = [];
+                                    foreach ($product->price as $object) {
+                                        $price[] = $object->toArray();
+                                    }
 
-                            $price = [];
-                            foreach ($product->price as $object) {
-                                $price[] = $object->toArray();
-                            }
+                                    // echo "<pre>";
+                                    //     print_r($price);
 
-                            $filter_1 = array_filter($price, function ($item) {
-                                if ($item['color_id'] != null && $item['size_id'] != null) {
-                                    return true;
-                                }
-                            });
-                            $filter_2 = array_filter($price, function ($item) {
-                                if ($item['color_id'] != null || $item['size_id'] != null) {
-                                    return true;
-                                }
-                            });
-                            $filter_3 = array_filter($price, function ($item) {
-                                if ($item['default_price'] == 1) {
-                                    return true;
-                                }
-                            });
+                                    $filter = array_filter($price, function ($item) {
+                                        if ($item['color_id'] > 1 && $item['size_id'] != null) {
+                                            return true;
+                                        }
+                                    });
+                                    if(count($filter) == 0){
+                                        $filter = array_filter($price, function ($item) {
+                                            if ($item['color_id'] > 1 || $item['size_id'] != null) {
+                                                return true;
+                                            }
+                                        });
+                                    }
+                                    if(count($filter) == 0){
+                                        $filter = array_filter($price, function ($item) {
+                                            if ($item['default_price'] == 1) {
+                                                return true;
+                                            }
+                                        });
+                                    }
+                                @endphp
 
-                        @endphp
-
-                                        @if (count($filter_1))
-                                            @foreach ($filter_1 as $item)
-                                                @if ($item)
-                                                    {!! $product->discount ? '<span class="product_amount_discount">' . number_format($item['sale_price'] * ((100 - $product->discount) / 100), 2) . '</span>₼<del><span class="product_amount" data-price-id="' . $item['id'] . '" data-color="'. $item['color_id'] . '" data-size="'. $item['size_id'] . '">' . $item['sale_price'] . '</span>₼ </del>' : '<span class="product_amount" data-price-id="' . $item['id'] . '" data-color="'. $item['color_id'] . '" data-size="'. $item['size_id'] . '">' . $item['sale_price'] . '</span>₼' !!}
-                                                    @break
-                                                @endif
-                                            @endforeach
-                                        @elseif (count($filter_2))
-                                            @foreach ($filter_2 as $item)
-                                                @if ($item)
-                                                    {!! $product->discount ? '<span class="product_amount_discount">' . number_format($item['sale_price'] * ((100 - $product->discount) / 100), 2) . '</span>₼<del><span class="product_amount" data-price-id="' . $item['id'] . '" data-color="'. $item['color_id'] . '" data-size="'. $item['size_id'] . '">' . $item['sale_price'] . '</span>₼ </del>' : '<span class="product_amount" data-price-id="' . $item['id'] . '" data-color="'. $item['color_id'] . '" data-size="'. $item['size_id'] . '">' . $item['sale_price'] . '</span>₼' !!}
-                                                    @break
-                                                @endif
-                                            @endforeach
+                                @if (count($filter))
+                                @foreach ($filter as $item)
+                                    @if ($item)
+                                        @if ($product->discount)
+                                            <del class="product_amount currency_azn" data-price-id="{{ $item['id'] }}">{{ $item['sale_price'] }}</del>
+                                            <div class="font-size-36 product_amount_discount currency_azn" >{{ number_format($item['sale_price'] * ((100 - $product->discount) / 100), 2) }}</div>
                                         @else
-                                            @foreach ($filter_3 as $item)
-                                                @if ($item)
-                                                    {!! $product->discount ? '<span class="product_amount_discount">' . number_format($item['sale_price'] * ((100 - $product->discount) / 100), 2) . '</span>₼<del><span class="product_amount" data-price-id="' . $item['id'] . '" data-color="'. $item['color_id'] . '" data-size="'. $item['size_id'] . '">' . $item['sale_price'] . '</span>₼ </del>' : '<span class="product_amount" data-price-id="' . $item['id'] . '" data-color="'. $item['color_id'] . '" data-size="'. $item['size_id'] . '">' . $item['sale_price'] . '</span>₼' !!}
-                                                    @break
-                                                @endif
-                                            @endforeach
+                                            <div class="font-size-36 product_amount currency_azn" data-price-id="{{ $item['id'] }}">{{ $item['sale_price'] }}</div>
                                         @endif
-                        </p>
-                        <p><a class="ps-product__title" href="{{ route('product', $product->slug) }}">{{ $product->product_name }}</a></p>
-                        <div class="col-12">
-                            <div class="row py-3 justify-content-center">
-                                <div class="col-12 col-md-8">
-                                    <div class="form-group--number">
-                                        <button type="button" class="ProductQuantity-Plus up"  data-id="{{ $product->id }}">
-                                            <i class="fa fa-plus"></i>
-                                        </button>
-                                        <button type="button" class="ProductQuantity-Minus down "  data-id="{{ $product->id }}">
-                                            <i class="fa fa-minus"></i>
-                                        </button>
-                                        <input
-                                            {{-- id="qty" --}}
-                                            type="text"
-                                            data-id="{{ $product->id }}"
-                                            min="1"
-                                            name="piece"
-                                            value="1"
-                                            autocomplete="off"
-                                            class="ProductQuantity-Input-{{ $product->id }} form-control"
-                                        />
-                                    </div>
-                                </div>
+                                        @break
+                                    @endif
+                                @endforeach
+                                @endif
+                            </div>
+                            <div class="d-none d-xl-block prodcut-add-cart">
+                                <a href="javascript:void(0)" class="btn-add-cart btn-primary transition-3d-hover"
+                                    data-size="{{ count($product->sizes) > 0 ? 'true' : 'false' }}"
+                                    data-color="{{ count($product->colors) > 0 ? 'true' : 'false' }}" data-piece="1"
+                                    data-id="{{ $product->id }}"><i class="fas fa-cart-arrow-down add-to-cart"></i></a>
                             </div>
                         </div>
-                        <p class="ps-btn ps-btn---primary add-to-cart btn-sm" data-piece="1" data-size="{{ count($product->sizes) > 0 ? 'true' : 'false' }}" data-color="{{ count($product->colors) > 0 ? 'true' : 'false' }}" data-id="{{ $product->id }}" >Səbətə at</p>
+                    </div>
+                    <div class="product-item__footer">
+                        <div class="border-top pt-2 flex-center-between flex-wrap">
+                            <input type="hidden" name="id" value="{{ $product->id }}">
+                            <a href="javascript:void(0)" class="text-gray-6 font-size-13 add-to-compare"><i class="fa fa-retweet font-size-15"></i></a>
+                            <a href="javascript:void(0)" class="text-gray-6 font-size-13 add-wish-list"><i class="fa fa-heart font-size-15 mr-1"></i></a>
+                        </div>
                     </div>
                 </div>
             </div>
+        </li>
         @endforeach
-    </div>
 @else
     <div class="w-100 text-center">
         <h3 class="text-center">@lang('content.There is no any product')</h3>

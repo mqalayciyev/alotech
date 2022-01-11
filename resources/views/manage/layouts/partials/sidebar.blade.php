@@ -156,8 +156,8 @@
                             href="{{ route('manage.banner', 'top') }}">Üst</a></li>
                     <li class="{{ url()->current() == route('manage.banner', 'center') ? 'active' : '' }}"><a
                             href="{{ route('manage.banner', 'center') }}">Mərkəz</a></li>
-                    <li class="{{ url()->current() == route('manage.banner', 'bottom') ? 'active' : '' }}"><a
-                            href="{{ route('manage.banner', 'bottom') }}">Alt</a></li>
+                    {{-- <li class="{{ url()->current() == route('manage.banner', 'bottom') ? 'active' : '' }}"><a
+                            href="{{ route('manage.banner', 'bottom') }}">Alt</a></li> --}}
                 </ul>
             </li>
             <li class="{{ url()->current() == route('manage.review') ? 'active' : '' }}">

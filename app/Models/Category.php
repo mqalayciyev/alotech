@@ -24,12 +24,18 @@ class Category extends Model
             'category_name' => __('admin.Parent Category')
         ]);
     }
+    public function second_top_category()
+    {
+        return $this->belongsTo('App\Models\Category', 'second_id')->withDefault([
+            'category_name' => __('admin.Parent Category')
+        ]);
+    }
 
     public function alt_category(){
         return $this->hasMany('App\Models\Category','top_id','id') ;
     }
-    public function third_category(){
-        return $this->hasMany('App\Models\Category','third_id','top_id') ;
+    public function second_category(){
+        return $this->hasMany('App\Models\Category','second_id','id') ;
     }
     public function image()
     {

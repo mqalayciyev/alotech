@@ -6952,13 +6952,13 @@ input[type="button"].btn-block {
 .breadcrumb-item + .breadcrumb-item {
   padding-left: 1rem;
 }
-
+/*
 .breadcrumb-item + .breadcrumb-item::before {
   display: inline-block;
   padding-right: 1rem;
   color: #333e48;
-  content: "e";
-}
+  content: "f054";
+} */
 
 .breadcrumb-item + .breadcrumb-item:hover::before {
   text-decoration: underline;
@@ -8818,7 +8818,7 @@ button.close {
 a.close.disabled {
   pointer-events: none;
 }
-
+/*
 .toast {
   max-width: 350px;
   overflow: hidden;
@@ -8864,7 +8864,7 @@ a.close.disabled {
 
 .toast-body {
   padding: 0.75rem;
-}
+} */
 
 .modal-open {
   overflow: hidden;
@@ -37463,4 +37463,153 @@ blockquote:not(.blockquote) p {
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
+}
+
+.category-menu-desktop{
+    width: 100%;
+    min-height: 80vh;
+    position: absolute;
+    z-index: 10000;
+    top: 0;
+    left: 0;
+    background-color: #fff;
+    border-radius: 0px;
+    padding-top: 15px;
+    padding-bottom: 15px;
+    display: none;
+}
+.category-menu-overlay{
+    position: fixed;
+    display: none;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    background-color: rgba(0,0,0,0.5);
+}
+@media (min-width: 1024px){
+    .menu-nav .active{
+        display: block;
+    }
+    .hide-desktop{
+        display: none;
+    }
+}
+.category-menu-desktop ul{
+    padding: 0px;
+}
+.category-menu-desktop li{
+    list-style: none;
+}
+.category-menu-desktop a{
+    color: #000;
+}
+.category-menu-desktop a:hover{
+    color: #fed700;
+}
+.category-menu-desktop .top-category{
+    max-width: 256px;
+    position: relative;
+}
+
+.category-menu-desktop .top-category-item .sub-menu{
+    position: absolute;
+    left: 100%;
+    top: 0;
+    visibility: hidden;
+    opacity: 0;
+    padding: 0 15px;
+    width: calc(90vw - 300px);
+    transition: 0.4s;
+}
+.category-menu-desktop .top-category-item .sub-menu.show{
+    visibility: visible;
+    opacity: 1;
+}
+
+.category-menu-desktop .top-category-item .sub-menu .sub-menu-items{
+    display: flex;
+    flex-wrap: wrap;
+}
+.category-menu-desktop .top-category-item .sub-menu .sub-menu-items li{
+    flex: 1;
+}
+.category-menu-desktop .top-category-item .top-category-item-link{
+    padding: 8px 11px 8px 11px;
+    border-radius: 4px;
+    border: none;
+    outline: none;
+    font-weight: 400;
+    font-style: normal;
+    font-stretch: normal;
+    text-decoration: none;
+    transition: color .3s;
+    flex-grow: 1;
+    line-height: 14px;
+    display: flex;
+    justify-content: space-between;
+    background: transparent;
+    align-items: center;
+    color: #000;
+    width: 100%;
+}
+.category-menu-desktop .top-category-item .top-category-item-link:hover{
+    background-color: #f4f4f4;
+}
+.category-menu-desktop .top-category-item .top-category-item-link .category-icon{
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    margin-right: 8px;
+    vertical-align: middle;
+    background: transparent 50% 50% no-repeat;
+    background-size: 100%;
+}
+.category-menu-desktop .top-category-item .top-category-item-link span{
+    flex: 1;
+}
+
+
+.icon-filter {
+    filter: invert(22%) sepia(44%) saturate(4476%) hue-rotate(342deg) brightness(79%) contrast(80%);
+}
+
+
+
+.currency_azn:after{
+    content: '₼';
+}
+
+.ps-form--review .form-group__rating {
+    display: flex;
+    align-items: center;
+}
+.ps-form--review .form-group__rating label {
+    margin-bottom: 0;
+    line-height: 20px;
+    margin-right: 15px;
+}
+
+.ps-form--review .form-group__rating .br-wrapper {
+    line-height: 20px;
+}
+
+.ps-form--review .form-group__rating .br-wrapper.br-theme-fontawesome-stars .br-widget {
+    height: auto;
+    line-height: 20px;
+}
+
+.br-theme-fontawesome-stars .br-widget {
+    height: 28px;
+    white-space: nowrap;
+}
+.ps-form--review .form-group__rating .br-wrapper a {
+    font-size: 14px;
+}
+.br-theme-fontawesome-stars .br-widget a {
+    font: normal normal normal 20px/1 FontAwesome;
+    text-rendering: auto;
+    -webkit-font-smoothing: antialiased;
+    text-decoration: none;
+    margin-right: 2px;
 }
