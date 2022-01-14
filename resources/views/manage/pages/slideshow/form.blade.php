@@ -2,7 +2,6 @@
 @section('title', __('admin.Slider Manager'))
 @section('head')
     <!--<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/croppie/2.6.2/croppie.min.css">-->
-    <script src="https://cdn.ckeditor.com/4.9.1/basic/ckeditor.js"></script>
     <style>
         .panel {
             margin-top: 25px;
@@ -125,16 +124,6 @@
     </style>
 @endsection
 @section('content')
-    @if (@$manage == 2)
-        <!-- Demo Admin -->
-        @php
-            $disabled = 'disabled';
-        @endphp
-    @else
-        @php
-            $disabled = '';
-        @endphp
-    @endif
     <form id="slider-form" add-edit="{{ @$flight->id ? @$flight->id : 0 }}">
         @csrf
         <section class="content-header">
@@ -142,11 +131,11 @@
             <div class="pull-right">
                 @if ($flight->id > 0)
                     <a href="{{ route('manage.slider.new') }}" class="btn btn-success"> @lang('admin.Add New Slider')</a>
-                    <button type="submit" {{ $disabled }} class="btn btn-info crop_image"><i class="fa fa-refresh"></i>
+                    <button type="submit" class="btn btn-info crop_image"><i class="fa fa-refresh"></i>
                         @lang('admin.Update')</button>
                 @else
                     <a href="{{ route('manage.slider') }}" class="btn btn-default"> @lang('admin.Cancel')</a>
-                    <button type="submit" {{ $disabled }} class="btn btn-success crop_image"><i class="fa fa-plus"></i>
+                    <button type="submit" class="btn btn-success crop_image"><i class="fa fa-plus"></i>
                         @lang('admin.Save')</button>
                 @endif
             </div>
@@ -163,22 +152,10 @@
                         <div class="container-fluid">
                             <div class="row">
                                 <div class="col-md-12">
-                                    <!--<div id="uploadimageModal" class="col-12 p-0" role="dialog">-->
-                                    <!--    <div class="modal-content border-0">-->
-                                    <!--        <div class="modal-body ">-->
-                                    <!--            <div class="col-12 p-0">-->
-                                    <!--                <div class=" text-center">-->
-                                    <!--                    <div id="image_demo" class="w-100" style=" margin-top:30px"></div>-->
-                                    <!--                </div>-->
-                                    <!--            </div>-->
-                                    <!--        </div>-->
-                                    <!--    </div>-->
-                                    <!--</div>-->
                                     <div class="row">
                                         <div class="col-md-12">
                                             <div class="jumbotron text-center">
-                                                <p><i class="fa fa-info-circle text-info"></i> Tövsiyyə edilən şəkil ölçüsü
-                                                    1600x671</p>
+                                                <p><i class="fa fa-info-circle text-info"></i> Tövsiyyə edilən şəkil ölçüsü 1000x419</p>
                                                 <div class="row">
                                                     <div class="col-md-12">
                                                         <div id="image_demo"></div>
@@ -192,19 +169,28 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <!--<div class="form-group">-->
-                                    <!--    <label for="image">@lang('admin.Upload Image')</label>-->
-                                    <!--    <input type="file" name="image" id="upload" value="Choose a file" accept="image/*" />-->
-                                    <!--</div>-->
+                                    
                                 </div>
 
                                 <div class="col-md-12">
-                                    {{-- <div class="form-group">
+                                    <div class="form-group">
+                                        <div>
+                                            <img src="{{ asset('assets/img/sliders/' . $flight->slider_icon) }}" alt="" style="max-width: 200px; border: 1px solid silver">
+                                        </div>
+                                        <label for="slider_icon">İcon şəkli </label>
+                                        <p class="m-0"><small><i class="fa fa-info-circle text-info"></i> Tövsiyyə edilən şəkil ölçüsü 500x380</small></p>
+                                        <input type="file" name="slider_icon" id="slider_icon" value="Choose a file" accept="image/*" />
+                                    </div>
+                                    <div class="form-group">
+                                        <input type="checkbox" name="delete_icon" id="delete_icon" value="1" />
+                                        <label for="delete_icon">İcon şəkli sil</label>
+                                    </div>
+                                    <div class="form-group">
                                         <label for="slider_name">@lang('admin.Slider Name')</label>
-                                        <input type="text" class="form-control" id="slider_name"
-                                            placeholder="@lang('admin.Slider Name')" name="slider_name"
-                                            value="{{ old('slider_name', $flight->slider_name) }}">
-                                    </div> --}}
+                                        <textarea class="form-control" id="slider_name"
+                                        placeholder="@lang('admin.Slider Name')" 
+                                            name="slider_name">{{ old('slider_name', $flight->slider_name) }}</textarea>
+                                    </div>
                                     <div class="form-group">
                                         <label for="slider_slug">@lang('admin.Slider Slug')</label>
                                         <input type="text" class="form-control" id="slider_slug"
@@ -268,6 +254,25 @@
 @section('footer')
     <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/croppie/2.6.2/croppie.js"></script>-->
     <script type="text/javascript">
+        $config = CKEDITOR.replace('slider_name', {
+            autoGrow_onStartup: true,
+            enterMode: CKEDITOR.ENTER_BR,
+            FullPage : false,
+            allowedContent : true,
+            
+        });
+        CKEDITOR.on('instanceReady', function(e) {
+            // First time
+            e.editor.document.getBody().setStyle('background-color', 'rgba(0,0,0,0.3)');
+            e.editor.document.getBody().setStyle('color', 'white');
+            e.editor.document.appendStyleText( 'a { color: white; }' );
+            // in case the user switches to source and back
+            e.editor.on('contentDom', function() {
+                e.editor.document.getBody().setStyle('background-color', 'rgba(0,0,0,0.3)');
+                e.editor.document.getBody().setStyle('color', 'white');   
+                e.editor.document.appendStyleText( 'a { color: white; }' );
+            });
+        }); 
 
         var image_crop = $('#image_demo').croppie({
             viewport: {
@@ -303,12 +308,17 @@
             event.preventDefault()
             let id = $("#slider-form").attr('add-edit')
             let slider_active = $("#slider_active").val()
-            let slider_name = $("#slider_name").val()
+            let slider_icon = $("#slider_icon")[0].files[0]
+            let delete_icon = $("#delete_icon:checked").val() ? 1 : null
+            
+            let slider_name = $config.getData()
             let slider_slug = $("#slider_slug").val()
             let formData = new FormData();
             formData.append("_token", "{{ csrf_token() }}");
             formData.append('id', id);
             formData.append('slider_active', slider_active);
+            formData.append('slider_icon', slider_icon);
+            formData.append('delete_icon', delete_icon);
             formData.append('slider_name', slider_name);
             formData.append('slider_slug', slider_slug);
 

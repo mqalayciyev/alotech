@@ -33,7 +33,7 @@ class AdminController extends Controller
                 'email' => 'required|email',
                 'password' => 'required'
             ]);
-            
+
             $admin = Admin::where('email', request('email'))->first();
             $admin_count = Admin::where('email', request('email'))->count();
             if($admin_count === 0){
@@ -51,7 +51,7 @@ class AdminController extends Controller
             } else {
                 return back()->withInput()->withErrors(['email' => __('admin.Incorrect entry')]);
             }
-            
+
         }
         return view('manage.pages.login');
     }
@@ -59,8 +59,6 @@ class AdminController extends Controller
     public function logout()
     {
         Auth::guard('manage')->logout();
-        request()->session()->flush();
-        request()->session()->regenerate();
         return redirect()->route('manage.login');
     }
 
@@ -93,9 +91,9 @@ class AdminController extends Controller
                 elseif($row->is_manage == 3){
                     $bg = "primary";
                 }
-                
+
                 $output = '<span class="label label-' . $bg . '">';
-                
+
                 if($row->is_manage == 1){
                     $output .= "Admin";
                 }
@@ -122,7 +120,7 @@ class AdminController extends Controller
                         <a href="' . route('manage.admin.edit', $row->id) . '" class="btn btn-sm btn-primary edit"> <i class="fa fa-edit"></i> ' . __('admin.Edit') . '</a>
                         </div>';
                 }
-                
+
             })
             ->addColumn('checkbox', function($row){
                 if(auth('manage')->id() !== $row->id)
@@ -156,7 +154,7 @@ class AdminController extends Controller
             'email' => 'required|email',
             'email' => Rule::unique('admin')->ignore($id)
         ]);
-        
+
 
         $data = request()->only('first_name', 'last_name', 'email', 'mobile', 'address', 'city', 'state', 'country', 'zip_code', 'phone');
 
@@ -165,7 +163,7 @@ class AdminController extends Controller
         }
         $data['is_active'] = request()->has('is_active') && request('is_active') == 1 ? 1 : 0;
         $data['is_manage'] = request()->has('is_manage') && request('is_manage') == 1 ? 1 : 0;
-        
+
         if ($id > 0) {
             $entry = Admin::where('id', $id)->firstOrFail();
             $entry->update($data);
@@ -199,11 +197,11 @@ class AdminController extends Controller
         if (request()->isMethod('POST')) {
             // $admin = Admin::where('email', '=', request('email'))->first();
             $count =Admin::where('email', '=', request('email'))->count();
-            
+
             if ($count == 0) {
                 return redirect()->back()->withErrors(['email' => trans('İstifadəçi mövcud deyil')]);
             }
-            
+
             $token = Str::random(60);
             PasswordReset::insert([
                 'email' =>request('email'),
@@ -220,7 +218,7 @@ class AdminController extends Controller
         else{
             return view('manage.pages.forgot_password');
         }
-       
+
     }
     public function recovery($token, $email){
         $count = PasswordReset::where('email', $email)
@@ -238,23 +236,23 @@ class AdminController extends Controller
                 ->route('manage.login')
                 ->withErrors(['Bu link artıq mövcud deyil.']);
         }
-        
+
     }
     public function change(){
-    
+
         $this->validate(request(), [
             'password'              => 'required|min:6',
             'password_confirmation' => 'required|same:password'
         ]);
-        
+
         Admin::where('email', request('email'))->update([
             'password' => Hash::make(request('password')),
         ]);
-        
+
         PasswordReset::where('email', request('email'))
             ->where('token', request('token'))
             ->delete();
-            
+
         return redirect()
                 ->route('manage.login')
                 ->with('message_type', 'success')

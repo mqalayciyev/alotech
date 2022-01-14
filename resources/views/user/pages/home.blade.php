@@ -15,18 +15,25 @@
                                 @foreach ($sliders as $slider)
                                     <div class="js-slide bg-img-hero-center"
                                         style="background-image: url({{ asset('assets/img/sliders/' . $slider->slider_image) }});">
-                                        <div class="row height-410-xl py-7 py-md-0 mx-0">
+                                        <div class="row height-410-xl py-7 py-md-0 mx-0 position-relative">
+                                            <div class="bg-overlay" style="width: 100%; height: 100%; position: absolute; left: 0; top: 0; background-color: rgba(0,0,0,0.2); z-index: 0;"></div>
                                             <div class="d-none d-wd-block offset-1"></div>
-                                            <div class="col-xl col-6 col-md-6 mt-md-8">
-                                                {!! $slider->slider_name !!}
-
-                                                <p class="my-3">
+                                            <div class="col-xl col-6 col-md-6 mt-md-8" >
+                                                <div data-scs-animation-in="fadeInDown">
+                                                    {!! $slider->slider_name !!}
+                                                </div>
+                                                <div data-scs-animation-in="fadeInUp" data-scs-animation-delay="300">
                                                     <a href="{{ $slider->slider_slug }}"
                                                         class="btn btn-primary transition-3d-hover rounded-lg font-weight-normal py-2 px-md-7 px-3 font-size-16 {{ $slider->slider_slug ? '' : 'd-none' }}"
                                                         data-scs-animation-in="fadeInUp" data-scs-animation-delay="400">
                                                         İndi Al
                                                     </a>
-                                                </p>
+                                                </div>
+                                            </div>
+                                            <div class="col-xl-7 col-6 d-flex align-items-center ml-auto ml-md-0 justify-content-end" data-scs-animation-in="zoomIn" data-scs-animation-delay="500">
+                                                @if ($slider->slider_icon)
+                                                <img class="img-fluid" src="{{ asset('assets/img/sliders/' . $slider->slider_icon) }}" alt="Image Description" style="max-width: 500px; max-height:380px;">
+                                                @endif
                                             </div>
                                         </div>
                                     </div>
@@ -309,7 +316,6 @@
                             category_slug: item.id
                         },
                         success: function(data) {
-                            console.log(data)
                             $('.alt_category#' + item.id).html(data);
                         }
                     });

@@ -1,5 +1,5 @@
         <!-- ========== HEADER ========== -->
-        <header id="header" class="u-header u-header-left-aligned-nav mb-4">
+        <header id="header" class="u-header u-header-left-aligned-nav mb-xl-4">
             <div class="u-header__section">
                 <!-- Logo-Search-header-icons -->
                 <div class="bg-primary">
@@ -131,18 +131,24 @@
                             <!-- End Logo-offcanvas-menu -->
                             <!-- Search Bar -->
                             <div class="col d-none d-xl-block">
-                                <form class="js-focus-state">
-                                    <label class="sr-only" for="searchproduct">Axtar</label>
+                                <form class="js-focus-state position-relative" action="{{ route('search_product') }}" method="get">
                                     <div class="input-group">
-                                        <input type="email"
-                                            class="form-control py-2 pl-5 font-size-15 border-right-0 height-42 border-width-0 rounded-left-pill border-primary"
-                                            name="email" id="searchproduct-item" placeholder="Məhsulları axtar"
-                                            aria-label="Məhsulları axtar" aria-describedby="searchProduct1" required="">
+                                        <input type="search" name="wanted" value="{{ old('wanted') }}" id="searchproduct-item" placeholder="Məhsulları axtar" 
+                                            class="form-control py-2 pl-5 font-size-15 border-right-0 height-42 border-width-0 rounded-left-pill border-primary search_form_item">
                                         <div class="input-group-append">
-                                            <button class="btn btn-dark height-42 py-2 px-3 rounded-right-pill"
-                                                type="button" id="searchProduct1">
+                                            <button class="btn btn-dark height-42 py-2 px-3 rounded-right-pill" type="submit" value="1" id="searchProduct1">
                                                 <i class="fas fa-search font-size-20"></i>
                                             </button>
+                                        </div>
+                                        
+                                    </div>
+                                    <div class="quick_search_form_result row m-0">
+                                        <div class="w-100 loader text-center ">
+                                            <img style="max-height: 80px; height: 100%" src="{{ asset('assets/img/search_loader.gif') }}" />
+                                        </div>
+                                        
+                                        <div class="col-12 search_results">
+                                            
                                         </div>
                                     </div>
                                 </form>
@@ -170,24 +176,34 @@
                                             <div id="searchClassic"
                                                 class="dropdown-menu dropdown-unfold dropdown-menu-right left-0 mx-2"
                                                 aria-labelledby="searchClassicInvoker">
-                                                <form class="js-focus-state input-group px-3">
-                                                    <input class="form-control" type="search"
-                                                        placeholder="Məhsulları axtar">
-                                                    <div class="input-group-append">
-                                                        <button class="btn btn-primary px-3" type="button">
-                                                            <i class="fas fa-search font-size-18"></i>
-                                                        </button>
+                                                <form class="js-focus-state px-3" action="{{ route('search_product') }}" method="get">
+                                                    <div class="input-group">
+                                                        <input class="form-control search_form_item" type="search" name="wanted" value="{{ old('wanted') }}" placeholder="Məhsulları axtar">
+                                                        <div class="input-group-append">
+                                                            <button class="btn btn-primary px-3" type="submit">
+                                                                <i class="fas fa-search font-size-18"></i>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                    <div class="quick_search_form_result row m-0">
+                                                        <div class="w-100 loader text-center ">
+                                                            <img style="max-height: 80px; height: 100%" src="{{ asset('assets/img/search_loader.gif') }}" />
+                                                        </div>
+                                                        
+                                                        <div class="col-12 search_results">
+                                                            
+                                                        </div>
                                                     </div>
                                                 </form>
                                             </div>
                                             <!-- End Input -->
                                         </li>
                                         <!-- End Search -->
-                                        {{-- <li class="col d-none d-xl-block">
-                                            <a href="../shop/compare.html" class="text-gray-90" data-toggle="tooltip" data-placement="top" title="Müqayisə">
-                                                <i class="font-size-22 fas fa-retweet"></i>
+                                        <li class="col d-none d-xl-block">
+                                            <a href="{{ route('orders') }}" class="text-gray-90" data-toggle="tooltip" data-placement="top" title="Sifarişlər">
+                                                <i class="font-size-22 fas fa-box"></i>
                                             </a>
-                                        </li> --}}
+                                        </li>
                                         <li class="col d-block">
                                             <a href="{{ route('my_wish_list') }}" class="text-gray-90"
                                                 data-toggle="tooltip" data-placement="top" title="Seçilmişlər">
@@ -199,17 +215,17 @@
                                                 data-toggle="tooltip" data-placement="top" title="Hesabım">
                                                 <i class="font-size-22 far fa-user"></i>
                                             </a>
-
                                         </li>
                                         <li class="col pr-xl-0 px-2 px-sm-3">
                                             <a href="{{ route('cart') }}"
                                                 class="text-gray-90 position-relative d-flex " data-toggle="tooltip"
                                                 data-placement="top" title="Səbət">
                                                 <i class="font-size-22 icon-bag2"></i>
-                                                <span
-                                                    class="width-22 height-22 bg-dark position-absolute d-flex align-items-center justify-content-center rounded-circle left-12 top-8 font-weight-bold font-size-12 text-white show_cartCount">{{ Cart::count() }}</span>
-                                                <span
-                                                    class="d-none d-xl-block font-weight-bold font-size-16 text-gray-90 ml-3 show_cart_total">{{ Cart::total() > 0 ? Cart::total() . ' ₼' : '' }}</span>
+                                                <span class="width-22 height-22 bg-dark position-absolute d-flex align-items-center justify-content-center rounded-circle left-12 top-8 font-weight-bold font-size-12 text-white show_cartCount">{{ Cart::count() }}</span>
+                                                @if (Cart::total() > 0)
+                                                    <span class="d-none d-xl-block font-weight-bold font-size-16 text-gray-90 ml-3 show_cart_total currency_azn total-amount">{{  Cart::total() }}</span>
+                                                @endif
+
                                             </a>
                                         </li>
                                     </ul>
@@ -317,8 +333,8 @@
                                             <!-- End Gift Cards -->
 
                                             <li class="nav-item u-header__nav-last-item">
-                                                <a class="text-gray-90" href="#" target="_blank">
-                                                    Anbar
+                                                <a class="text-gray-90 set-depot font-weight-bold" href="javascript:void(0)">
+                                                    {{ Cookie::get('depot')  ? $depots->where('id', Cookie::get('depot'))->first()->name : $depots->where('default', 1)->first()->name }}
                                                 </a>
                                             </li>
 

@@ -17,6 +17,7 @@ use App\Models\Contact;
 use App\Models\Product;
 use App\Models\Category;
 use App\Models\Customer;
+use App\Models\Depot;
 use App\Models\Supplier;
 use App\Models\WishList;
 use App\Models\ShippingReturn;
@@ -82,6 +83,7 @@ class AppServiceProvider extends ServiceProvider
         });
 
         View::composer('*', function ($view) {
+            $depots = Depot::orderBy('order')->get();
             $website_info = Info::find(1);
             $about = About::find(1);
             $user_id = auth()->id();
@@ -105,6 +107,7 @@ class AppServiceProvider extends ServiceProvider
 
             return $view->with([
                 'website_info' => $website_info,
+                'depots' => $depots,
                 'about' => $about,
                 'shipping_return' => $shipping_return,
                 'wish_lists'=>$wish_lists,

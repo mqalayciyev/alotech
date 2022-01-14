@@ -2,33 +2,68 @@
 
 @section('content')
 
-    <div class="ps-breadcrumb">
-        <div class="ps-container">
-            <ul class="breadcrumb">
-                <li><a href="{{ route('home') }}">Ana Səhifə</a></li>
-                <li>Endirimli Məhsullar</li>
-            </ul>
-        </div>
-    </div>
 
+        <!-- ========== MAIN CONTENT ========== -->
+        <main id="content" role="main">
 
-    <div class="ps-page--shop pt-5">
-        <div class="ps-container">
-            <div class="ps-layout--shop justify-content-center">
-                <div class="ps-layout__right" style="max-width: 100%">
-                    <div class="ps-shopping ps-tab-root">
-                        <div class="ps-shopping__header">
-                            <h3 class="m-0">Endirimli Məhsullar</h3>
-                        </div>
-                        <div class="ps-tabs">
-                            <div class="ps-tab active products" id="tab-1">
+            <!-- breadcrumb -->
+            <div class="bg-gray-13 bg-md-transparent">
+                <div class="container">
+                    <!-- breadcrumb -->
+                    <div class="my-md-3">
+                        <nav aria-label="breadcrumb">
+                            <ol class="breadcrumb mb-3 flex-nowrap flex-xl-wrap overflow-auto overflow-xl-visble">
+                                <li  class="breadcrumb-item flex-shrink-0 flex-xl-shrink-1"><a href="/">@lang('content.Home')</a></li>
+                                <li class="breadcrumb-item flex-shrink-0 flex-xl-shrink-1"><i class="fas fa-chevron-right"></i></li>
+                                <li class="breadcrumb-item flex-shrink-0 flex-xl-shrink-1 active" aria-current="page">Endirimli Məhsullar</li>
+                            </ol>
+                        </nav>
+                    </div>
+                    <!-- End breadcrumb -->
+                </div>
+            </div>
+            <!-- End breadcrumb -->
+    
+            <div class="container">
+                <div class="row mb-8">
+                    <div class="col-12 col-wd-9gdot5">
+                        <!-- Shop-control-bar -->
+                        <div class="bg-gray-1 flex-center-between borders-radius-9 py-2">
+                            <div class="px-3 d-block">
+                                <ul class="nav nav-tab-shop" id="pills-tab" role="tablist">
+    
+                                    <li class="nav-item">
+                                        <a class="nav-link active" id="pills-two-example1-tab" data-toggle="pill"
+                                            href="#pills-two-example1" role="tab" aria-controls="pills-two-example1"
+                                            aria-selected="false">
+                                            <div class="d-md-flex justify-content-md-center align-items-md-center">
+                                                <i class="fa fa-align-justify"></i>
+                                            </div>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" id="pills-three-example1-tab" data-toggle="pill"
+                                            href="#pills-three-example1" role="tab" aria-controls="pills-three-example1"
+                                            aria-selected="true">
+                                            <div class="d-md-flex justify-content-md-center align-items-md-center">
+                                                <i class="fa fa-list"></i>
+                                            </div>
+                                        </a>
+                                    </li>
+                                </ul>
                             </div>
+
+                        </div>
+                        <!-- End Shop-control-bar -->
+                        <!-- Shop Body -->
+                        <div class="products">
+    
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
+        </main>
+        <!-- ========== END MAIN CONTENT ========== -->
 
 @endsection
 
@@ -58,7 +93,6 @@
                     },
                     success: function(data) {
                         $('.products').html(data).fadeIn('slow');
-                        owlCarouselConfig()
                     }
                 });
             };

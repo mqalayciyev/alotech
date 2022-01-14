@@ -4,7 +4,7 @@
         <h4><i class="icon fa fa-warning"></i> @lang('admin.Alert')!</h4>
         <ul class="">
             @foreach($errors->all() as $error)
-                <li>{{ $error }}</li>
+                <li>{{ json_encode($error) }}</li>
             @endforeach
         </ul>
     </div>

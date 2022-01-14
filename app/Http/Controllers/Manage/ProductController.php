@@ -8,11 +8,11 @@ use App\Models\Category;
 use App\Models\Product;
 use App\Models\ProductImage;
 use App\Models\PriceList;
-use App\Models\StockList;
 use App\Models\Size;
 use App\Models\SizeProduct;
 use App\Models\Color;
 use App\Models\ColorProduct;
+use App\Models\Depot;
 use App\Models\Tag;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
@@ -110,6 +110,8 @@ class ProductController extends Controller
             $product_sizes = $entry->sizes()->pluck('size_id')->all();
         }
 
+        // return  $product_categories;
+
         $entry_category = new Category();
 
         $categories = Category::all();
@@ -118,9 +120,10 @@ class ProductController extends Controller
         $sizes = Size::all();
         $colors = Color::all();
         $images = ProductImage::all();
+        $depots = Depot::orderBy('order')->get();
         // echo "<pre>";
         // print_r($entry->colors);
-        return view('manage.pages.product.form', compact('entry', 'product_colors', 'product_sizes', 'categories', 'product_categories', 'images', 'brands', 'tags', 'colors', 'sizes',  'entry_category', 'product_brands'));
+        return view('manage.pages.product.form', compact('entry', 'product_colors', 'product_sizes', 'categories', 'product_categories', 'images', 'brands', 'depots', 'tags', 'colors', 'sizes',  'entry_category', 'product_brands'));
     }
     public function categories()
     {
@@ -144,17 +147,18 @@ class ProductController extends Controller
     }
     public function save($id = 0)
     {
-        $data = request()->only('product_name', 'meta_title', 'meta_discription', 'slug', 'product_description',  'discount', 'discount_date', 'one_or_more', 'other_count', 'other_bonus', 'bonus_comment');
+        $data = request()->only('product_name', 'meta_title', 'depot', 'sku', 'meta_discription', 'slug', 'product_description',  'discount', 'discount_date', 'one_or_more', 'other_count', 'other_bonus', 'bonus_comment');
 
         $data['slug'] = str_slug(request('product_name'));
         request()->merge(['slug' => $data['slug']]);
-
+        // return request();
         $this->validate(request(), [
             'product_name' => 'required',
             'measurement' => 'required',
             'categories' => 'required',
-            // 'brand' => 'required',
             'sale_price' => 'required',
+            'stock_piece' => 'required',
+            'depot' => 'required',
             'slug' => Rule::unique('product', 'slug')->ignore($id)
         ]);
 
@@ -164,7 +168,7 @@ class ProductController extends Controller
 
 
         $data_detail = request()->only('measurement', 'show_new_collection', 'show_hot_deal', 'show_best_seller', 'show_latest_products', 'show_deals_of_the_day', 'show_picked_for_you');
-        $data_price = request()->only('sale_price', 'wholesale_count', 'wholesale_price');
+        $data_price = request()->only('sale_price', 'wholesale_count', 'wholesale_price', 'stock_piece');
         if(request()->wholesale_price <= 0 || request()->wholesale_count <= 0){
             $data_price['wholesale_count'] = null;
             $data_price['wholesale_price'] = null;
@@ -283,6 +287,22 @@ class ProductController extends Controller
 
 
         if (request()->hasFile('product_images')) {
+            $images = ProductImage::where('product_id', $id);
+            $image_path = app_path("assets/img/products/{$images->image_name}");
+            $image_path2 = app_path("assets/img/products/{$images->thumb_name}");
+            $image_path3 = app_path("assets/img/products/{$images->main_name}");
+            if(file_exists($image_path))
+            {
+                unlink($image_path);
+            }
+            if(file_exists($image_path2))
+            {
+                unlink($image_path2);
+            }
+            if(file_exists($image_path3))
+            {
+                unlink($image_path3);
+            }
             $product_images = request()->file('product_images');
             $product_images = request()->product_images;
             // $cover = request()->cover;
@@ -297,7 +317,7 @@ class ProductController extends Controller
                     $path_main = public_path('assets/img/products/' . $filename_main);
                     $path_thumb = public_path('assets/img/products/' . $filename_thumb);
 
-                    $square = Image::canvas(1000, 1000, array(255, 255, 255));
+                    $square = Image::canvas(1000, 943, array(255, 255, 255));
 
                     $img = Image::make($product_image->getRealPath())
                         ->resize(1000, null, function ($constraint) {
@@ -309,7 +329,7 @@ class ProductController extends Controller
                         $constraint->aspectRatio();
                     })->save($path_thumb);
 
-                    $rectangle = Image::canvas(300, 300, array(255, 255, 255));
+                    $rectangle = Image::canvas(300, 283, array(255, 255, 255));
                     $img_rec = Image::make($product_image->getRealPath())
                         ->resize(300, null, function ($constraint) {
                             $constraint->aspectRatio();
@@ -344,6 +364,22 @@ class ProductController extends Controller
     public function delete_data(Request $request)
     {
         $rows = Product::find($request->input('id'));
+        $images = ProductImage::where('product_id', $rows->id);
+        $image_path = app_path("assets/img/products/{$images->image_name}");
+        $image_path2 = app_path("assets/img/products/{$images->thumb_name}");
+        $image_path3 = app_path("assets/img/products/{$images->main_name}");
+        if(file_exists($image_path))
+        {
+            unlink($image_path);
+        }
+        if(file_exists($image_path2))
+        {
+            unlink($image_path2);
+        }
+        if(file_exists($image_path3))
+        {
+            unlink($image_path3);
+        }
         if ($rows->delete()) {
             echo __('admin.Data Deleted');
         }
@@ -353,6 +389,24 @@ class ProductController extends Controller
     {
         $id_array = $request->input('id');
         $rows = Product::whereIn('id', $id_array);
+        foreach ($rows as $row) {
+            $images = ProductImage::where('product_id', $row->id);
+            $image_path = app_path("assets/img/products/{$images->image_name}");
+            $image_path2 = app_path("assets/img/products/{$images->thumb_name}");
+            $image_path3 = app_path("assets/img/products/{$images->main_name}");
+            if(file_exists($image_path))
+            {
+                unlink($image_path);
+            }
+            if(file_exists($image_path2))
+            {
+                unlink($image_path2);
+            }
+            if(file_exists($image_path3))
+            {
+                unlink($image_path3);
+            }
+        }
         if ($rows->delete()) {
             echo __('admin.Data Deleted');
         }
@@ -387,6 +441,21 @@ class ProductController extends Controller
     {
         $image_id = $request->get('id');
         $image_rows = ProductImage::find($image_id);
+        $image_path = app_path("assets/img/products/{$image_rows->image_name}");
+        $image_path2 = app_path("assets/img/products/{$image_rows->thumb_name}");
+        $image_path3 = app_path("assets/img/products/{$image_rows->main_name}");
+        if(file_exists($image_path))
+        {
+            unlink($image_path);
+        }
+        if(file_exists($image_path2))
+        {
+            unlink($image_path2);
+        }
+        if(file_exists($image_path3))
+        {
+            unlink($image_path3);
+        }
         $image_rows->delete();
     }
 
@@ -396,7 +465,9 @@ class ProductController extends Controller
         $validation = Validator::make($request->all(), [
             'sale_price' => 'required',
             'product_id' => 'required',
+            'stock_piece' => 'required',
         ]);
+
 
         $id = $request->id;
 
@@ -409,30 +480,18 @@ class ProductController extends Controller
             }
         }
         else {
-            if ($request->size == null && $request->color == null) {
+            if ($request->size == null && $request->color == 1) {
                 $rows = PriceList::where('product_id', $request->product_id)->where('default_price', 1)->update(['sale_price' => $request->sale_price]);
+                $rows = PriceList::where('product_id', $request->product_id)->where('default_price', 1)->update(['sale_price' => $request->sale_price, 'stock_piece' => $request->stock_piece]);
             } else {
-                if ($id > 0) {
-                    $rows = PriceList::find($request->id);
-                    $rows->sale_price = $request->sale_price;
-                    $rows->wholesale_count = $request->wholesale_price > 0 && $request->wholesale_count ? $request->wholesale_count : null;
-                    $rows->wholesale_price = $request->wholesale_price > 0 && $request->wholesale_count ? $request->wholesale_price : null;
-                    $rows->color_id = $request->color;
-                    $rows->size_id = $request->size;
-                    $rows->save();
-                    $success_output = '<div class="alert alert-success">' . __('admin.Data Updated') . '</div>';
-                } else {
-                    $form = new PriceList([
-                        'product_id' => $request->product_id,
-                        'sale_price' => $request->sale_price,
-                        'wholesale_count' => $request->wholesale_price > 0 && $request->wholesale_count ? $request->wholesale_count : null,
-                        'wholesale_price' => $request->wholesale_price > 0 && $request->wholesale_count > 0 ? $request->wholesale_price : null,
-                        'color_id' => $request->color,
-                        'size_id' => $request->size,
-                    ]);
-                    $form->save();
-                    $success_output = '<div class="alert alert-success">' . __('admin.Data Inserted') . '</div>';
-                }
+                PriceList::updateOrCreate(['color_id' => $request->color, 'size_id' => $request->size,],[
+                    'product_id' => $request->product_id,
+                    'sale_price' => $request->sale_price,
+                    'wholesale_count' => $request->wholesale_price > 0 && $request->wholesale_count ? $request->wholesale_count : null,
+                    'wholesale_price' => $request->wholesale_price > 0 && $request->wholesale_count > 0 ? $request->wholesale_price : null,
+                    'stock_piece' => $request->stock_piece,
+                ]);
+                $success_output = '<div class="alert alert-success">' . __('admin.Data Inserted') . '</div>';
             }
         }
         $output = array(
@@ -457,63 +516,25 @@ class ProductController extends Controller
     public function delete_all(Request $request)
     {
         Product::query()->delete();
+        $image_rows = ProductImage::all();
+        
+        foreach ($image_rows as $row) {
+            $image_path = app_path("assets/img/products/{$row->image_name}");
+            $image_path2 = app_path("assets/img/products/{$row->thumb_name}");
+            $image_path3 = app_path("assets/img/products/{$row->main_name}");
+            if(file_exists($image_path))
+            {
+                unlink($image_path);
+            }
+            if(file_exists($image_path2))
+            {
+                unlink($image_path2);
+            }
+            if(file_exists($image_path3))
+            {
+                unlink($image_path3);
+            }
+        }
         return back();
-    }
-
-    public function stock_post_data(Request $request)
-    {
-
-        $validation = Validator::make($request->all(), [
-            'stock_piece' => 'required',
-            'product_id' => 'required',
-        ]);
-
-        $id = $request->id;
-
-        $error_array = array();
-        $success_output = '';
-
-        if ($validation->fails()) {
-            foreach ($validation->messages()->getMessages() as $messages) {
-                $error_array[] = $messages;
-            }
-        }
-        else {
-            if ($id > 0) {
-                $rows = StockList::find($request->id);
-                $rows->stock_piece = $request->stock_piece;
-                $rows->color_id = $request->color;
-                $rows->size_id = $request->size;
-                $rows->save();
-                $success_output = '<div class="alert alert-success">' . __('admin.Data Updated') . '</div>';
-            } else {
-                $form = new StockList([
-                    'product_id' => $request->product_id,
-                    'stock_piece' => $request->stock_piece,
-                    'color_id' => $request->color,
-                    'size_id' => $request->size,
-                ]);
-                $form->save();
-                $success_output = '<div class="alert alert-success">' . __('admin.Data Inserted') . '</div>';
-            }
-        }
-        $output = array(
-            'error' => $error_array,
-            'success' => $success_output
-        );
-        return response()->json($output);
-    }
-    public function stock_fetch_data(Request $request)
-    {
-        $id  = $request->get('id');
-        $data = StockList::find($id);
-        return response()->json($data);
-    }
-
-    public function stock_delete_data(Request $request)
-    {
-        $id  = $request->get('id');
-        $rows = StockList::find($id);
-        $rows->delete();
     }
 }

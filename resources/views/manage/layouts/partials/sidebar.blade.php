@@ -56,6 +56,11 @@
                     </span>
                 </a>
             </li>
+            <li class="{{ url()->current() == route('manage.depot') ? 'active' : '' }}">
+                <a href="{{ route('manage.depot') }}">
+                    <i class="fa fa-database"></i> <span>Depo</span>
+                </a>
+            </li>
             {{-- <li class="{{ url()->current() == route('manage.supplier') ? 'active' : '' }}">
                 <a href="{{ route('manage.supplier') }}">
                     <i class="fa fa-male"></i> <span>@lang('admin.Suppliers')</span>
@@ -127,14 +132,7 @@
                     </span>
                 </a>
             </li>
-            {{-- <li class="{{ url()->current() == route('manage.customer') ? 'active' : '' }}">
-                <a href="{{ route('manage.customer') }}">
-                    <i class="fa fa-users"></i> <span>@lang('admin.Customers')</span>
-                    <span class="pull-right-container">
-              <small class="label pull-right bg-gray">{{ @$statistics['total_customer'] ? $statistics['total_customer'] : 0 }}</small>
-            </span>
-                </a>
-            </li> --}}
+
             <li class="{{ url()->current() == route('manage.slider') ? 'active' : '' }}">
                 <a href="{{ route('manage.slider') }}">
                     <i class="fa fa-slideshare"></i> <span>@lang('admin.Sliders')</span>

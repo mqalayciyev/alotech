@@ -12,7 +12,6 @@ use App\Models\Color;
 use App\Models\Size;
 use App\Models\SizeProduct;
 use App\Models\PriceList;
-use App\Models\StockList;
 use App\Models\ColorProduct;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Validator;
@@ -85,23 +84,8 @@ class ProductController extends Controller
                 if(isset($product['product_description'])){
                     $data['product_description'] = $product['product_description'];
                 }
-                // if(isset($product['discount'])){
-                //     $data['discount'] = $product['discount'];
-                // }
-                // if(isset($product['discount_date'])){
-                //     $data['discount_date'] = $product['discount_date'];
-                // }
-                // return $product;
-        //         $data_detail = request()->only('measurement', 'show_new_collection', 'show_hot_deal', 'show_best_seller', 'show_latest_products', 'show_deals_of_the_day', 'show_picked_for_you');
-        // $data_price = request()->only('sale_price', 'wholesale_count', 'wholesale_price');
 
                 $data['slug'] = str_slug($product['product_name']);
-                // if(isset($product['discount'])){
-                //     $data['sale_price'] = $product['retail_price'] - ($product['retail_price']*$product['discount']/100);
-                // }
-                // else{
-                //     // $data['sale_price'] = $product['retail_price'];
-                // }
 
 
 
@@ -127,7 +111,7 @@ class ProductController extends Controller
                 $entry->detail()->updateOrCreate($data_detail);
                 $entry->categories()->sync($category);
                 $entry->brands()->sync($brands);
-                
+
                 if (isset($product['colors']) && $product['colors'] != null) {
                     $colors = $product['colors'];
                     foreach ($colors as $color) {
@@ -225,6 +209,7 @@ class ProductController extends Controller
                         ]);
                         $size_id = $size_exist->id;
                     }
+                    
                     if($stock['color_name'] ){
                         $color_exist = Color::updateOrCreate(['name' => $stock['color_name']], ['title' => $stock['color_title'] ] );
                         ColorProduct::updateOrcreate([
@@ -247,14 +232,8 @@ class ProductController extends Controller
                     if(!$stock['stock_piece'] ){
                         $stock_piece = 0;
                     }
-                    
 
-                    // StockList::updateOrCreate($data_stock);
-                    
-                    // if($product['product_code'] == 29){
-                    //     return $data_stock;
-                    // }
-                    StockList::updateOrCreate(['product_id' => $entry->id, 'color_id' => $color_id, 'size_id' => $size_id], ['stock_piece' => $stock_piece]);
+                    PriceList::updateOrCreate(['product_id' => $entry->id, 'color_id' => $color_id, 'size_id' => $size_id], ['stock_piece' => $stock_piece]);
                 }
 
             }

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Manage;
 use App\Http\Controllers\Controller;
 use App\Models\Slider;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Validator;
 use Image;
 use Yajra\DataTables\Facades\DataTables;
@@ -83,8 +84,16 @@ class SlideshowController extends Controller
         }
 
         $id = request('id');
-        $data = request()->only('slider_slug', 'slider_active');
+        $data = request()->only('slider_slug', 'slider_name', 'slider_active');
+
+        // return request();
         if(request()->hasFile('image')){
+            $rows = Slider::find($id);
+            $image_path = app_path("assets/img/sliders/{$rows->slider_image}");
+            if (File::exists($image_path)) {
+                unlink($image_path);
+            }
+
             $image = request()->file('image');
             $image = request()->image;
 
@@ -102,10 +111,33 @@ class SlideshowController extends Controller
 
 
             $data['slider_image'] = $filename;
-            $path = asset('assets/img/sliders/' . $filename);
+            
         }
-        else{
-            $path = "";
+        if(request()->hasFile('slider_icon')){
+            $rows = Slider::find($id);
+            $image_path = app_path("assets/img/sliders/{$rows->slider_icon}");
+            if (File::exists($image_path)) {
+                unlink($image_path);
+            }
+            
+            $file = request()->file('slider_icon');
+            $image = request()->image;
+
+            $filename = 'slider_icon_' . time().'.webp';
+
+            $path = public_path('assets/img/sliders/');
+
+            $file->move($path, $filename);
+
+            $data['slider_icon'] = $filename;
+        }
+        if(request('delete_icon') == 1){
+            $rows = Slider::find($id);
+            $image_path = app_path("assets/img/sliders/{$rows->slider_icon}");
+            if (File::exists($image_path)) {
+                unlink($image_path);
+            }
+            $data['slider_icon'] = null;
         }
 
         if ($id > 0) {
@@ -113,17 +145,27 @@ class SlideshowController extends Controller
             $flight->update($data);
             $message = 'Məlumat yeniləndi';
         } else {
-            $data['slider_order'] = Slider::where('deleted_at', null)->count() + 1;
+            $data['slider_order'] = Slider::count() + 1;
             $flight = Slider::create($data);
             $message = 'Məlumat əlavə edildi';
         }
 
-        return response()->json(['status' => 'success', 'message' => $message, 'url' => $path]);
+        return response()->json(['status' => 'success', 'message' => $message]);
 
     }
     public function delete_data(Request $request)
     {
         $rows = Slider::find($request->input('id'));
+
+        $image_path = app_path("assets/img/sliders/{$rows->slider_image}");
+        $image_path2 = app_path("assets/img/sliders/{$rows->slider_icon}");
+        if (File::exists($image_path)) {
+            unlink($image_path);
+        }
+        if (File::exists($image_path2)) {
+            unlink($image_path2);
+        }
+
         if ($rows->delete()) {
             echo __('admin.Data Deleted');
         }
@@ -133,6 +175,17 @@ class SlideshowController extends Controller
     {
         $id_array = $request->input('id');
         $rows = Slider::whereIn('id', $id_array);
+        foreach ($rows as $row) {
+            $image_path = app_path("assets/img/sliders/{$row->slider_image}");
+            $image_path2 = app_path("assets/img/sliders/{$row->slider_icon}");
+            
+            if (File::exists($image_path)) {
+                unlink($image_path);
+            }
+            if (File::exists($image_path2)) {
+                unlink($image_path2);
+            }
+        }
         if ($rows->delete()) {
             echo __('admin.Data Deleted');
         }

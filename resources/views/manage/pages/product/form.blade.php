@@ -1,7 +1,6 @@
 @extends('manage.layouts.master')
 @section('title', __('admin.Product Manager'))
 @section('head')
-    <script src="https://cdn.ckeditor.com/4.16.0/standard/ckeditor.js"></script>
     <style>
         .panel{
             margin-top: 25px;
@@ -171,9 +170,9 @@
                                                 <option value="{{ $alt_category->id }}"
                                                         {{ $entry_category->top_category->id == $alt_category->id ? 'selected' : '' }}>
                                                         - - {{ $alt_category->category_name }}</option>
-                                                        
+
                                                     @foreach ($alt_category->second_category as $second_category)
-                                                        <option value="{{ $alt_category->id }}" 
+                                                        <option value="{{ $alt_category->id }}"
                                                             {{ $entry_category->top_category->id == $alt_category->id ? 'selected' : '' }}>
                                                             - - - - {{ $second_category->category_name }}</option>
                                                     @endforeach
@@ -284,10 +283,14 @@
                         <div class="form-group">
                             <input placeholder="Topdan satış qiyməti" class="form-control numeric" name="wholesale_price" id="form_wholesale_price"/>
                         </div>
+                        <div class="form-group">
+                            <input placeholder="Stok sayı" class="form-control numeric" name="stock_piece" id="form_stock_piece"/>
+                        </div>
                     </div>
                     <div class="modal-footer">
                         <input type="hidden" name="id" value="0">
                         <input type="hidden" name="product_id" value="{{ @$entry->id }}">
+
                         {{-- <input type="hidden" name="button_action" id="price_button_action" value="insert"/> --}}
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Ləğv et</button>
                         <button type="submit" class="btn btn-success">Saxla</button>
@@ -296,49 +299,7 @@
             </form>
         </div>
     </div>
-    <div class="modal fade" id="StockList" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <form id="stock_form">
-                {{ csrf_field() }}
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                        </button>
-                        <h4 class="modal-title" id="modalLabel">Stok sayları</h4>
-                    </div>
-                    <div class="modal-body">
-                        <span class="form_output"></span>
-                        <div class="form-group">
-                            <select class="form-control" name="color" id="stock_color_id">
-                                @foreach ($entry->colors as $color)
-                                    <option value="{{ $color->id }}" style="background-color: {{ $color->name }}">{{ $color->title }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <select class="form-control" name="size" id="stock_size_id">
-                                <option value="">Ölçü seç</option>
-                                @foreach ($entry->sizes as $size)
-                                    <option value="{{ $size->id }}">{{ $size->name }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <input placeholder="Sok sayı" class="form-control numeric" name="stock_piece" id="stock_stock_piece"/>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <input type="hidden" name="id" value="0">
-                        <input type="hidden" name="product_id" value="{{ @$entry->id }}">
-                        {{-- <input type="hidden" name="button_action" id="price_button_action" value="insert"/> --}}
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Ləğv et</button>
-                        <button type="submit" class="btn btn-success">Saxla</button>
-                    </div>
-                </div>
-            </form>
-        </div>
-    </div>
+
     <form id="product-form" action="{{ route('manage.product.save', @$entry->id) }}" method="post" enctype="multipart/form-data">
         {{ csrf_field() }}
         <section class="content-header">
@@ -365,11 +326,8 @@
                     <div class="box box-body box-primary">
                         @include('common.errors.validate_admin')
                         @include('common.alert')
-                        @if (count($entry->stock) == 0)
-                        <div class="alert alert-danger">
-                            Məhslun stok sayı qeyd edilməyib
-                        </div>
-                        @endif
+
+
                         <div class="container">
                             <div class="jumbotron">
                                 <div class="row">
@@ -408,14 +366,6 @@
                                                               placeholder="@lang('admin.Description')"
                                                               name="product_description">{{ old('product_description', $entry->product_description) }}</textarea>
 
-                                                    <script>
-                                                        CKEDITOR.replace('product_description', {
-                                                            autoGrow_onStartup: true,
-                                                            enterMode: CKEDITOR.ENTER_BR,
-                                                            FullPage : false,
-                                                            allowedContent : true,
-                                                        });
-                                                    </script>
                                                 </div>
                                             </div>
                                         </div>
@@ -423,7 +373,8 @@
                                             <div class="panel-body">
                                                 <p class="title" style="margin: 0; color: blue;"></p>
                                                 <p class="url" style="word-wrap: break-word; color: green; font-size: 15px; font-weight: 200; margin: 0;">
-                                                    {{ config('app.url') }}/products/27?adtoken=1cd9fc99265bc7693e8c7b34e66df7c8&ad=admin123&id_employee=1&preview=1</p>
+                                                    {{ env('APP_URL') . 'product/' . $entry->slug }}
+                                                </p>
                                                 <small class="discription"></small>
                                             </div>
                                         </div>
@@ -431,7 +382,7 @@
                                             <div class="col-md-12">
                                                 <div class="form-group">
                                                     <label for="meta-description">Seo description</label>
-                                                    <input type="text" id="meta-discription" name="meta_discription" class="form-control" value="{{ old('meta_title', $entry->meta_discription) }}">
+                                                    <input type="text" id="meta-discription" name="meta_discription" placeholder="Məhsulun təsviri qısa mətn." class="form-control" value="{{ old('meta_title', $entry->meta_discription) }}">
                                                 </div>
                                             </div>
                                         </div>
@@ -439,7 +390,7 @@
                                             <div class="col-md-12">
                                                 <div class="form-group">
                                                     <label for="meta-title">Seo keywords</label>
-                                                    <input type="text" id="meta-title" name="meta_title" class="form-control" value="{{ old('meta_title', $entry->meta_title) }}">
+                                                    <input type="text" id="meta-title" name="meta_title" placeholder="məhsul, məhsul-açıqlama, keywords, product, məhsul adı," class="form-control" value="{{ old('meta_title', $entry->meta_title) }}">
                                                 </div>
                                             </div>
                                         </div>
@@ -457,14 +408,14 @@
                                                             @if($category->top_id==null)
                                                                 <option class="text text-primary"
                                                                         value="{{ $category->id }}" {{ collect(old('categories', $product_categories))->contains($category->id) ? 'selected' : '' }}>{{ $category->category_name }}</option>
-                                                                
+
                                                                 @foreach ($category->alt_category as $alt_category)
                                                                     @if ($alt_category->second_id == null)
                                                                         <option value="{{ $alt_category->id }}"
                                                                             {{ collect(old('categories', $product_categories))->contains($alt_category->id) ? 'selected' : '' }}>
                                                                             - - {{ $alt_category->category_name }}</option>
                                                                             @foreach ($alt_category->second_category as $second_category)
-                                                                                <option value="{{ $alt_category->id }}"
+                                                                                <option value="{{ $second_category->id }}"
                                                                                     {{ collect(old('categories', $product_categories))->contains($second_category->id) ? 'selected' : '' }}>
                                                                                     - - - - {{ $second_category->category_name }}</option>
                                                                             @endforeach
@@ -491,10 +442,22 @@
                                             </div>
                                         </div>
                                         <div class="row">
+                                            <div class="col-xs-12">
+                                                <div class="form-group">
+                                                    <label for="depot">Depo</label>
+                                                    <select class="form-control select3" style="width: 100%;" id="depot" name="depot">
+                                                        @foreach($depots as $depot)
+                                                            <option value="{{ $depot->id }}" {{ $entry->depot == $depot->id ? 'selected' : null }}>{{ $depot->name }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
                                             <div class="col-md-12">
                                                 <div class="form-group">
 
-                                                    <p><i class="fa fa-info-circle text-info"></i> Tövsiyyə edilən şəkil ölçüsü 300x300</p>
+                                                    <p><i class="fa fa-info-circle text-info"></i> Tövsiyyə edilən şəkil ölçüsü 1000x943</p>
                                                     <label for="product_images">@lang('admin.Upload Images')</label><br>
                                                     <div class="form-group">
                                                         <select class="form-control" name="image_color_id" id="image_color_id">
@@ -513,57 +476,11 @@
                                         </div>
                                     </div>
                                 </div>
-
-                                @if($entry->id>0)
-                                    <hr>
-                                    <div class="row">
-                                        <div class="col-md-4">
-                                            <h3>@lang('admin.Inventory')</h3>
-                                            <span>@lang('admin.The type of product we choose determines how we manage inventory and reporting.')</span>
-                                        </div>
-                                        <div class="col-md-8">
-                                            <div class="row">
-                                                <div class="col-xs-12">
-                                                    <button type="button" class="btn btn-primary add_stock" data-toggle="modal" data-target="#StockList">Stok sayı</button>
-                                                </div>
-                                                <hr />
-                                                <div class="col-xs-12">
-                                                    <table class="table table-bordered table-striped table-hover">
-                                                        <thead>
-                                                            <tr>
-                                                                <th>Stok sayı</th>
-                                                                <th>Rəngi</th>
-                                                                <th>Ölçüsü</th>
-                                                                <th></th>
-                                                            </tr>
-                                                        </thead>
-                                                        <tbody>
-
-                                                            @foreach ($entry->stock as $stock)
-                                                                <tr>
-                                                                    <td>{{ $stock->stock_piece }}</td>
-                                                                    <td><span style="background-color: {{ $stock->color ? $stock->color->name : '' }}">{{ $stock->color ? $stock->color->name : '' }}</span></td>
-                                                                    <td>{{ $stock->size ? $stock->size->name : '' }}</td>
-                                                                    <td class="text-right">
-                                                                        <button type="button" class="btn btn-sm btn-primary edit_stock" data-toggle="modal" data-target="#StockList" data-id="{{ $stock->id }}"><i class="fa fa-edit"></i></button>
-                                                                        <button type="button" class="btn btn-sm btn-danger delete_stock" data-id="{{ $stock->id }}"> <i class="fa fa-remove"></i></b>
-                                                                    </td>
-                                                                </tr>
-                                                            @endforeach
-
-                                                        </tbody>
-
-                                                    </table>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                @endif
                                 <hr>
                                 <div class="row">
                                     <div class="col-md-4">
-                                        <h3>Ölçü</h3>
-                                        <span>Seçdiyiniz məhsulun ölçü vahidi, forması</span>
+                                        <h3>Ölçü və SKU</h3>
+                                        <span>Seçdiyiniz məhsulun ölçü vahidi və SKU artikulu</span>
                                     </div>
                                     <div class="col-md-8">
                                         <div class="row">
@@ -571,6 +488,12 @@
                                                 <div class="form-group">
                                                     <label for="measurement">Ölçü forması</label>
                                                     <input type="text" placeholder="Ölçü forması" name="measurement" id="measurement" class="form-control" value="{{ old('measurement', $entry->detail ? $entry->detail->measurement : '') }}">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label for="sku">SKU</label>
+                                                    <input type="text" placeholder="SKU" name="sku" id="sku" class="form-control" value="{{ old('sku', $entry->sku) }}">
                                                 </div>
                                             </div>
                                         </div>
@@ -653,6 +576,22 @@
                                                                placeholder="0.00">
                                                         <span class="input-group-addon">%</span>
                                                     </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6"></div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label style="padding: 7px 0 0 0" for="stock_piece"
+                                                           class="col-md-6 text-left">Stok sayı</label>
+                                                    <div class="input-group col-md-6 text-right">
+                                                        <input type="text" class="form-control text-right numeric"
+                                                               id="stock_piece"
+                                                               name="stock_piece"
+                                                               value="{{ old('stock_piece', $entry->default_price ? $entry->default_price->stock_piece : '') }}"
+                                                               placeholder="0.00">
+                                                    </div>
                                                     <hr>
                                                 </div>
                                             </div>
@@ -671,6 +610,7 @@
                                                         <thead>
                                                             <tr>
                                                                 <th>Satış qiyməti</th>
+                                                                <th>Stok sayı</th>
                                                                 <th>Topdan satış miqdarı</th>
                                                                 <th>Topdan satış qiyməti</th>
                                                                 <th>Rəngi</th>
@@ -684,6 +624,7 @@
                                                                 @if ($price->default_price == 0)
                                                                     <tr>
                                                                         <td>{{ $price->sale_price }}</td>
+                                                                        <td>{{ $price->stock_piece }}</td>
                                                                         <td>{{ $price->wholesale_count }}</td>
                                                                         <td>{{ $price->wholesale_price }}</td>
                                                                         <td><span style="background-color: {{ $price->color ? $price->color->name : '' }}">{{ $price->color ? $price->color->name : '' }}</span></td>
@@ -695,9 +636,7 @@
                                                                     </tr>
                                                                 @endif
                                                             @endforeach
-
                                                         </tbody>
-
                                                     </table>
                                                 </div>
                                             </div>
@@ -876,6 +815,14 @@
 @section('footer')
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.5/js/i18n/az.js"></script>
     <script>
+
+    CKEDITOR.replace('product_description', {
+            autoGrow_onStartup: true,
+            enterMode: CKEDITOR.ENTER_BR,
+            FullPage : false,
+            allowedContent : true,
+        });       
+        
         function categories(){
             $.ajax({
                 url: "{{ route('manage.product.categories') }}",
@@ -892,75 +839,15 @@
 
 
         $(function () {
-            $(document).on('click', '.add_price', function() {
-                $('form#price_form')[0].reset();
-                $("form#price_form").find('input[name="id"]').val(0)
-            })
-            $(document).on('click', '.edit_price', function() {
-                var id = $(this).attr('data-id');
 
-                $.ajax({
-                    method: 'GET',
-                    url: '{{ route('manage.product.price_fetch_data') }}',
-                    data: {id},
-                    success: function (data) {
-                        $('#form_color_id').val(data.color_id);
-                        $('#form_size_id').val(data.size_id);
-                        $('#form_sale_price').val(data.sale_price);
-                        $('#form_wholesale_count').val(data.wholesale_count);
-                        $('#form_wholesale_price').val(data.wholesale_price);
-                        $("form#price_form").find('input[name="id"]').val(id)
-                    }
-                });
-            })
-            $(document).on('click', '.delete_price', function() {
-                var id = $(this).attr('data-id');
-                $.ajax({
-                    method: 'GET',
-                    url: '{{ route('manage.product.price_delete_data') }}',
-                    data: {id},
-                    success: function (data) {
-                        window.location.reload()
-                    }
-                });
-            })
-            $(document).on('click', '.add_stock', function() {
-                $('form#price_form')[0].reset();
-                $("form#price_form").find('input[name="id"]').val(0)
-            })
-            $(document).on('click', '.edit_stock', function() {
-                var id = $(this).attr('data-id');
 
-                $.ajax({
-                    method: 'GET',
-                    url: '{{ route('manage.product.stock_fetch_data') }}',
-                    data: {id},
-                    success: function (data) {
-                        $('#stock_color_id').val(data.color_id);
-                        $('#stock_size_id').val(data.size_id);
-                        $('#stock_stock_piece').val(data.stock_piece);
-                        $("form#stock_form").find('input[name="id"]').val(id)
-                    }
-                });
-            })
-            $(document).on('click', '.delete_stock', function() {
-                var id = $(this).attr('data-id');
-                $.ajax({
-                    method: 'GET',
-                    url: '{{ route('manage.product.stock_delete_data') }}',
-                    data: {id},
-                    success: function (data) {
-                        window.location.reload()
-                    }
-                });
-            })
-            if($("#meta-title").val().trim() !== '' || $("#meta-discription").val().trim() !== ''){
+            if($("#product_name").val().trim() !== '' || $("#meta-discription").val().trim() !== ''){
                 let metaView = $("#meta-view")
-                $(metaView).find(".title").html($("#meta-title").val().trim())
+                $(metaView).find(".title").html($("#product_name").val().trim())
                 $(metaView).find(".discription").html($("#meta-discription").val().trim())
             }
 
-            $("#meta-title").on('keyup', function(event){
+            $("#product_name").on('keyup', function(event){
                 let title = $(event.target).val()
                 let metaView = $("#meta-view")
                 $(metaView).find(".title").html(title)
@@ -1010,7 +897,8 @@
                 }
             });
 
-            $('.select2').select2();
+            $('.select3').select2();
+
             $('input[type="checkbox"].minimal, input[type="radio"].minimal').iCheck({
                 checkboxClass: 'icheckbox_minimal-blue',
                 radioClass: 'iradio_minimal-blue'
@@ -1081,7 +969,39 @@
 
 
 
+            $(document).on('click', '.add_price', function() {
+                $('form#price_form')[0].reset();
+                $("form#price_form").find('input[name="id"]').val(0)
+            })
+            $(document).on('click', '.edit_price', function() {
+                var id = $(this).attr('data-id');
 
+                $.ajax({
+                    method: 'GET',
+                    url: '{{ route('manage.product.price_fetch_data') }}',
+                    data: {id},
+                    success: function (data) {
+                        $('#form_color_id').val(data.color_id);
+                        $('#form_size_id').val(data.size_id);
+                        $('#form_sale_price').val(data.sale_price);
+                        $('#form_stock_piece').val(data.stock_piece);
+                        $('#form_wholesale_count').val(data.wholesale_count);
+                        $('#form_wholesale_price').val(data.wholesale_price);
+                        $("form#price_form").find('input[name="id"]').val(id)
+                    }
+                });
+            })
+            $(document).on('click', '.delete_price', function() {
+                var id = $(this).attr('data-id');
+                $.ajax({
+                    method: 'GET',
+                    url: '{{ route('manage.product.price_delete_data') }}',
+                    data: {id},
+                    success: function (data) {
+                        window.location.reload()
+                    }
+                });
+            })
             $('form#price_form').submit(function (event) {
                 event.preventDefault();
                 var form_data = $(this).serialize();
@@ -1097,29 +1017,6 @@
                                 error_html += '<div class="alert alert-danger">' + data.error[count] + '</div>';
                             }
                             $('#price_form .form_output').html(error_html).hide().fadeIn('slow');
-                        } else {
-                            window.location.reload()
-
-                        }
-                    }
-                });
-            });
-            $('form#stock_form').submit(function (event) {
-                event.preventDefault();
-                var form_data = $(this).serialize();
-
-                $.ajax({
-                    method: 'POST',
-                    url: '{{ route('manage.product.stock_post_data') }}',
-                    data: form_data,
-                    success: function (data) {
-                        console.log(data)
-                        if (data.error.length > 0) {
-                            var error_html = '';
-                            for (var count = 0; count < data.error.length; count++) {
-                                error_html += '<div class="alert alert-danger">' + data.error[count] + '</div>';
-                            }
-                            $('#stock_form .form_output').html(error_html).hide().fadeIn('slow');
                         } else {
                             window.location.reload()
 
@@ -1252,9 +1149,9 @@
             //     $('input[name=sale_price]').val(sale_price);
             // });
 
-            $('input[type="file"]').imageuploadify();
-            $('.imageuploadify-message').text('{{ __('admin.Drag&Drop Your File(s)Here To Upload') }}');
-            $('.btn_file_upload').text('{{ __('admin.or select file to upload') }}');
+            // $('input[type="file"]').imageuploadify();
+            // $('.imageuploadify-message').text('{{ __('admin.Drag&Drop Your File(s)Here To Upload') }}');
+            // $('.btn_file_upload').text('{{ __('admin.or select file to upload') }}');
 
             $("input.numeric").keydown(function (event) {
                 if (event.shiftKey == true) {

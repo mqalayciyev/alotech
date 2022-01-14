@@ -37,14 +37,14 @@
                            type="tel">
                 </div>
                 <div class="form-group">
-                    <button type="submit" class="remodalConfirm ps-btn"> Yenilə </button>
+                    <button type="submit" class="remodalConfirm btn btn-soft-secondary mb-3 mb-md-0 font-weight-normal px-5 px-md-3 px-xl-5"> Yenilə </button>
                 </div>
             </form>
             <div class="updateAddress margin-top-50">
                 <div class="ps-form__header">
                     <h3> Ətraflı məlumat</h3>
                 </div>
-                
+
                 <form id="frmInfoDetail">
                     <div class="response"></div>
                     <div class="row">
@@ -74,7 +74,7 @@
                                   >{{ (isset($user_detail->address)) ? $user_detail->address : '' }}</textarea>
                     </div>
                     <div class="form-group">
-                        <button type="submit" class="remodalConfirm ps-btn">Məlumatları Yenilə</button>
+                        <button type="submit" class="remodalConfirm btn btn-soft-secondary mb-3 mb-md-0 font-weight-normal px-5 px-md-3 px-xl-5">Məlumatları Yenilə</button>
                     </div>
                 </form>
             </div>
@@ -88,7 +88,7 @@
                         <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
                             <div class="form-group">
                                 <label>Mövcud Şifrə</label>
-                                <input class="form-control rounded-0" name="old_password" type="password" minlength="6" required>
+                                <input class="form-control rounded-0" name="old_password" type="password" minlength="6" >
                             </div>
                         </div>
                     </div>
@@ -96,18 +96,18 @@
                         <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
                             <div class="form-group">
                                 <label>Yeni Şifrə</label>
-                                <input class="form-control rounded-0" name="password" id="password" type="password" minlength="6" required>
+                                <input class="form-control rounded-0" name="password" id="password" type="password" minlength="6" >
                             </div>
                         </div>
                         <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
                             <div class="form-group">
                                 <label>Yeni Şifrə Təkrar</label>
-                                <input class="form-control rounded-0" name="password_confirmation" type="password" minlength="6" required>
+                                <input class="form-control rounded-0" name="password_confirmation" type="password" minlength="6" >
                             </div>
                         </div>
                     </div>
                     <div class="form-group">
-                        <button type="submit" class="remodalConfirm ps-btn">Şifrəni Dəyişdir</button>
+                        <button type="submit" class="remodalConfirm btn btn-soft-secondary mb-3 mb-md-0 font-weight-normal px-5 px-md-3 px-xl-5">Şifrəni Dəyişdir</button>
                     </div>
                 </form>
             </div>
@@ -138,24 +138,24 @@
             success: function(data){
                 // console.log(data);
                 if(data.status == 'success'){
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Məlumatlar dəyişdirildi',
-                        showConfirmButton: false,
-                        timer: 2000
-                    })
+                    toastr.options = {
+                        "closeButton": true,
+                        "progressBar": true
+                    }
+                    toastr.success('Məlumatlar dəyişdirildi');
                 }
                 else{
                     let msg = "";
                     let message = data.message;
-                    for (const [key, value] of Object.entries(message)) {
-                        msg = msg + "<br>" + value
+                    toastr.options = {
+                        "closeButton": true,
+                        "progressBar": true
                     }
-                    Swal.fire({
-                        icon: 'error',
-                        title: msg,
-                        showConfirmButton: true,
-                    })
+
+                    for (const value of Object.values(message)) {
+                        toastr.error(value);
+                    }
+
                 }
             }
         })
@@ -180,24 +180,23 @@
             success: function(data){
                 // console.log(data);
                 if(data.status == 'success'){
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Məlumatlar dəyişdirildi',
-                        showConfirmButton: false,
-                        timer: 2000
-                    })
+                    toastr.options = {
+                        "closeButton": true,
+                        "progressBar": true
+                    }
+                    toastr.success('Məlumatlar dəyişdirildi');
                 }
                 else{
                     let msg = "";
                     let message = data.message;
-                    for (const [key, value] of Object.entries(message)) {
-                        msg = msg + "<br>" + value
+                    toastr.options = {
+                        "closeButton": true,
+                        "progressBar": true
                     }
-                    Swal.fire({
-                        icon: 'error',
-                        title: msg,
-                        showConfirmButton: true,
-                    })
+
+                    for (const value of Object.values(message)) {
+                        toastr.error(value);
+                    }
                 }
             }
         })
@@ -218,24 +217,23 @@
             success: function(data){
                 // console.log(data);
                 if(data.status == 'success'){
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Şifrə dəyişdirildi',
-                        showConfirmButton: false,
-                        timer: 2000
-                    })
+                    toastr.options = {
+                        "closeButton": true,
+                        "progressBar": true
+                    }
+                    toastr.success('Şifrə dəyişdirildi');
                 }
                 else{
                     let msg = "";
                     let message = data.message;
-                    for (const [key, value] of Object.entries(message)) {
-                        msg = msg + "<br>" + value
+                    toastr.options = {
+                        "closeButton": true,
+                        "progressBar": true
                     }
-                    Swal.fire({
-                        icon: 'error',
-                        title: msg,
-                        showConfirmButton: true,
-                    })
+
+                    for (const value of Object.values(message)) {
+                        toastr.error(value);
+                    }
                 }
             },
         })

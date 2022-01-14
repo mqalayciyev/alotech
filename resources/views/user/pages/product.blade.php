@@ -72,30 +72,12 @@
         </div>
         <!-- End breadcrumb -->
 
-        <!-- Error Alert -->
-        <div class="bg-gray-13 bg-md-transparent">
-            <div class="container">
-                <!-- Error Alert -->
-                <div class="my-md-3">
-                    @if ($errors->any())
-                        <div class="alert alert-danger">
-                            <ul class="m-0">
-                                @foreach ($errors->all() as $error)
-                                    <li>{{ $error }}</li>
-                                @endforeach
-                            </ul>
-                        </div>
-                    @endif
-                </div>
-                <!-- End Error Alert -->
-            </div>
-        </div>
-        <!-- End Error Alert -->
+
 
         <div class="container">
             <!-- Single Product Body -->
             <div class="mb-14">
-                <div class="row">
+                <div class="row product__single">
                     <div class="col-md-6 col-lg-4 col-xl-5 mb-4 mb-md-0">
                         <div id="sliderSyncingNav" class="js-slick-carousel u-slick mb-2" data-infinite="true"
                             data-arrows-classes="d-none d-lg-inline-block u-slick__arrow-classic u-slick__arrow-centered--y rounded-circle"
@@ -156,21 +138,39 @@
 
                             <div class="mb-2">
                                 <ul class="font-size-14 pl-3 ml-1 text-gray-110">
-                                    @foreach ($price as $item)
-                                        @if ($item)
-                                            @if ($item['wholesale_count'])
-                                                <li style="color: rgba(173,51,53,255)">
-                                                    @php
-                                                        $item_color = App\Models\Color::find($item['color_id']);
-                                                        $item_size = App\Models\Size::find($item['size_id']);
-                                                        $color_name = $item_color && $item_color->id > 1 ? $item_color->title : '';
-                                                        $size_name = $item_size ? $item_size->name : '';
-                                                    @endphp
-                                                    {!!  '*' . $product->product_name . ' ' . $size_name . ' ' . $color_name . ' ' . $item['wholesale_count'] . ' ' . $product->detail->measurement . ' çox aldıqda satış qiməti ' . $item['wholesale_price'] . '₼' !!}
-                                                </li>
+                                    @if (count($product->price) > 1)
+                                        @foreach ($product->price->where('default_price', 0) as $item)
+                                            @if ($item)
+                                                @if ($item['wholesale_count'])
+                                                    <li style="color: rgba(173,51,53,255)">
+                                                        @php
+                                                            $item_color = App\Models\Color::find($item['color_id']);
+                                                            $item_size = App\Models\Size::find($item['size_id']);
+                                                            $color_name = $item_color && $item_color->id > 1 ? $item_color->title : '';
+                                                            $size_name = $item_size ? $item_size->name : '';
+                                                        @endphp
+                                                        {!!  '*' . $product->product_name . ' ' . $size_name . ' ' . $color_name . ' ' . $item['wholesale_count'] . ' ' . $product->detail->measurement . ' çox aldıqda satış qiməti ' . $item['wholesale_price'] . '₼' !!}
+                                                    </li>
+                                                @endif
                                             @endif
-                                        @endif
-                                    @endforeach
+                                        @endforeach
+                                    @else
+                                        @foreach ($price as $item)
+                                            @if ($item)
+                                                @if ($item['wholesale_count'])
+                                                    <li style="color: rgba(173,51,53,255)">
+                                                        @php
+                                                            $item_color = App\Models\Color::find($item['color_id']);
+                                                            $item_size = App\Models\Size::find($item['size_id']);
+                                                            $color_name = $item_color && $item_color->id > 1 ? $item_color->title : '';
+                                                            $size_name = $item_size ? $item_size->name : '';
+                                                        @endphp
+                                                        {!!  '*' . $product->product_name . ' ' . $size_name . ' ' . $color_name . ' ' . $item['wholesale_count'] . ' ' . $product->detail->measurement . ' çox aldıqda satış qiməti ' . $item['wholesale_price'] . '₼' !!}
+                                                    </li>
+                                                @endif
+                                            @endif
+                                        @endforeach
+                                    @endif
                                     @if ($product->one_or_more)
                                         <li style="color: rgba(173,51,53,255)">{{  '*Məhsulun 1' . $product->detail->measurement . ' yuxarı alışına ' . $product->one_or_more . ' bonus hesabınıza əlavə olunacaq' }}</li>
                                     @endif
@@ -228,43 +228,38 @@
                                     </div>
                                     <!-- End Quantity -->
                                 </div>
-                                @if (count($product->stock) > 0)
-                                    <div class="mb-3">
-                                        @if (count($product->stock->where('color_id', '!=', 1)) > 0)
-                                            <h6 class="font-size-14">Rəng</h6>
-                                            <!-- Select -->
-                                            <select class="js-select selectpicker dropdown-select btn-block col-12 px-0 color-element"
-                                                data-style="btn-sm bg-white font-weight-normal py-2 border" data-type="ps-product__single">
-                                                @php $selected_color = false; @endphp
-                                                    @foreach ($product->stock->where('color_id', '!=', 1) as $stock)
-                                                        <option value="{{ $stock->color->name }}" {{ !$selected_color ? 'selected' : null }} data-id="{{ $stock->color_id }}">{{ $stock->color->title }}</option>
-                                                        @php $selected_color = true; @endphp
-                                                    @endforeach
-                                            </select>
-                                            <!-- End Select -->
-                                        @endif
-                                    </div>
-                                    <div class="mb-3">
-                                        @if (count($product->stock->where('size_id', '!=', null)) > 0)
-                                            <h6 class="font-size-14">Ölçü</h6>
-                                            <!-- Select -->
-                                            <select class="js-select selectpicker dropdown-select btn-block col-12 px-0 size-element"
-                                                data-style="btn-sm bg-white font-weight-normal py-2 border" data-type="ps-product__single">
-                                                @php $selected_size = false; @endphp
-                                                    @foreach ($product->stock->where('size_id', '!=', null) as $stock)
-                                                        <option value="{{ $stock->size->name }}" {{ !$selected_size ? 'selected' : null }} data-id="{{ $stock->size_id }}">{{ $stock->size->name }}</option>
-                                                        @php $selected_size = true; @endphp
-                                                    @endforeach
-                                            </select>
-                                            <!-- End Select -->
-                                        @endif
-                                    </div>
-                                @else
-                                        <h4>Məhsul anbarda mövcud deyil</h4>
-                                @endif
+                                <div class="mb-3">
+                                    @if (count($product->price->where('color_id', '!=', 1)) > 0)
+                                        @php $colors_array = array(); @endphp
+                                        <h6 class="font-size-14">Rəng</h6>
+                                        <!-- Select -->
+                                        <select class="form-control color-element" data-type="product__single" data-discount="{{ $product->discount }}">
+                                            @foreach ($product->price->where('color_id', '!=', 1) as $colors)
+                                                @if (!in_array($colors->color_id, $colors_array) && $colors->color_id != 1)
+                                                    <option value="{{ $colors->color_id }}" data-id="{{ $colors->color_id }}">{{ $colors->color->title }}</option>
+                                                    @php array_push($colors_array, $colors->color_id); @endphp
+                                                @endif
+                                            @endforeach
+                                        </select>
+                                        <!-- End Select -->
+                                    @endif
+                                </div>
+                                <div class="mb-3">
+                                    @if (count($product->price->where('size_id', '!=', null)) > 0)
+                                        <h6 class="font-size-14">Ölçü</h6>
+                                        <!-- Select -->
+                                        <select class="form-control size-element" data-type="product__single" data-discount="{{ $product->discount }}">
+                                            @foreach ($product->price->where('size_id', '!=', null) as $sizes)
+                                                <option value="{{ $sizes->size_id }}"  data-id="{{ $sizes->color_id }}">{{ $sizes->size->name }}</option>
+                                            @endforeach
+                                        </select>
+                                        <!-- End Select -->
+                                    @endif
+                                </div>
+                                {{-- <h5>Məhsul anbarda mövcud deyil</h5> --}}
 
                                 <div class="mb-2 pb-0dot5">
-                                    <a href="javascript:void(0)" data-piece="1" data-type="ps-product__single" data-stock="{{ count($product->stock) }}" data-id="{{ $product->id }}" data-discount="{{ $product->discount }}" class="btn btn-block btn-primary-dark add-to-cart"><i class="ec ec-add-to-cart mr-2 font-size-20"></i>Səbətə at</a>
+                                    <a href="javascript:void(0)" data-piece="1" data-type="product__single" data-id="{{ $product->id }}" data-discount="{{ $product->discount }}" class="btn btn-block btn-primary-dark add-to-cart"><i class="ec ec-add-to-cart mr-2 font-size-20"></i>Səbətə at</a>
                                 </div>
 
                                 <div class="flex-content-center flex-wrap">

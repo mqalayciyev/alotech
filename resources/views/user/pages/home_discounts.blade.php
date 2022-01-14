@@ -1,7 +1,7 @@
 @if (count($products))
     @foreach ($products as $array => $product)
         <div class="js-slide products-group">
-            <div class="product-item mx-1 remove-divider">
+            <div class="product-item mx-1 remove-divider products__all">
                 <div class="product-item__outer h-100">
                     <div class="product-item__inner bg-white px-wd-4 p-2 p-md-3">
                         <div class="product-item__body pb-xl-2">
@@ -15,12 +15,17 @@
                                     class="text-blue font-weight-bold line-clamp-1"
                                     title="{{ $product->product_name }}">{{ $product->product_name }}</a>
                             </h5>
-                            <div class="mb-2">
+                            <div class="mb-2 position-relative">
                                 <a href="{{ route('product', $product->slug) }}" class="d-block text-center">
                                     <img class="img-fluid"
                                         src="{{ $product->image->image_name ? asset('assets/img/products/' . $product->image->image_name) : asset('assets/img/' . old('logo', $website_info->logo)) }}"
                                         alt="{{ $product->product_name }}">
                                 </a>
+                                @if (count($product->price) > 1)
+                                    <div style="position: absolute; right: 0; bottom: 0;">
+                                        <img src="{{ asset('assets/img/colorwheel-circle-icon-256.png') }}" style="width: 25px; height: 25px;" alt="">
+                                    </div>
+                                @endif
                             </div>
                             <div class="flex-center-between mb-1">
                                 <div class="prodcut-price">
@@ -76,20 +81,19 @@
                                     @endif
 
                                 </div>
-                                <div class="d-none d-xl-block prodcut-add-cart">
-                                    <a href="javascript:void(0)" class="btn-add-cart btn-primary transition-3d-hover"
-                                    data-size="{{ count($product->sizes) > 0 ? 'true' : 'false' }}"
-                                    data-color="{{ count($product->colors) > 0 ? 'true' : 'false' }}" data-piece="1"
-                                    data-id="{{ $product->id }}"><i class="fas fa-cart-arrow-down add-to-cart"></i></a>
+                                <div class="d-block prodcut-add-cart">
+                                    <a href="javascript:void(0)" class="btn-add-cart btn-primary transition-3d-hover add-to-cart"
+                                        data-type="products__all" data-piece="1" data-discount="{{ $product->discount }}"
+                                        data-id="{{ $product->id }}"><i class="fas fa-cart-arrow-down "></i></a>
                                 </div>
                             </div>
                         </div>
                         <div class="product-item__footer">
                             <div class="border-top pt-2 flex-center-between flex-wrap">
-                                <a href="javascript:void(0)" class="text-gray-6 font-size-13 add-to-compare">
+                                <a href="javascript:void(0)" class="text-gray-6 font-size-13 add-to-compare" data-id="{{ $product->id }}">
                                     <i class="fa fa-retweet font-size-15"></i>
                                 </a>
-                                <a href="javascript:void(0)" class="text-gray-6 font-size-13 add-wish-list">
+                                <a href="javascript:void(0)" class="text-gray-6 font-size-13 add-wish-list" data-id="{{ $product->id }}">
                                     <i class="fa fa-heart font-size-15 mr-1"></i>
                                 </a>
                             </div>

@@ -13,7 +13,7 @@
 <script src="{{ asset('assets/vendor/fancybox/jquery.fancybox.min.js') }}"></script>
 <script src="{{ asset('assets/vendor/slick-carousel/slick/slick.js') }}"></script>
 <script src="{{ asset('assets/vendor/bootstrap-select/dist/js/bootstrap-select.min.js') }}"></script>
-
+<script src="{{ asset('assets/vendor/nouislider/nouislider.min.js') }}"></script>
 <!-- Toastr -->
 <script src="{{ asset('assets/js/toastr.min.js') }}" type="text/javascript"></script>
 
@@ -33,6 +33,7 @@
 <script src="{{ asset('assets/js/components/hs.go-to.js') }}"></script>
 <script src="{{ asset('assets/js/components/hs.selectpicker.js') }}"></script>
 
+{{-- {{ dd(session()->all()) }} --}}
 <script>
     @if (Session::has('message'))
 
@@ -45,6 +46,7 @@
     @endif
 
     @if (Session::has('error'))
+
         toastr.options =
         {
         "closeButton" : true,
@@ -52,6 +54,18 @@
         }
         toastr.error("{{ session('error') }}");
     @endif
+
+    @if(isset($errors) && count($errors)>0)
+        toastr.options =
+        {
+        "closeButton" : true,
+        "progressBar" : true
+        }
+        @foreach($errors->all() as $error)
+            toastr.error("{{ $error }}");
+        @endforeach
+    @endif
+
 
     @if (Session::has('info'))
         toastr.options =
@@ -180,11 +194,66 @@
     $(".menu-nav .category-menu-overlay").on('click', function(){
         $(".menu-nav .category-menu-overlay").removeClass('active')
         $(".menu-nav .category-menu-desktop").removeClass('active')
+        if($("#sidebarHeaderInvokerMenu").attr('aria-expanded')  == 'true'){
+            $("#sidebarHeaderInvokerMenu").attr('aria-expanded', false)
+        }
+        else{
+            $("#sidebarHeaderInvokerMenu").attr('aria-expanded', true)
+        }
     })
     $("#sidebarHeaderInvokerMenu").on('click', function(){
+        if($("#sidebarHeaderInvokerMenu").attr('aria-expanded') == 'true'){
+            $("#sidebarHeaderInvokerMenu").attr('aria-expanded', false)
+        }
+        else{
+            $("#sidebarHeaderInvokerMenu").attr('aria-expanded', true)
+        }
         $(".menu-nav .category-menu-overlay").toggleClass('active')
         $(".menu-nav .category-menu-desktop").toggleClass('active')
     })
+    $(document).on('click', '.set-depot', function(){
+        $(".depots").addClass('show')
+    })
+    $(document).on('click', '.close-depot', function(){
+        $(".depots").removeClass('show')
+    })
+    $(document).on('input', '.search_form_item', function() {
+            let wanted = $(this).val();
+            $(".quick_search_form_result .loader").addClass('active')
+            $(".quick_search_form_result").css('display', 'flex')
+            $(".quick_search_form_result .search_results").html('')
+            if(wanted.length >= 3){
+                $.ajax({
+                    url: '{{ route('quick_search_product') }}',
+                    method: 'GET',
+                    data: {
+                        wanted: wanted
+                    },
+                    success: function(data) {
+                        $(".quick_search_form_result .loader").removeClass('active')
+                        $(".quick_search_form_result .search_results").html(data)
+                    }
+                });
+            }
+            else{
+                $(".quick_search_form_result").css('display', 'none')
+                $(".quick_search_form_result .loader").removeClass('active')
+                $(".quick_search_form_result .search_results").html('')
+            }
+        })
+
+        $(document).on('click', function(e) {
+            if($(e.target).parents(".quick_search_form_result").length == 0){
+                if(!$('.search_form_item').is(":focus")){
+                    $(".quick_search_form_result").css('display', 'none')
+                }
+            }
+
+            if($(e.target).parents(".ps-layout__left").length == 0 && !$(e.target).hasClass('filter-show')  && !$(e.target).hasClass('fa-filter')){
+                $(".ps-layout__left").removeClass('active')
+                $("body").removeClass('filter-active')
+            }
+        })
 </script>
 
 

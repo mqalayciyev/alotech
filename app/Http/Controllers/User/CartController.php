@@ -9,11 +9,12 @@ use App\Models\Product;
 use App\Models\ProductImage;
 use App\Models\ColorProduct;
 use App\Models\SizeProduct;
-use App\Models\StockList;
 use App\Models\PriceList;
 use App\Models\Color;
+use App\Models\Depot;
 use App\Models\Size;
 use Gloudemans\Shoppingcart\Facades\Cart;
+use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\Validator;
 
 class CartController extends Controller
@@ -26,24 +27,18 @@ class CartController extends Controller
 
     public function my_cart()
     {
-        $output = '';
+        $depot = Cookie::get('depot')  ? Cookie::get('depot') : Depot::where('default', 1)->first()->id;
         if (count(Cart::content()) > 0) {
-            $output .= '<div class="ps-section__header">
-            <h1>Sifarişlər</h1>
-        </div>
-        <div class="ps-section__content">
-            <div class="table-responsive">
-                <table class="table ps-table--shopping-cart ps-table--responsive">
-                    <thead>
-                        <tr>
-                            <th>Məhsulun adı</th>
-                            <th>QİYMƏT</th>
-                            <th>MİQDAR</th>
-                            <th>ÜMUMİ</th>
-                            <th></th>
-                        </tr>
-                    </thead>
-                    <tbody >';
+            foreach (Cart::content() as $productCartItem) {
+                $product = Product::find($productCartItem);
+                if($product){
+                    if($product->depot != $depot){
+                        Cart::remove($productCartItem->rowId);
+                    }
+                }
+            }
+
+            $output = '';
             foreach (Cart::content() as $productCartItem) {
 
                 $color = '';
@@ -56,70 +51,74 @@ class CartController extends Controller
                     $sizes = Size::where('id', $productCartItem->options->size)->firstOrFail();
                     $size = $sizes->name ;
                 }
-                // $stok_piece = Product::select('stok_piece')->where('id', $productCartItem->id)->first();
-                $output .= '<tr><td data-label="Məhsul"><div class="ps-product--cart">';
-                $output .= '<div class="ps-product__thumbnail"><a href=' . route('product', $productCartItem->options->slug) . '><img src="';
-                $output .= $productCartItem->options->image ? asset('assets/img/products/' . $productCartItem->options->image) : asset('assets/img/logo.png');
 
-                $output .='" alt=""></a></div>
-                    <div class="ps-product__content">
-                        <a href=' . route('product', $productCartItem->options->slug) . '>' . $productCartItem->name . ' ' . $size . ' ' . $color . '</a>
+                $img = $productCartItem->options->image ? asset('assets/img/products/' . $productCartItem->options->image) : asset('assets/img/logo.png');
+                $output .= '<tr>
+                <td data-label="Sil" class="text-center">
+                    <a href="javascript:void(0)" id="' . $productCartItem->rowId . '" class="delete Remove text-gray-32 font-size-26"><i class="icon-cross"></i></a>
+                </td>
+            <td class="d-none d-md-table-cell">
+                <a href="' . route('product', $productCartItem->options->slug) . '"><img class="img-fluid max-width-100 p-1 border border-color-1" src="' . $img . '" alt="Image Description"></a>
+            </td>
+            <td data-title="Məhsul">
+                <a class="text-gray-90" href=' . route('product', $productCartItem->options->slug) . '>' . $productCartItem->name . ' ' . $size . ' ' . $color . '</a>
+            </td>
+            <td class="price" data-label="Qiymət"><span class="currency_azn">' . $productCartItem->price . '</span></td>
+
+            <td data-titl="Miqdarı">
+                <div class="border rounded-pill py-1 width-122 w-xl-80 px-3 border-color-1">
+                    <div class="js-quantity row align-items-center ProductQuantity">
+                        <div class="col">
+                            <input class="js-result form-control h-auto border-0 rounded p-0 shadow-none ProductQuantity-Input form-control input-' . $productCartItem->rowId . '"
+                                type="text"
+                                min="1"
+                                name="piece"
+                                value="' . $productCartItem->qty . '"
+                                data-id="' . $productCartItem->rowId . '"
+                                data-product="'. $productCartItem->id .'"
+                                data-sale-price="'. $productCartItem->price .'"
+                                step="1"
+                                autocomplete="off"
+                            >
+                        </div>
+                        <div class="col-auto pr-1">
+                            <a class="js-minus btn btn-icon btn-xs btn-outline-secondary rounded-circle border-0 cartProductQuantityMinus" data-id="' . $productCartItem->rowId . '" href="javascript:void(0);">
+                                <small class="fas fa-minus btn-icon__inner"></small>
+                            </a>
+                            <a class="js-plus btn btn-icon btn-xs btn-outline-secondary rounded-circle border-0 cartProductQuantityPlus" data-id="' . $productCartItem->rowId . '" href="javascript:void(0);">
+                                <small class="fas fa-plus btn-icon__inner"></small>
+                            </a>
+                        </div>
                     </div>
                 </div>
             </td>
-            <td class="price" data-label="Qiymət">' . $productCartItem->price . '‎ ₼</td>
+            <td data-title="Ümumi"><span class="currency_azn">' . $productCartItem->price * $productCartItem->qty . '</span></td>
 
-            <td data-label="Miqdarı">
-                <div class="form-group--number ProductQuantity">
-                    <button type="button" class="ProductQuantity-Plus up">
-                        <i class="fa fa-plus"></i>
-                    </button>
-                    <button type="button" class="ProductQuantity-Minus down " >
-                        <i class="fa fa-minus"></i>
-                    </button>
-                    <input
-                        type="number"
-                        min="1"
-                        name="piece"
-                        value="' . $productCartItem->qty . '"
-                        data-id="' . $productCartItem->rowId . '"
-                        data-product="'. $productCartItem->id .'"
-                        data-sale-price="'. $productCartItem->price .'"
-                        step="1"
-                        autocomplete="off"
-                        class="ProductQuantity-Input form-control input"
-                    />
-                </div>
-            </td>
-            <td data-label="Ümumi">' . $productCartItem->price * $productCartItem->qty . '‎ ₼</td>
-            <td data-label="Sil"><a href="javascript:void(0)" id="' . $productCartItem->rowId . '" class="delete Remove"><i class="icon-cross"></i></a></td>
         </tr>';
             }
-            $output .= '</tbody>
-                    </table>
+            $output .= '<tr>
+            <td colspan="6" class="border-top space-top-2 justify-content-center">
+                <div class="pt-md-3">
+                    <div class="d-block d-md-flex flex-center-between">
+                        <div class="d-md-flex">
+                            <a href="'. route('payment') . '" class="btn btn-primary-dark-w ml-md-2 px-5 px-md-4 px-lg-5 w-100 w-md-auto d-none d-md-inline-block">Sifariş Ver</a>
+                        </div>
+                    </div>
                 </div>
-                <div>
-                <span>Ümumi qiymət:</span> <b class="total">' . Cart::total() . ' ₼</b
-                ></div>
-                <div class="ps-section__cart-actions">
-                    <a class="ps-btn " href="' . route('payment') . '"> ' . __('content.Place Order') . '</a>
-
-                </div>
-            </div>';
+            </td>
+        </tr>';
         } else {
-            $output .= '<div data-v-59955730="" class="LayoutMP-Main"><div data-v-0faeac38="" data-v-59955730="" class="Wrapper">
-            <div data-v-0faeac38="" class="EmptyCart"><i data-v-0faeac38="" class="fa fa-shopping-bag"></i>
-            <span data-v-0faeac38="">Səbətinizdə heç bir məhsul yoxdur</span></div></div></div>';
+            $output = '<tr><td colspan="7" class="text-center">Səbətdə məhsul yoxdur</td></tr>';
         }
 
-        return $output;
+        return response()->json(['output' => $output, 'total' => Cart::total(), 'count' => Cart::count() ]);
     }
 
     public function update_cart()
     {
 
         $piece = request()->get('piece');
-       
+
         // $product = request()->get('product');
 
         $rowID = request()->get('rowID');
@@ -127,26 +126,27 @@ class CartController extends Controller
         $sale_price = request()->get('sale_price');
 
 
-        
+
+
         $cart = Cart::get($rowID);
-        
-        
+
+
         $priceList = PriceList::find($cart->options->price_id);
         $wholesale_count = $priceList->wholesale_count;
         $wholesale_price = $priceList->wholesale_price;
-        $stock = StockList::where('product_id', $product->id)->where('color_id', $cart->options->color)->where('size_id', $cart->options->size)->first();
-        
-        if($piece > $stock->stock_piece){
-            $piece = $stock->stock_piece;
+
+
+        if($piece > $priceList->stock_piece){
+            $piece = $priceList->stock_piece;
         }
-        
+
         if($wholesale_count > 0 && $piece >= $wholesale_count){
             $sale_price = $wholesale_price;
         }
         else{
-            $sale_price = $priceList->sale_price;
-
+            $sale_price = number_format($priceList->sale_price - ($priceList->sale_price*$product->discount / 100), 2);
         }
+        
         if($piece <= 0){
             $piece = 1;
         }
@@ -160,66 +160,99 @@ class CartController extends Controller
             );
         }
 
+        $output = '';
         if (count(Cart::content()) > 0) {
-
-            $output = '<div class="ps-cart__items">';
+            $output .= '';
             foreach (Cart::content() as $productCartItem) {
 
                 $color = '';
                 if($productCartItem->options->color > 1){
                     $colors = Color::where('id', $productCartItem->options->color)->firstOrFail();
-                    $color = '<span style="background-color: ' . $colors->name . '">' . $colors->name .'</span>' ;
+                    $color = '<span style="background-color: ' . $colors->name . '">' . $colors->title .'</span>' ;
                 }
                 $size = '';
                 if($productCartItem->options->size > 0){
                     $sizes = Size::where('id', $productCartItem->options->size)->firstOrFail();
-                    $size = '<span>' . $sizes->name .'</span>';
+                    $size = $sizes->name ;
                 }
+                // $stok_piece = Product::select('stok_piece')->where('id', $productCartItem->id)->first();
+                $img = $productCartItem->options->image ? asset('assets/img/products/' . $productCartItem->options->image) : asset('assets/img/logo.png');
+                $output .= '<tr>
+                <td data-label="Sil" class="text-center">
+                    <a href="javascript:void(0)" id="' . $productCartItem->rowId . '" class="delete Remove text-gray-32 font-size-26"><i class="icon-cross"></i></a>
+                </td>
+            <td class="d-none d-md-table-cell">
+                <a href="' . route('product', $productCartItem->options->slug) . '"><img class="img-fluid max-width-100 p-1 border border-color-1" src="' . $img . '" alt="Image Description"></a>
+            </td>
+            <td data-title="Məhsul">
+                <a class="text-gray-90" href=' . route('product', $productCartItem->options->slug) . '>' . $productCartItem->name . ' ' . $size . ' ' . $color . '</a>
+            </td>
+            <td class="price" data-label="Qiymət"><span class="currency_azn">' . $productCartItem->price . '</span></td>
 
-                $output .= '<div class="ps-product--cart-mobile">
-                                <div class="ps-product__thumbnail">
-                                    <a href="#">
-                                        <img src="';
-                $output .= $productCartItem->options->image ? asset('assets/img/products/' . $productCartItem->options->image) : asset('assets/img/logo.png');
-                $output .= '" alt=""></a></div>
-                <div class="ps-product__content"><a href="' . route('product', $productCartItem->options->slug) . '">' . $productCartItem->name . ' ' . $size . ' ' . $color . '</a>
-
-                <p>
-                    <small>' . $productCartItem->qty . ' x ' . $productCartItem->price . ' ₼</small>
-                </p>
+            <td data-titl="Miqdarı">
+                <div class="border rounded-pill py-1 width-122 w-xl-80 px-3 border-color-1">
+                    <div class="js-quantity row align-items-center ProductQuantity">
+                        <div class="col">
+                            <input class="js-result form-control h-auto border-0 rounded p-0 shadow-none ProductQuantity-Input form-control input-' . $productCartItem->rowId . '"
+                                type="text"
+                                min="1"
+                                name="piece"
+                                value="' . $productCartItem->qty . '"
+                                data-id="' . $productCartItem->rowId . '"
+                                data-product="'. $productCartItem->id .'"
+                                data-sale-price="'. $productCartItem->price .'"
+                                step="1"
+                                autocomplete="off"
+                            >
+                        </div>
+                        <div class="col-auto pr-1">
+                            <a class="js-minus btn btn-icon btn-xs btn-outline-secondary rounded-circle border-0 cartProductQuantityMinus" data-id="' . $productCartItem->rowId . '" href="javascript:void(0);">
+                                <small class="fas fa-minus btn-icon__inner"></small>
+                            </a>
+                            <a class="js-plus btn btn-icon btn-xs btn-outline-secondary rounded-circle border-0 cartProductQuantityPlus" data-id="' . $productCartItem->rowId . '" href="javascript:void(0);">
+                                <small class="fas fa-plus btn-icon__inner"></small>
+                            </a>
+                        </div>
+                    </div>
                 </div>
-            </div>';
+            </td>
+            <td data-title="Ümumi"><span class="currency_azn">' . $productCartItem->price * $productCartItem->qty . '</span></td>
+
+        </tr>';
             }
-            $output .= '</div><div class="ps-cart__footer">
-                            <h3>Ümumi: <strong>'. Cart::total() .'₼</strong></h3>
-                            <figure><a class="ps-btn btn-block text-center" href="'. route('cart') .'">Səbətə Bax</a></figure>
-                        </div>';
+            $output .= '<tr>
+            <td colspan="6" class="border-top space-top-2 justify-content-center">
+                <div class="pt-md-3">
+                    <div class="d-block d-md-flex flex-center-between">
+                        <div class="d-md-flex">
+                            <a href="'. route('payment') . '" class="btn btn-primary-dark-w ml-md-2 px-5 px-md-4 px-lg-5 w-100 w-md-auto d-none d-md-inline-block">Sifariş Ver</a>
+                        </div>
+                    </div>
+                </div>
+            </td>
+        </tr>';
+        } else {
+            $output .= '<tr><td colspan="7" class="text-center">Səbətdə məhsul yoxdur</td></tr>';
         }
-        else{
-            $output = '<div class="ps-cart__items">
-                            <h4 class="text-center">'.
-                            __('header.Empty, there is no product') .'
-                            </h4>
-                        </div>';
-        }
-
-        $cart_count = Cart::count();
-
-        $data = array(
-            'output' => $output,
-            'cart_count' => $cart_count,
-        );
-
-        echo json_encode($data);
-        // $cart_count = Cart::count();
-        // echo $cart_count;
+        return response()->json(['output' => $output, 'total' => Cart::total(), 'count' => Cart::count() ]);
     }
 
     public function add_to_cart()
     {
-        
+
+        $validator = Validator::make(request()->all(), [
+            'piece' => 'required',
+            'amount' => 'required',
+            'id' => 'required',
+            'priceId' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['status' => 'error', 'message' => $validator->errors()]);
+        }
+
         $piece = request()->get('piece');
-        
+
         if($piece < 1){
             $piece = 1;
         }
@@ -234,15 +267,15 @@ class CartController extends Controller
             $color = 1;
         }
         $product = Product::find(request()->get('id'));
-        
-        $stock = StockList::where('product_id', $product->id)->where('color_id', $color)->where('size_id', $size)->first();
-        // return request()->all();
-        if(!$stock){
-            return response()->json(['status' => 'error', 'message' => 'Məhsul stokda yoxdur']);
+
+        $priceList = PriceList::find($priceId);
+
+        if($priceList->stock_piece == 0){
+            return response()->json(['status' => 'error', 'message' => ['Məhsul stokda yoxdur']]);
         }
         else{
-            if($piece > $stock->stock_piece){
-                return response()->json(['status' => 'error', 'message' => 'Seçilən say anbar sayından çoxdur']);
+            if($piece > $priceList->stock_piece){
+                return response()->json(['status' => 'error', 'message' => ['Seçilən say anbar sayından çoxdur']]);
             }
         }
         // return session()->get('cart');
@@ -254,21 +287,19 @@ class CartController extends Controller
             foreach ($cart_content as $key => $item) {
                 if($item->id == request()->get('id') && $item->options->color == $color && $item->options->size == $size){
                     $qty = $item->qty;
-                    
                     break;
                 }
             }
-            if($qty + $piece > $stock->stock_piece){
-                return response()->json(['status' => 'error', 'message' => 'Seçilən say anbar sayından çoxdur']);
+            if($qty + $piece > $priceList->stock_piece){
+                return response()->json(['status' => 'error', 'message' => ['Seçilən say anbar sayından çoxdur']]);
             }
         }
 
         $price = $amount;
         $discount = $product->discount;
-        $priceList = PriceList::find($priceId);
         $wholesale_count = $priceList->wholesale_count;
         $wholesale_price = $priceList->wholesale_price;
-        
+
         if($wholesale_count > 0 && $piece >= $wholesale_count){
             $price = $wholesale_price;
         }
@@ -280,17 +311,17 @@ class CartController extends Controller
                 if($item->id == request()->get('id') && $item->options->color == $color && $item->options->size == $size){
                     $qty += $item->qty;
                     $rowId = $item->rowId;
-                    
+
                 }
             }
         }
-        
-        
+
+
         if($wholesale_count > 0 && $qty >= $wholesale_count){
             $price = $wholesale_price;
         }
         $image = ProductImage::where('product_id', $product->id)->where('color_id', $color)->first();
-        
+
         if($image){
             $img = $image->main_name;
         }
@@ -301,14 +332,14 @@ class CartController extends Controller
            $cartItem = Cart::update($rowId, ['qty' => $qty, 'price' => $price]);
         }
         else{
-            $cartItem = Cart::add($product->id, $product->product_name, $piece, $price, ['slug' => $product->slug, 'sale_price' => $price, 'price_id' => $priceId, 'discount' => $discount, 'image' => $img, 'color'=> $color, 'size' => $size]);
+            $cartItem = Cart::add($product->id, $product->product_name, $piece, $price, ['slug' => $product->slug, 'price_id' => $priceId, 'discount' => $discount, 'image' => $img, 'color'=> $color, 'size' => $size]);
         }
-        
-        
-       
+
+
+
         if (auth()->check()) {
             $active_cart_id = session('active_cart_id');
-            
+
             if (!isset($active_cart_id)) {
                 $active_cart = CartModel::create([
                     'user_id' => auth()->id()
@@ -319,7 +350,7 @@ class CartController extends Controller
             // return $active_cart_id;
             CartProduct::updateOrCreate(
                 ['cart_id' => $active_cart_id, 'product_id' => $product->id, 'size_id' => $size, 'color_id' => $color],
-                ['piece' => $cartItem->qty, 'amount' => $cartItem->price, 'price_id' => $priceId, 'cart_status' => 'Pending', 'sale_price' => $cartItem->options->sale_price]
+                ['piece' => $cartItem->qty, 'amount' => $cartItem->price, 'price_id' => $priceId, 'cart_status' => 'Pending']
             );
             // return 'ok';
         }
@@ -347,7 +378,7 @@ class CartController extends Controller
                 $output .= $productCartItem->options->image ? asset('assets/img/products/' . $productCartItem->options->image) : asset('assets/img/logo.png');
                 $output .= '" alt=""></a></div>
                 <div class="ps-product__content"><a href="' . route('product', $productCartItem->options->slug) . '">' . $productCartItem->name . ' ' . $size . ' ' . $color .'</a>
-                
+
                 <p>
                     <small>' . $productCartItem->qty . ' x ' . $productCartItem->price . ' ₼</small>
                 </p>
@@ -367,10 +398,7 @@ class CartController extends Controller
                         </div>';
         }
 
-        $cart_count = Cart::count();
-
-
-        return response()->json(['status'  => 'success', 'message' => 'Məhsul səbətə əlavə edildi', 'output' => $output, 'cart_count' => $cart_count]);
+        return response()->json(['status'  => 'success', 'message' => 'Məhsul səbətə əlavə edildi', 'output' => $output, 'total' => Cart::total(), 'count' => Cart::count() ]);
 
     }
 
@@ -383,53 +411,83 @@ class CartController extends Controller
         }
         Cart::remove(request()->get('rowID'));
 
-        if (count(Cart::content()) > 0) {
 
-            $output = '<div class="ps-cart__items">';
+        $output = '';
+        if (count(Cart::content()) > 0) {
+            $output .= '';
             foreach (Cart::content() as $productCartItem) {
 
                 $color = '';
                 if($productCartItem->options->color > 1){
                     $colors = Color::where('id', $productCartItem->options->color)->firstOrFail();
-                    $color = '<span style="background-color: ' . $colors->name .'">' . $colors->title . '</span>';
+                    $color = '<span style="background-color: ' . $colors->name . '">' . $colors->title .'</span>' ;
                 }
                 $size = '';
                 if($productCartItem->options->size > 0){
                     $sizes = Size::where('id', $productCartItem->options->size)->firstOrFail();
-                    $size = '<span>Ölçü: '.$sizes->name . '</span>';
+                    $size = $sizes->name ;
                 }
+                // $stok_piece = Product::select('stok_piece')->where('id', $productCartItem->id)->first();
+                $img = $productCartItem->options->image ? asset('assets/img/products/' . $productCartItem->options->image) : asset('assets/img/logo.png');
+                $output .= '<tr>
+                <td data-label="Sil" class="text-center">
+                    <a href="javascript:void(0)" id="' . $productCartItem->rowId . '" class="delete Remove text-gray-32 font-size-26"><i class="icon-cross"></i></a>
+                </td>
+            <td class="d-none d-md-table-cell">
+                <a href="' . route('product', $productCartItem->options->slug) . '"><img class="img-fluid max-width-100 p-1 border border-color-1" src="' . $img . '" alt="Image Description"></a>
+            </td>
+            <td data-title="Məhsul">
+                <a class="text-gray-90" href=' . route('product', $productCartItem->options->slug) . '>' . $productCartItem->name . ' ' . $size . ' ' . $color . '</a>
+            </td>
+            <td class="price" data-label="Qiymət"><span class="currency_azn">' . $productCartItem->price . '</span></td>
 
-                $output .= '<div class="ps-product--cart-mobile">
-                                <div class="ps-product__thumbnail">
-                                    <a href="#">
-                                        <img src="';
-                $output .= $productCartItem->options->image ? asset('assets/img/products/' . $productCartItem->options->image) : asset('assets/img/logo.png');
-                $output .= '" alt=""></a></div>
-                <div class="ps-product__content"><a href="' . route('product', $productCartItem->options->slug) . '">' . $productCartItem->name . ' ' . $size . ' ' . $color .'</a>
-                
-                <p>
-                    <small>' . $productCartItem->qty . ' x ' . $productCartItem->price . ' ₼</small>
-                </p>
+            <td data-titl="Miqdarı">
+                <div class="border rounded-pill py-1 width-122 w-xl-80 px-3 border-color-1">
+                    <div class="js-quantity row align-items-center ProductQuantity">
+                        <div class="col">
+                            <input class="js-result form-control h-auto border-0 rounded p-0 shadow-none ProductQuantity-Input form-control input-' . $productCartItem->rowId . '"
+                                type="text"
+                                min="1"
+                                name="piece"
+                                value="' . $productCartItem->qty . '"
+                                data-id="' . $productCartItem->rowId . '"
+                                data-product="'. $productCartItem->id .'"
+                                data-sale-price="'. $productCartItem->price .'"
+                                step="1"
+                                autocomplete="off"
+                            >
+                        </div>
+                        <div class="col-auto pr-1">
+                            <a class="js-minus btn btn-icon btn-xs btn-outline-secondary rounded-circle border-0 cartProductQuantityMinus" data-id="' . $productCartItem->rowId . '" href="javascript:void(0);">
+                                <small class="fas fa-minus btn-icon__inner"></small>
+                            </a>
+                            <a class="js-plus btn btn-icon btn-xs btn-outline-secondary rounded-circle border-0 cartProductQuantityPlus" data-id="' . $productCartItem->rowId . '" href="javascript:void(0);">
+                                <small class="fas fa-plus btn-icon__inner"></small>
+                            </a>
+                        </div>
+                    </div>
                 </div>
-            </div>';
+            </td>
+            <td data-title="Ümumi"><span class="currency_azn">' . $productCartItem->price * $productCartItem->qty . '</span></td>
+
+        </tr>';
             }
-            $output .= '</div><div class="ps-cart__footer">
-                            <h3>Ümumi: <strong>'. Cart::total() .'₼</strong></h3>
-                            <figure><a class="ps-btn btn-block text-center" href="'. route('cart') .'">Səbətə Bax</a></figure>
-                        </div>';
+            $output .= '<tr>
+            <td colspan="6" class="border-top space-top-2 justify-content-center">
+                <div class="pt-md-3">
+                    <div class="d-block d-md-flex flex-center-between">
+                        <div class="d-md-flex">
+                            <a href="'. route('payment') . '" class="btn btn-primary-dark-w ml-md-2 px-5 px-md-4 px-lg-5 w-100 w-md-auto d-none d-md-inline-block">Sifariş Ver</a>
+                        </div>
+                    </div>
+                </div>
+            </td>
+        </tr>';
+        } else {
+            $output .= '<tr><td colspan="7" class="text-center">Səbətdə məhsul yoxdur</td></tr>';
         }
-        else{
-            $output = '<div class="ps-cart__items">
-                            <h4 class="text-center">'.
-                            __('header.Empty, there is no product') .'
-                            </h4>
-                        </div>';
-        }
 
-        $cart_count = Cart::count();
-
-
-        return response()->json(['status'  => 'success', 'message' => 'Məhsul səbətə əlavə edildi', 'output' => $output, 'cart_count' => $cart_count]);
+        return response()->json(['output' => $output, 'total' => Cart::total(), 'count' => Cart::count() ]);
     }
 
     public function destroy()
@@ -439,35 +497,6 @@ class CartController extends Controller
             CartProduct::where('cart_id', $active_cart_id)->delete();
         }
         Cart::destroy();
-    }
-
-    public function update($rowid)
-    {
-        $validator = Validator::make(request()->all(), [
-            'piece' => 'required|numeric|between:1,5'
-        ]);
-
-        if ($validator->fails()) {
-            session()->flash('message_type', 'danger');
-            session()->flash('message', __('content.The number must be between 1 and 10'));
-            return response()->json(['success' => false]);
-        }
-
-        if (auth()->check()) {
-            $active_cart_id = session('active_cart_id');
-            $cartItem = Cart::get($rowid);
-            if (request('piece') == 0) {
-                CartProduct::where('cart_id', $active_cart_id)->where('product_id', $cartItem->id)->delete();
-            } else {
-                CartProduct::where('cart_id', $active_cart_id)->where('product_id', $cartItem->id)->
-                update(['piece' => request('piece')]);
-            }
-        }
-
-        Cart::update($rowid, request('piece'));
-        session()->flash('message_type', 'success');
-        session()->flash('message', __('content.Piece info updated'));
-        return route('cart');
     }
 
 }

@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Mail\OrderStatus;
 use App\Models\Cart;
 use App\Models\CartProduct;
-use App\Models\StockList;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\User;
@@ -16,7 +15,9 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Yajra\DataTables\Facades\DataTables;
 use App\Exports\Raports;
+use App\Models\PriceList;
 use Maatwebsite\Excel\Facades\Excel;
+use PhpOffice\PhpSpreadsheet\Calculation\Financial\Securities\Price;
 
 class OrderController extends Controller
 {
@@ -52,7 +53,7 @@ class OrderController extends Controller
 
             })
             ->addColumn('action', function ($row) {
-                
+
                 return '<div>
                         <a href="' . route("manage.order.edit", $row->id) .'" class="btn btn-xs btn-success" data-id="' . $row->id .'">' . __('admin.Edit') . '
                         <span class="fa fa-pencil"></span></a>
@@ -91,7 +92,7 @@ class OrderController extends Controller
         $user = User::where('id', $user_id)->first();
 
         $data = request()->only('first_name', 'last_name', 'address', 'phone', 'mobile', 'status');
-        
+
         if ($id > 0) {
             $entry = Order::where('id', $id)->firstOrFail();
             if(request('status') == 'Your order is canceled'){
@@ -99,20 +100,18 @@ class OrderController extends Controller
                 foreach ($cartProduct as $value) {
                     $product = Product::where('id', $value->product_id)->first();
                     if($product){
-                        $stock = StockList::where('product_id', $product->id)->where('color_id', $value->color_id)->where('size_id', $value->size_id)->first();
-                        $stock->update([
-                            'stock_piece' => $stock->stock_piece + $value->piece
-                        ]);
+                        $priceList = PriceList::find($value->options->price_id);
+                        PriceList::where('id', $value->options->price_id)->update(['stock_piece' => $priceList->stock_piece + $value->piece]);
                     }
                 }
                 $data['exported'] = 1;
             }
-            
+
             Order::where('id',  $id)->update($data);
             $order = Order::with('cart.cart_products.product')->find($id);
             Mail::to($user->email)->send(new OrderStatus($order));
         }
-        
+
         return redirect()
             ->route('manage.order.edit', $entry->id)
             ->with('message_type', 'success')
@@ -128,10 +127,8 @@ class OrderController extends Controller
         //     foreach ($cartProduct as $value) {
         //         $product = Product::where('id', $value->product_id)->first();
         //         if($product){
-        //             $stock = StockList::where('product_id', $product->id)->where('color_id', $value->color_id)->where('size_id', $value->size_id)->first();
-        //             $stock->update([
-        //                 'stock_piece' => $stock->stok_piece + $value->piece
-        //             ]);
+        //             $priceList = PriceList::find($value->options->price_id);
+        //             PriceList::where('id', $value->options->price_id)->update(['stock_piece' => $priceList->stock_piece + $value->piece]);
         //         }
         //     }
         // }
@@ -154,11 +151,8 @@ class OrderController extends Controller
         //         foreach ($cartProduct as $value) {
         //             $product = Product::where('id', $value->product_id)->first();
         //             if($product){
-        //                 $stock = StockList::where('product_id', $product->id)->where('color_id', $value->color_id)->where('size_id', $value->size_id)->first();
-        //                 $stock_piece = $stock->stok_piece + $value->piece;
-        //                 $stock->update([
-        //                     'stock_piece' => $stock_piece
-        //                 ]);
+        //                 $priceList = PriceList::find($value->options->price_id);
+        //                 PriceList::where('id', $value->options->price_id)->update(['stock_piece' => $priceList->stock_piece + $value->piece]);
         //             }
         //         }
         //     }
@@ -193,17 +187,17 @@ class OrderController extends Controller
     }
     public function exported($id){
         $order = Order::find($id);
-        
+
         if($order->exported == 1){
             Order::where('id',  $id)->update(['exported' => 0]);
         }
         else{
             Order::where('id',  $id)->update(['exported' => 1]);
         }
-        
+
         return back();
     }
-    
+
     public function export($type)
     {
         // $type = request('type');
@@ -212,7 +206,7 @@ class OrderController extends Controller
                 "type" => $type
             ];
             return (new Raports((array)$data))->download('products.xlsx');
-        } 
+        }
         else if ($type == "orders") {
             $data = [
                 "type" => $type

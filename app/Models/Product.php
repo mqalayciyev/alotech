@@ -47,10 +47,7 @@ class Product extends Model
     {
         return $this->hasMany('App\Models\PriceList');
     }
-    public function stock()
-    {
-        return $this->hasMany('App\Models\StockList');
-    }
+
     public function default_price()
     {
         return $this->hasOne('App\Models\PriceList')->ofMany('default_price', 'max');
@@ -68,5 +65,10 @@ class Product extends Model
     public function images()
     {
         return $this->hasMany('App\Models\ProductImage');
+    }
+
+    public function depots()
+    {
+        return $this->hasMany(Depot::class, 'id', 'depot');
     }
 }

@@ -7,6 +7,7 @@ use App\Mail\ResetPassword;
 // use App\Mail\UserRegistration;
 use App\Models\Cart as CartModel;
 use App\Models\CartProduct;
+use App\Models\Depot;
 use App\Models\PasswordReset;
 use App\Models\UserDetail;
 use App\Models\Product;
@@ -14,6 +15,7 @@ use App\Models\User;
 use Carbon\Carbon;
 use Gloudemans\Shoppingcart\Facades\Cart;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\Hash;
 // use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Str;
@@ -30,15 +32,16 @@ class UserController extends Controller
             'user_detail' => $user_detail,
         ]);
     }
-    
+
     public function sign_in_form()
     {
         return view('user.auth.login');
     }
-    
+
 
     public function authenticate(Request $request)
     {
+
         $messages = [
             'email.required'  => 'Email boş ola bilməz.',
             'email.email'  => 'Düzgün email forması daxil edin.',
@@ -53,7 +56,7 @@ class UserController extends Controller
             'email' => request('email'),
             'password' => request('password')
         ];
-         
+
 
         if (auth()->attempt($credentials, request()->has('remember'))) {
             request()->session()->regenerate();
@@ -65,46 +68,53 @@ class UserController extends Controller
             session()->put('active_cart_id', $active_cart_id);
 
             if (Cart::count() > 0) {
+                $depot = Cookie::get('depot')  ? Cookie::get('depot') : Depot::where('default', 1)->first()->id;
+                
+                foreach (Cart::content() as $productCartItem) {
+                    $product = Product::find($productCartItem);
+                    if($product){
+                        if($product->depot != $depot){
+                            Cart::remove($productCartItem->rowId);
+                        }
+                    }
+                }
                 foreach (Cart::content() as $cartItem) {
-                    $size = $cartItem->options->size; 
-                    $color = $cartItem->options->color; 
+                    $size = $cartItem->options->size;
+                    $color = $cartItem->options->color;
                     CartProduct::updateOrCreate(
                         ['cart_id' => $active_cart_id, 'product_id' => $cartItem->id, 'size_id' => $size, 'color_id' => $color],
-                        ['piece' => $cartItem->qty, 'amount' => $cartItem->price,  'price_id' => $cartItem->options->price_id, 'cart_status' => 'Pending', 'sale_price' => $cartItem->options->sale_price]
+                        ['piece' => $cartItem->qty, 'amount' => $cartItem->price,  'price_id' => $cartItem->options->price_id, 'cart_status' => 'Pending']
                     );
                 }
             }
 
             Cart::destroy();
-            
+
             $cartProducts = CartProduct::where('cart_id', $active_cart_id)->get();
             foreach ($cartProducts as $cartProduct) {
                 $product = Product::find($cartProduct->product_id);
                 if($product){
-                    Cart::add($cartProduct->product_id, 
-                                $product->product_name, 
-                                $cartProduct->piece, 
-                                $cartProduct->amount, 
-                                ['slug' => $product->slug, 
-                                'discount' => $product->discount, 
-                                'sale_price' => $cartProduct->sale_price, 
+                    Cart::add($cartProduct->product_id,
+                                $product->product_name,
+                                $cartProduct->piece,
+                                $cartProduct->amount,
+                                ['slug' => $product->slug,
+                                'discount' => $product->discount,
                                 'image' => $product->image->main_name,
                                 'price_id' => $cartProduct->price_id,
                                 'size' => $cartProduct->size_id,
                                 'color' => $cartProduct->color_id]);
-                    
+
                 }
                 else{
                     CartProduct::where('cart_id', $active_cart_id)->where('product_id', $cartProduct->product_id)->delete();
                 }
             }
-
-            return redirect()->intended('/account');
+            return redirect()->intended('/account')->with(['info' => 'Uğurlu']);
         }
 
-        return back()->withErrors([
-            'email' => 'Təqdim olunan etimadnamələr qeydlərimizə uyğun gəlmir.',
-        ]);
+
+        return back()->with(['error' => 'Təqdim olunan etimadnamələr qeydlərimizə uyğun gəlmir.']);
     }
     public function sign_up_form()
     {
@@ -158,14 +168,14 @@ class UserController extends Controller
             }
             session()->put('active_cart_id', $active_cart_id);
 
-            
+
             if (Cart::count() > 0) {
                 foreach (Cart::content() as $cartItem) {
-                    $size = $cartItem->options->size; 
-                    $color = $cartItem->options->color; 
+                    $size = $cartItem->options->size;
+                    $color = $cartItem->options->color;
                     CartProduct::updateOrCreate(
                         ['cart_id' => $active_cart_id, 'product_id' => $cartItem->id, 'size_id' => $size, 'color_id' => $color],
-                        ['piece' => $cartItem->qty, 'amount' => $cartItem->price, 'price_id' => $cartItem->options->price_id, 'cart_status' => 'Pending', 'sale_price' => $cartItem->options->sale_price]
+                        ['piece' => $cartItem->qty, 'amount' => $cartItem->price, 'price_id' => $cartItem->options->price_id, 'cart_status' => 'Pending']
                     );
                 }
             }
@@ -175,32 +185,30 @@ class UserController extends Controller
             foreach ($cartProducts as $cartProduct) {
                 $product = Product::find($cartProduct->product_id);
                 if($product){
-                    Cart::add($cartProduct->product_id, 
-                                $product->product_name, 
-                                $cartProduct->piece, 
-                                $cartProduct->amount, 
-                                ['slug' => $product->slug, 
-                                'discount' => $product->discount, 
-                                'sale_price' => $cartProduct->sale_price, 
+                    Cart::add($cartProduct->product_id,
+                                $product->product_name,
+                                $cartProduct->piece,
+                                $cartProduct->amount,
+                                ['slug' => $product->slug,
+                                'discount' => $product->discount,
                                 'price_id' => $cartProduct->price_id,
                                 'image' => $product->image->main_name,
                                 'size' => $cartProduct->size_id,
                                 'color' => $cartProduct->color_id]);
-                    
+
                 }
                 else{
                     CartProduct::where('cart_id', $active_cart_id)->where('product_id', $cartProduct->product_id)->delete();
                 }
             }
             // Mail::to(request('email'))->send(new UserRegistration($user));
-            return redirect()->intended('/account');
+            return redirect()->intended('/account')->with(['info' => 'Uğurlu']);
         }
         else {
-            $errors = ['email' => 'Yanlış giriş'];
-            return back()->withErrors($errors);
+            return redirect()->back()->with(['warning' => 'Hesabınıza giriş edin']);
         }
 
-        
+
         // return redirect()->to('/')
         //         ->with('message', 'Hesab uğurla yaradıldı. Zəhmət olmasa hesabınıza giriş edin.')
         //         ->with('message_type', 'success');
@@ -216,12 +224,12 @@ class UserController extends Controller
             'last_name.required' => 'Soyad daxil edilmeyib.',
             'email.required' => 'Email daxil edilmeyib.',
             'mobile.required' => 'Mobile nomre daxil edilmeyib.',
-            
+
             ]);
         if ($validator->fails()) {
             return response()->json(['status' => 'error', 'message' => $validator->errors()]);
         }
-        
+
         User::where('id', auth()->id())->update([
             'first_name' => request('first_name'),
             'last_name' => request('last_name'),
@@ -246,13 +254,13 @@ class UserController extends Controller
             'state.required' => 'Paytaxt daxil edilmeyib.',
             'city.required' => 'Şəhər daxil edilmeyib.',
             'address.required' => 'Address daxil edilmeyib.',
-            
+
             ]);
         if ($validator->fails()) {
             return response()->json(['status' => 'error', 'message' => $validator->errors()]);
         }
-        
-        
+
+
         UserDetail::updateOrCreate(['user_id' =>  auth()->id()], [
                 'country' => request('country'),
                 'state' => request('state'),
@@ -263,11 +271,11 @@ class UserController extends Controller
         return response()->json(['status' => 'success']);
     }
     public function form_password(Request $request){
-        
-        
+
+
         $user = Auth::user();
 
-        
+
         $validator = Validator::make(request()->all(), [
             'password'              => 'required|min:6',
             'password_confirmation' => 'required|same:password',
@@ -281,13 +289,13 @@ class UserController extends Controller
             'password.required' => 'Sifre qeyd edilmeyib.',
             'password_confirmation.required' => 'Sifre(tekrar) qeyd edilmeyib.',
             'password_confirmation.same' => 'Sifreler uygun deyil.',
-            
+
             ]);
-        
+
         if ($validator->fails()) {
             return response()->json(['status' => 'error', 'message' => $validator->errors()]);
         }
-        
+
         User::find(auth()->id())->update([
             'password'=> Hash::make($request->input('password')),
         ]);
@@ -317,17 +325,17 @@ class UserController extends Controller
     }
     public function resetPassword($email, $token)
     {
-        
-       
+
+
         $count = PasswordReset::where('email', $email)
             ->where('token', $token)
             ->firstOrFail();
         return view('user.auth.passwords.reset', ['email' => $email,'token' => $token]);
-        
+
 
     }
     public function change_password(){
-        
+
 
         $messages = [
             'email.required'  => 'Email boş ola bilməz.',
@@ -351,6 +359,8 @@ class UserController extends Controller
 
     public function logout(){
         Auth::logout();
-        return redirect()->route('home');
+        request()->session()->flush();
+        request()->session()->regenerate();
+        return redirect()->route('home')->with(['info' => 'Hesabdan çıxdınız.']);
     }
 }

@@ -25,7 +25,7 @@
 <link rel="stylesheet" href="{{ asset('assets/vendor/fancybox/jquery.fancybox.css') }}">
 <link rel="stylesheet" href="{{ asset('assets/vendor/slick-carousel/slick/slick.css') }}">
 <link rel="stylesheet" href="{{ asset('assets/vendor/bootstrap-select/dist/css/bootstrap-select.min.css') }}">
-
+<link rel="stylesheet" href="{{ asset('assets/vendor/nouislider/nouislider.min.css') }}">
 <!-- CSS Electro Template -->
 <link rel="stylesheet" href="{{ asset('assets/css/theme.css') }}">
 

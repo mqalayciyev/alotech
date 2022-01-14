@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Image;
 use Yajra\DataTables\Facades\DataTables;
+use Illuminate\Support\Facades\File; 
 
 class BannerController extends Controller
 {
@@ -27,7 +28,7 @@ class BannerController extends Controller
                     $logo = '310x188';
                 }
                 elseif($row->type == 2){
-                    $logo = '1200x250';
+                    $logo = '1200x350';
                 }
                 elseif($row->type == 3){
                     $logo = '380x250';
@@ -115,6 +116,14 @@ class BannerController extends Controller
 
 
         if (request()->hasFile('image')) {
+
+            $rows = Banner::find($id);
+            
+            $image_path = app_path("assets/img/banners/{$rows->banner_image}");
+            if (File::exists($image_path)) {
+                unlink($image_path);
+            }
+
             $image = request()->file('image');
             $image = request()->image;
 
@@ -154,6 +163,12 @@ class BannerController extends Controller
     public function delete_data(Request $request)
     {
         $rows = Banner::find($request->input('id'));
+
+        $image_path = app_path("assets/img/banners/{$rows->banner_image}");
+        if (File::exists($image_path)) {
+            unlink($image_path);
+        }       
+        
         if ($rows->forceDelete()) {
             echo __('admin.Data Deleted');
         }
@@ -163,6 +178,12 @@ class BannerController extends Controller
     {
         $id_array = $request->input('id');
         $rows = Banner::whereIn('id', $id_array);
+        foreach ($rows as $row) {
+            $image_path = app_path("assets/img/banners/{$row->banner_image}");
+            if (File::exists($image_path)) {
+                unlink($image_path);
+            }
+        }
         if ($rows->forceDelete()) {
             echo __('admin.Data Deleted');
         }

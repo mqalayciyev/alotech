@@ -1,17 +1,16 @@
 <script>
     $(function() {
         let price_list = [];
-        let color = [];
         let product_amount = [];
         let product_amount_discount = [];
-        let size = [];
+
         $(document).on('change', '.color-element', function() {
 
             let target = $(this)
+            let id = $(this).val()
             let discount = $(target).data('discount');
             let type = $(target).data('type')
-            let sizes_exist = $("." + type + " .size-element[data-color='" + $(target).data('id') +
-                "']").length;
+            let sizes_exist = $("." + type + " .size-element[data-color='" + id + "']").length;
             let product = $(target).data('product')
 
             if (!product_amount_discount[type]) {
@@ -22,57 +21,57 @@
                 product_amount['id'] = $("." + type + " .product_amount").data('price-id')
             }
 
-            $("." + type + " .size_label").each(function() {
-                let filter = $(this).data("filter");
-                if (filter != $(target).data('id')) {
-                    $(this).css('display', 'none')
+
+
+            $("." + type + " .size-element option").each(function() {
+                let filter = $(this).data('id');
+                if (filter != id) {
+                    $(this).addClass('d-none')
+                    $(this).prop('disabled', true);
                 } else {
-                    $(this).css('display', 'inline-block')
+                    $(this).removeClass('d-none')
+                    $(this).prop('disabled', false);
                 }
+                $(this).removeAttr('selected')
             });
 
-            if (type == "ps-product--quickview") {
-                $('.quick-view-slider').slick('slickUnfilter');
-                let filterClass = '.image-color-' + $(target).data('id')
-                if ($('.quick-view-slider ' + filterClass).length > 0) {
-                    $('.quick-view-slider').slick('slickFilter', filterClass);
-                }
-            } else {
-                $('.ps-product__gallery').slick('slickUnfilter');
-                $('.ps-product__variants ').slick('slickUnfilter');
-                let filterClass = '.image-color-' + $(target).data('id')
-                if ($('.ps-product__gallery ' + filterClass).length > 0) {
-                    $('.ps-product__gallery').slick('slickFilter', filterClass);
-                    $('.ps-product__variants ').slick('slickFilter', filterClass);
+            $("." + type + " .size-element option").not(':disabled').first().prop('selected', true)
+
+
+            if (type == "product__single") {
+                $('#sliderSyncingNav').slick('slickUnfilter');
+                $('#sliderSyncingThumb ').slick('slickUnfilter');
+                let filterClass = '.image-color-' + id
+                if ($('#sliderSyncingNav ' + filterClass).length > 0) {
+                    $('#sliderSyncingNav').slick('slickFilter', filterClass);
+                    $('#sliderSyncingThumb ').slick('slickFilter', filterClass);
                 }
             }
 
 
 
+            let color = id
+            let size = $("." + type + " .size-element").val()
 
-            $("." + type + " .size-element:checked").prop('checked', false);
-
-
-            color[type] = $(target).data('id')
             let price = []
-            if (size[type]) {
-                price = price_list[type].filter(item => item.color_id == color[type] && item.size_id ==
-                    size[type])
+            if (size) {
+                price = price_list[type].filter(item => item.color_id == color && item.size_id == size)
+                console.log(price)
+                console.log(price_list)
                 if (price.length == 0) {
-                    price = price_list[type].filter(item => item.color_id == color[type] && item
-                        .size_id == null)
+                    price = price_list[type].filter(item => item.color_id == color && item.size_id == null)
                 }
-            } else {
-                price = price_list[type].filter(item => item.color_id == color[type] && item.size_id ==
-                    null)
             }
+            else {
+                price = price_list[type].filter(item => item.color_id == color && item.size_id == null)
+            }
+
             if (price.length == 0) {
 
                 $("." + type + " .product_amount").html(product_amount[type])
                 $("." + type + " .product_amount").attr('data-price-id', product_amount['id'])
                 if (discount) {
-                    let amount = parseFloat(product_amount[type]) - (parseFloat(product_amount[type]) *
-                        parseFloat(discount) / 100)
+                    let amount = parseFloat(product_amount[type]) - (parseFloat(product_amount[type]) * parseFloat(discount) / 100)
                     $("." + type + " .product_amount_discount").html(amount.toFixed(2))
                 }
 
@@ -80,17 +79,18 @@
                 $("." + type + " .product_amount").html(price[0].sale_price)
                 $("." + type + " .product_amount").attr('data-price-id', price[0].id)
                 if (discount) {
-                    let amount = parseFloat(price[0].sale_price) - (parseFloat(price[0].sale_price) *
-                        parseFloat(discount) / 100)
+                    let amount = parseFloat(price[0].sale_price) - (parseFloat(price[0].sale_price) * parseFloat(discount) / 100)
                     $("." + type + " .product_amount_discount").html(amount.toFixed(2))
                 }
             }
         })
         $(document).on('change', '.size-element', function() {
             let target = $(this)
+            let id = $(this).val()
             let discount = $(target).data('discount');
             let type = $(target).data('type')
             let colors_exist = $("." + type + " .color-element").length;
+
 
             if (!product_amount_discount[type]) {
                 product_amount_discount[type] = $("." + type + " .product_amount_discount").html()
@@ -101,42 +101,24 @@
             }
 
             if (colors_exist > 0) {
-                if (!color[type]) {
-                    toastr.options = {
-                        "closeButton": true,
-                        "progressBar": true
-                    }
-                    toastr.warning("İlk öncə rəng seçin");
-                    $(target).prop('checked', false);
-                    return false;
-                }
-                size[type] = $(target).data('id')
-                let price = price_list[type].filter(item => item.size_id == size[type] && item
-                    .color_id == color[type])
+                let size = id
+                let color = $("." + type + " .color-element").val()
+                let price = price_list[type].filter(item => item.size_id == size && item.color_id == color)
 
 
-                if (price.length == 0) {
-                    size[type] = undefined
-                    // if(!color){
-                    //     $(".product_amount").html(product_amount)
-                    //     if (product_amount_discount) {
-                    //         $(".product_amount_discount").html(product_amount_discount)
-                    //     }
-                    // }
-
-                } else {
+                if (price.length != 0) {
                     $("." + type + " .product_amount").html(price[0].sale_price)
                     $("." + type + " .product_amount").attr('data-price-id', price[0].id)
                     if (discount) {
-                        let amount = parseFloat(price[0].sale_price) - (parseFloat(price[0]
-                            .sale_price) * parseFloat(discount) / 100)
+                        let amount = parseFloat(price[0].sale_price) - (parseFloat(price[0].sale_price) * parseFloat(discount) / 100)
                         $("." + type + " .product_amount_discount").html(amount.toFixed(2))
                     }
+
                 }
+
             } else {
-                size[type] = $(target).data('id')
-                let price = price_list[type].filter(item => item.size_id == size[type] && item
-                    .color_id == null)
+                let size = id
+                let price = price_list[type].filter(item => item.size_id == size && item.color_id == 1)
 
 
                 if (price.length == 0) {
@@ -144,8 +126,7 @@
                     $("." + type + " .product_amount").attr('data-price-id', product_amount['id'])
 
                     if (discount) {
-                        let amount = parseFloat(product_amount[type]) - (parseFloat(product_amount[
-                            type]) * parseFloat(discount) / 100)
+                        let amount = parseFloat(product_amount[type]) - (parseFloat(product_amount[type]) * parseFloat(discount) / 100)
                         $("." + type + " .product_amount_discount").html(amount.toFixed(2))
                     }
 
@@ -154,15 +135,17 @@
                     $("." + type + " .product_amount").html(price[0].sale_price)
                     $("." + type + " .product_amount").attr('data-price-id', price[0].id)
                     if (discount) {
-                        let amount = parseFloat(price[0].sale_price) - (parseFloat(price[0]
-                            .sale_price) * parseFloat(discount) / 100)
+                        let amount = parseFloat(price[0].sale_price) - (parseFloat(price[0].sale_price) * parseFloat(discount) / 100)
                         $("." + type + " .product_amount_discount").html(amount.toFixed(2))
                     }
 
                 }
             }
         })
-        priceList("{{ $product->id }}", "ps-product__single");
+        @if (isset($product))
+            priceList("{{ $product->id }}", "product__single")
+        @endif
+
 
         function priceList(product_id, type) {
             $.ajax({
@@ -206,59 +189,32 @@
         $(document).on('click', '.add-to-cart', function() {
             let type = $(this).data('type')
             let discount = $(this).data('discount')
+            let id = $(this).data('id');
 
-            let id = $(this).attr('data-id');
+            let amount, priceId, selected_size, selected_color;
 
+            if (type == 'product__single') {
+                piece = parseInt($('.ProductQuantity-Input-' + id).val())
 
-            let amount = $(this).parents(".ps-product__amount_parent").find('.product_amount').html()
-            let priceId = $(this).parents(".ps-product__amount_parent").find('.product_amount').attr(
-                'data-price-id')
-            if (discount) {
-                amount = $(this).parents(".ps-product__amount_parent").find('.product_amount_discount')
-                    .html()
+                amount = $("." + type).find('.product_amount').html()
+                if (discount) {
+                    amount = $("." + type).find('.product_amount_discount').html()
+                }
+                priceId = $("." + type).find('.product_amount').attr('data-price-id')
+
+                selected_color = $('.' + type).find(".color-element").val()
+                selected_size = $('.' + type).find(".size-element").val()
             }
+            else {
+                piece = 1
+                amount = $("." + type).find('.product_amount').html()
+                if (discount) {
+                    amount = $("." + type).find('.product_amount_discount').html()
+                }
 
-            let piece = 1;
-            let selected_size;
-            let selected_color;
-            let color_exist = 0;
-            let size_exist = 0;
-
-            if (type) {
-                piece = parseInt($('.' + type + ' .ProductQuantity-Input-' + id).val())
-                if (!piece) {
-                    piece = 1;
-                }
-                selected_size = $('.' + type + ' .sizes').find("input:checked").val()
-                selected_color = $('.' + type + ' .colors').find("input:checked").val()
-                color_exist = $("." + type + " .color-element").length;
-                size_exist = $("." + type + " .size-element").length;
-                if (color_exist > 0) {
-                    if (!selected_color) {
-                        toastr.options = {
-                            "closeButton": true,
-                            "progressBar": true
-                        }
-                        toastr.warning('Rəng seçilməyib');
-                        return false;
-                    }
-                }
-                if (size_exist > 0) {
-                    if (!selected_size) {
-                        toastr.options = {
-                            "closeButton": true,
-                            "progressBar": true
-                        }
-                        toastr.warning('Ölçü seçilməyib');
-                        return false;
-                    }
-                }
-            } else {
-                piece = parseInt($(' .ProductQuantity-Input-' + id).val())
-                selected_color = $(this).parents(".ps-product__amount_parent").find('.product_amount')
-                    .data('color')
-                selected_size = $(this).parents(".ps-product__amount_parent").find('.product_amount')
-                    .data('size')
+                priceId = $("." + type).find('.product_amount').attr('data-price-id')
+                selected_color = $("." + type).find('.product_amount').data('color')
+                selected_size = $("." + type).find('.product_amount').data('size')
             }
 
 
@@ -274,24 +230,25 @@
                     amount,
                     discount: discount ? discount : 0
                 },
-                // dataType: 'JSON',
                 success: function(data) {
+                    // console.log(data)
+                    toastr.options = {
+                        "closeButton": true,
+                        "progressBar": true
+                    }
                     if (data.status == 'success') {
-                        $('.ps-cart__content').html('');
-                        $('.ps-cart__content').html(data.output);
-                        $('.show_cartCount').html(data.cart_count);
+                        $('.total-amount').html(data.total);
+                        $('.show_cartCount').html(data.count);
 
-                        toastr.options = {
-                            "closeButton": true,
-                            "progressBar": true
-                        }
                         toastr.success(data.message);
-                    } else {
-                        toastr.options = {
-                            "closeButton": true,
-                            "progressBar": true
+                    }
+                    else {
+                        let msg = "";
+                        let message = data.message;
+
+                        for (const value of Object.values(message)) {
+                            toastr.error(value);
                         }
-                        toastr.error(data.message);
                     }
                 }
             });
@@ -306,15 +263,12 @@
                 },
                 success: function(data) {
                     if (data.status == 'success') {
-
                         toastr.options = {
                             "closeButton": true,
                             "progressBar": true
                         }
                         toastr.success(data.message);
-
                     } else {
-
                         toastr.options = {
                             "closeButton": true,
                             "progressBar": true
@@ -339,13 +293,15 @@
                             "progressBar": true
                         }
                         toastr.success(data.message);
-                    } else {
+                    }
+                    else if (data.status == 'info') {
                         toastr.options = {
                             "closeButton": true,
                             "progressBar": true
                         }
-                        toastr.warning(data.message);
+                        toastr.info(data.message);
                     }
+                    window.location.reload()
                 }
             });
         })

@@ -36,7 +36,6 @@
                                 <tr>
                                     <th>#</th>
                                     <th>@lang('admin.Image')</th>
-                                    <th>@lang('admin.Slider Name')</th>
                                     <th>@lang('admin.Slider Slug')</th>
                                     <th>@lang('admin.Created at')</th>
                                     <th></th>
@@ -76,7 +75,6 @@
                 columns: [
                     {data: 'slider_order', searchable: false},
                     {data: 'slider_image', orderable: false, searchable: false},
-                    {data: 'slider_name'},
                     {data: 'slider_slug'},
                     {data: 'created_at'},
                     {data: 'slider_active', orderable: false, searchable: false},

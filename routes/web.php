@@ -25,6 +25,7 @@ use Illuminate\Support\Facades\Auth;
 
 Route::namespace('User')->group(function () {
     Route::get('/', 'HomeController@index')->name('home');
+    Route::get('/set-depot/{depot}', 'HomeController@setDepot')->name('set.depot');
     Route::get('/category-products', 'HomeController@categoryProducts')->name('homepage.category.products');
     Route::get('/products', 'HomeController@products')->name('homepage.products');
     Route::get('/get_product', 'HomeController@get_product')->name('get_product');
@@ -348,15 +349,15 @@ Route::namespace('Manage')->prefix('manage')->group(function () {
             Route::get('/mass_remove', 'SupplierController@mass_remove')->name('manage.supplier.mass_remove');
         });
 
-        Route::group(['prefix' => 'customer'], function () {
-            Route::get('/', 'CustomerController@index')->name('manage.customer');
-            Route::get('/index_data', 'CustomerController@index_data')->name('manage.customer.index_data');
-            Route::post('/post_data', 'CustomerController@post_data')->name('manage.customer.post_data');
-            Route::get('/new', 'CustomerController@form')->name('manage.customer.new');
-            Route::get('/edit/{id}', 'CustomerController@form')->name('manage.customer.edit');
-            Route::post('/save/{id?}', 'CustomerController@save')->name('manage.customer.save');
-            Route::get('/delete_data', 'CustomerController@delete_data')->name('manage.customer.delete_data');
-            Route::get('/mass_remove', 'CustomerController@mass_remove')->name('manage.customer.mass_remove');
+        Route::group(['prefix' => 'depot'], function () {
+            Route::get('/', 'DepotController@index')->name('manage.depot');
+            Route::get('/index_data', 'DepotController@index_data')->name('manage.depot.index_data');
+            Route::post('/reorder', 'DepotController@reorder')->name('manage.depot.reorder');
+            Route::get('/new', 'DepotController@form')->name('manage.depot.new');
+            Route::get('/edit/{id}', 'DepotController@form')->name('manage.depot.edit');
+            Route::post('/save/{id?}', 'DepotController@save')->name('manage.depot.save');
+            Route::get('/delete_data', 'DepotController@delete_data')->name('manage.depot.delete_data');
+            Route::get('/mass_remove', 'DepotController@mass_remove')->name('manage.depot.mass_remove');
         });
 
         Route::group(['prefix' => 'order'], function () {
@@ -374,7 +375,7 @@ Route::namespace('Manage')->prefix('manage')->group(function () {
             Route::get('/mass_remove', 'OrderController@mass_remove')->name('manage.order.mass_remove');
             Route::get('/exported/{id}', 'OrderController@exported')->name('manage.order.exported');
         });
-        
+
         Route::group(["prefix" => "raports"], function () {
             Route::get('/export/{type}', 'OrderController@export')->name('manage.raports.export');
         });

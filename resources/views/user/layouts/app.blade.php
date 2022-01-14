@@ -19,6 +19,7 @@
 
     @include('user.layouts.partials.script')
     @include('user.layouts.partials.javascript')
+    
 </body>
 
 </html>

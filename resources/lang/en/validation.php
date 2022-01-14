@@ -126,6 +126,7 @@ return [
         'stok' => 'Stok',
         'retail_price' => 'Pərakəndə Qiyməti',
         'sale_price' => 'Satış Qiyməti',
+        'stock_piece' => 'Stok Sayı',
     ],
 
 ];

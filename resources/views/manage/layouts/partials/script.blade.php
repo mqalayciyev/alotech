@@ -43,6 +43,7 @@
 <script src="{{ asset('manager/bower_components/jquery-slimscroll/jquery.slimscroll.min.js') }}"></script>
 <!-- iCheck 1.0.1 -->
 <script src="{{ asset('manager/plugins/iCheck/icheck.min.js') }}"></script>
+<script src="{{ asset('manager/plugins/ckeditor/ckeditor/ckeditor.js') }}"></script>
 <!-- FastClick -->
 <script src="{{ asset('manager/bower_components/fastclick/lib/fastclick.js') }}"></script>
 <script src="{{ asset('manager/dist/js/imageuploadify.min.js') }}"></script>

@@ -87,8 +87,9 @@ class BrandController extends Controller
 
         }
         if(request()->has('brand_image_delete')){
-            $image = Brand::where('id', $request->get('id'))->first();
-            $image_path = 'img/brand/' . $image->image;
+            
+            $rows = Brand::find($id);
+            $image_path = app_path("assets/img/brand/{$rows->image}");
             if(file_exists($image_path))
             {
                 unlink($image_path);
@@ -98,6 +99,12 @@ class BrandController extends Controller
                 ]);
         }
         if(request()->hasFile('brand_image')){
+            $rows = Brand::find($id);
+            $image_path = app_path("assets/img/brand/{$rows->image}");
+            if(file_exists($image_path))
+            {
+                unlink($image_path);
+            }
             $product_image = request()->file('brand_image');
 
             $filename = str_slug(request('name')) . '_' . time().'.webp';
@@ -145,6 +152,11 @@ class BrandController extends Controller
     public function delete_data(Request $request)
     {
         $rows = Brand::find($request->input('id'));
+        $image_path = app_path("assets/img/brand/{$rows->image}");
+        if(file_exists($image_path))
+        {
+            unlink($image_path);
+        }
         if ($rows->delete()) {
             echo __('admin.Data Deleted');
         }
@@ -154,6 +166,13 @@ class BrandController extends Controller
     {
         $id_array = $request->input('id');
         $rows = Brand::whereIn('id', $id_array);
+        foreach ($rows as $row) {
+            $image_path = app_path("assets/img/brand/{$row->image}");
+            if(file_exists($image_path))
+            {
+                unlink($image_path);
+            }
+        }
         if ($rows->delete()) {
             echo __('admin.Data Deleted');
         }

@@ -21265,7 +21265,7 @@ button:focus {
   }
   .u-header-left-aligned-nav .u-header__navbar-brand {
     margin-left: 0;
-    margin-right: 3rem;
+    margin-right: 1rem;
   }
   .u-header-left-aligned-nav .u-header__nav-last-item {
     margin-left: auto;
@@ -33915,12 +33915,12 @@ blockquote:not(.blockquote) p {
 }
 
 .product-item__footer {
-  display: none;
+  display: block;
 }
 
 @media (min-width: 1200px) {
   .product-item:hover .product-item__inner:not(.remove-prodcut-hover) {
-    position: absolute;
+    
     width: 100%;
     height: auto;
     min-height: 100%;
@@ -33928,9 +33928,10 @@ blockquote:not(.blockquote) p {
     background-color: #fff;
     z-index: 1;
   }
-  .product-item:hover .product-item__footer {
+  /* .product-item .product-item__footer {
+      position: absolute;
     display: block;
-  }
+  } */
 }
 
 .product-item__title {
@@ -34530,7 +34531,8 @@ blockquote:not(.blockquote) p {
   text-align: center;
   border: 1px solid #d7d7d7;
   text-transform: uppercase;
-  min-width: 12.5rem;
+  width: 10rem;
+  /* max-width: 10rem; */
 }
 
 .table-compare-list .table th, .table-compare-list .table td {
@@ -35043,6 +35045,9 @@ blockquote:not(.blockquote) p {
 
 .prodcut-price {
   font-size: 1.00012rem;
+  min-height: 60px;
+  display: grid;
+  align-items: end;
 }
 
 @media (min-width: 992px) {
@@ -37612,4 +37617,159 @@ blockquote:not(.blockquote) p {
     -webkit-font-smoothing: antialiased;
     text-decoration: none;
     margin-right: 2px;
+}
+.filter-label{
+    cursor: pointer;
+}
+
+.filter-label:hover{
+    color: #fed700;
+}
+.filter-label:checked{
+    color: #fed700;
+}
+.filter-item-radio{
+    visibility: hidden;
+    position: absolute;
+}
+
+.bg-overlay{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+    z-index: -1;
+}
+#sidebarCategory{
+    position: fixed;
+    width: 0;
+    z-index: 100;
+
+}
+
+#sidebarCategory .filter-content{
+    transform: translateX(-100vw);
+    max-width: 350px;
+    width: 100%;
+    background-color: #fff;
+    max-height: calc(100vh - 64px);
+    overflow: auto;
+    padding: 0 20px;
+    -webkit-transition: 0.5s cubic-bezier(0, 0.6, 1, 1);
+    -o-transition: 0.5s cubic-bezier(0, 0.6, 1, 1);
+    -moz-transition: 0.5s cubic-bezier(0, 0.6, 1, 1);
+    transition: 0.5s cubic-bezier(0, 0.6, 1, 1);
+}
+#sidebarCategory.active{
+    /* display: block; */
+    width: 100%;
+}
+#sidebarCategory.active .filter-content{
+    transform: translateX(0);
+}
+
+.filter--link{
+    color: #000;
+}
+.filter--link:hover{
+    color: #fed700;
+}
+
+
+.depots{
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 9999;
+    display: none;
+}
+.depots.show{
+    display: block;
+}
+
+.depots .bg-overlay{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.4);
+}
+
+.depots .depots-body{
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    margin: auto;
+    max-width: 600px;
+    max-height: 400px;
+    border-radius: 0.6rem;
+    width: 100%;
+    height: 100%;
+    background-color: #fff;
+}
+
+.depots .depots-close{
+    text-align: right;
+}
+
+.depots .depots-close button{
+    background-color: transparent;
+    border: none;
+    outline: none;
+    font-size: 18px;
+}
+
+.depots .depots-items{
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+}
+.depots .depots-items .depots-item{
+    display: block;
+    min-width: 100px;
+    min-height: 50px;
+    text-align: center;
+    flex: 1;
+}
+.depots .depots-items .depots-item a{
+    color: #000;
+}
+.depots .depots-items .depots-item a:hover, .depots .depots-items .depots-item a.active{
+    color: #fed700;
+}
+#toast-container>div{
+    opacity: 1;
+}
+
+.quick_search_form_result {
+    z-index: 9999;
+    position: absolute;
+    display: none;
+    left: 0;
+    top: 110%;
+    width: 100%;
+    border: 1px solid rgba(173,51,53,255);
+    background-color: white;
+}
+.quick_search_form_result .search_results{
+    overflow: auto;
+    max-height: 200px;
+}
+.quick_search_form_result .loader{
+    width: auto;
+    height: 0px;
+    visiblity: hidden;
+    opacity: 0;
+    transition: 0.2s;
+}
+.quick_search_form_result .loader.active{
+    width: auto;
+    height: 80px;
+    visiblity: visible;
+    opacity: 1;
 }

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Product;
 use App\Models\ColorProduct;
 use App\Models\Category;
+use App\Models\Depot;
 use App\Models\PriceList;
 use App\Models\StockList;
 use App\Models\Review;
@@ -14,14 +15,18 @@ use App\Models\SizeProduct;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cookie;
 
 class ProductController extends Controller
 {
     public function index($slug_product_name)
     {
+        $depot = Cookie::get('depot')  ? Cookie::get('depot') : Depot::where('default', 1)->first()->id;
+
         $product = Product::select('product.*')
             ->leftJoin('product_detail', 'product_detail.product_id', 'product.id')
             ->whereSlug($slug_product_name)
+            ->where('product.depot', $depot)
             ->orderBy('updated_at', 'desc')
             ->firstOrFail();
         $rating = Rating::select(DB::raw('avg(rating.rating) AS rating_avg'))
@@ -38,6 +43,9 @@ class ProductController extends Controller
 
     public function search()
     {
+
+        $depot = Cookie::get('depot')  ? Cookie::get('depot') : Depot::where('default', 1)->first()->id;
+
         $page = 1;
         if(request()->get('page')){
             $page = request()->get('page');
@@ -51,6 +59,7 @@ class ProductController extends Controller
             ->count();
         $products = Product::where('product_name', 'like', "%$wanted%")
             ->orWhere('product_description', 'like', "%$wanted%")
+            ->where('product.depot', $depot)
             ->offset($offset)
             ->limit(12)
             ->get();
@@ -60,9 +69,11 @@ class ProductController extends Controller
     }
     public function quick_search()
     {
+        $depot = Cookie::get('depot')  ? Cookie::get('depot') : Depot::where('default', 1)->first()->id;
         $wanted = request()->get('wanted');
         $products = Product::where('product_name', 'like', "%$wanted%")
             ->orWhere('product_description', 'like', "%$wanted%")
+            ->where('product.depot', $depot)
             ->take(12)
             ->get();
         request()->flash();
@@ -85,24 +96,27 @@ class ProductController extends Controller
         }
         return response()->json($output);
     }
-    public function new_products(){
-        echo "Yeni mehsullar";
-        echo mktime(time(), 'Y:m:d H:m:s');
-        // $products = Product::select("product.*")
-        //     ->leftJoin('product_detail', 'product_detail.product_id', 'product.id')
-        //     ->where('product.created_at', '>', "2020-08-16 00:57:18")
-        //     ->get();
-
-        // echo "<pre>";
-        // print_r($products);
-        // echo "</pre>";
-    }
+    
     public function compare(){
-        return view('user.pages.compare');
+        $depot = Cookie::get('depot')  ? Cookie::get('depot') : Depot::where('default', 1)->first()->id;
+        $products =[];
+        if(isset($_COOKIE['compare'])){
+            $cookie = $_COOKIE['compare'];
+            $compare = explode("-", $cookie);
+            $products = Product::select("product.*")
+                ->leftJoin('product_detail', 'product_detail.product_id', 'product.id')
+                ->whereIn('product.id', $compare)
+                ->where('product.depot', $depot)
+                ->get();
+        }
+
+
+        return view('user.pages.compare', compact('products'));
     }
     public function add_to_compare (){
         $cookie_name = "compare";
         $message = "";
+
         if(isset($_COOKIE[$cookie_name])){
             $cookie = explode("-", $_COOKIE[$cookie_name]);
             if(!in_array(request()->get('id'), $cookie)){
@@ -122,33 +136,33 @@ class ProductController extends Controller
         }
         return response()->json(['status'  => 'success', 'message' => $message]);
     }
-    public function view_compare (){
-        $page = 1;
-        if(request()->get('page')){
-            $page = request()->get('page');
-        }
-        $offset = ($page - 1) * 12;
-        $count = 0;
-        $products =[];
-        if(isset($_COOKIE['compare'])){
-            $cookie = $_COOKIE['compare'];
-            $compare = explode("-", $cookie);
-            $count = Product::select("product.*")
-                ->leftJoin('product_detail', 'product_detail.product_id', 'product.id')
-                ->whereIn('product.id', $compare)
-                ->count();
-                
-            $products = Product::select("product.*")
-                ->leftJoin('product_detail', 'product_detail.product_id', 'product.id')
-                ->whereIn('product.id', $compare)
-                ->offset($offset)
-                ->limit(12)
-                ->get();
-        }
-        $pagination = ceil($count/12);
-        $description = true;
-        return view('user.pages.shop_product', compact('products', 'count', 'page', 'pagination', 'description'));
-    }
+    // public function view_compare (){
+    //     $page = 1;
+    //     if(request()->get('page')){
+    //         $page = request()->get('page');
+    //     }
+    //     $offset = ($page - 1) * 12;
+    //     $count = 0;
+    //     $products =[];
+    //     if(isset($_COOKIE['compare'])){
+    //         $cookie = $_COOKIE['compare'];
+    //         $compare = explode("-", $cookie);
+    //         $count = Product::select("product.*")
+    //             ->leftJoin('product_detail', 'product_detail.product_id', 'product.id')
+    //             ->whereIn('product.id', $compare)
+    //             ->count();
+
+    //         $products = Product::select("product.*")
+    //             ->leftJoin('product_detail', 'product_detail.product_id', 'product.id')
+    //             ->whereIn('product.id', $compare)
+    //             ->offset($offset)
+    //             ->limit(12)
+    //             ->get();
+    //     }
+    //     $pagination = ceil($count/12);
+    //     $description = true;
+    //     return view('user.pages.shop_product', compact('products', 'count', 'page', 'pagination', 'description'));
+    // }
     public function remove_from_compare()
     {
 
@@ -251,12 +265,6 @@ class ProductController extends Controller
         $priceList = PriceList::where('product_id', $product_id)->where('default_price', 0)->get();
 
         return response()->json(['priceList' => $priceList]);
-    }
-    public function stock_list (Request $request)
-    {
-        $product_id = $request->get('product_id');
-        $stockList = StockList::where('product_id', $product_id)->where('default_price', 0)->get();
-        return response()->json(['stockList' => $stockList]);
     }
 
 }

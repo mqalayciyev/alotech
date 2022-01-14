@@ -10,6 +10,7 @@ use App\Models\Product;
 use App\Models\Color;
 use App\Models\Size;
 use App\Models\ColorProduct;
+use App\Models\Depot;
 use App\Models\Measurement;
 use App\Models\SizeProduct;
 use App\Models\Rating;
@@ -17,6 +18,7 @@ use App\Models\Slider;
 use Illuminate\Support\Facades\DB;
 use Session;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cookie;
 
 class HomeController extends Controller
 {
@@ -68,11 +70,13 @@ class HomeController extends Controller
         for($i=0; $i<count( $sub_categories ); $i++){
             array_push($cat_id, $sub_categories[$i]->id);
         }
+        $depot = Cookie::get('depot')  ? Cookie::get('depot') : Depot::where('default', 1)->first()->id;
 
         $products = Product::select('product.*')
             ->leftJoin('product_detail', 'product_detail.product_id', 'product.id')
             ->leftJoin('category_product', 'category_product.product_id', 'product.id')
             ->whereIn('category_product.category_id', $cat_id)
+            ->where('product.depot', $depot)
             ->orderBy('updated_at', 'desc')
             ->take(7)
             ->get();
@@ -81,12 +85,14 @@ class HomeController extends Controller
     }
     public function products()
     {
+        $depot = Cookie::get('depot')  ? Cookie::get('depot') : Depot::where('default', 1)->first()->id;
 
         $dynamic_product = request('product');
         if ($dynamic_product == 'products_deal_of_day') {
             $products = Product::select('product.*')
                 ->leftJoin('product_detail', 'product_detail.product_id', 'product.id')
                 ->where('product.discount', '!=', null)
+                ->where('product.depot', $depot)
                 ->orderBy('updated_at', 'desc')
                 ->take(8)
                 ->get();
@@ -98,6 +104,7 @@ class HomeController extends Controller
 
             $products = Product::select('product.*')
                 ->leftJoin('product_detail', 'product_detail.product_id', 'product.id')
+                ->where('product.depot', $depot)
                 ->orderBy('product.best_selling', 'desc')
                 ->take(8)
                 ->get();
@@ -107,6 +114,7 @@ class HomeController extends Controller
 
             $products = Product::select('product.*')
                 ->leftJoin('product_detail', 'product_detail.product_id', 'product.id')
+                ->where('product.depot', $depot)
                 ->orderBy('product.created_at', 'desc')
                 ->take(8)
                 ->get();
@@ -120,6 +128,7 @@ class HomeController extends Controller
                 $products = Product::select('product.*')
                     ->leftJoin('product_detail', 'product_detail.product_id', 'product.id')
                     ->whereIn('product.id', $your_products)
+                    ->where('product.depot', $depot)
                     ->orderBy('updated_at', 'desc')
                     ->take(8)
                     ->get();
@@ -136,6 +145,7 @@ class HomeController extends Controller
                 ->leftJoin('category', 'category.id', 'category_product.category_id')
                 ->where('category.slug', $category)
                 ->where('product.id', '!=', $product_id)
+                ->where('product.depot', $depot)
                 ->orderBy('updated_at', 'desc')
                 ->take(6)
                 ->get();
@@ -355,4 +365,11 @@ class HomeController extends Controller
         </article>';
         return $output;
     }
+
+    public function setDepot ($depot) {
+        $depo = Depot::where('id', $depot)->firstOrFail();
+        Cookie::queue('depot', $depot, 720*60);
+        return redirect()->route('home')->with(['info' => $depo->name . ' deposu seçildi']);
+    }
 }
+
