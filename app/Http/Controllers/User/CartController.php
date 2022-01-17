@@ -30,21 +30,27 @@ class CartController extends Controller
         $depot = Cookie::get('depot')  ? Cookie::get('depot') : Depot::where('default', 1)->first()->id;
         if (count(Cart::content()) > 0) {
             foreach (Cart::content() as $productCartItem) {
-                $product = Product::find($productCartItem);
+                $product = Product::select('product.*', 'price_list.depot_id')
+                    ->leftJoin('price_list', 'price_list.product_id', 'product.id')
+                    ->where('product.id',  $productCartItem->id)
+                    ->where('price_list.id',  $productCartItem->options->price_id)
+                    ->first();
                 if($product){
-                    if($product->depot != $depot){
+                    if($product->depot_id != $depot){
                         Cart::remove($productCartItem->rowId);
                     }
                 }
             }
+        }
 
+        if (count(Cart::content()) > 0) {
             $output = '';
             foreach (Cart::content() as $productCartItem) {
 
                 $color = '';
                 if($productCartItem->options->color > 1){
                     $colors = Color::where('id', $productCartItem->options->color)->firstOrFail();
-                    $color = '<span style="background-color: ' . $colors->name . '">' . $colors->title .'</span>' ;
+                    $color = $colors->title;
                 }
                 $size = '';
                 if($productCartItem->options->size > 0){
@@ -57,7 +63,7 @@ class CartController extends Controller
                 <td data-label="Sil" class="text-center">
                     <a href="javascript:void(0)" id="' . $productCartItem->rowId . '" class="delete Remove text-gray-32 font-size-26"><i class="icon-cross"></i></a>
                 </td>
-            <td class="d-none d-md-table-cell">
+            <td class="d-md-table-cell">
                 <a href="' . route('product', $productCartItem->options->slug) . '"><img class="img-fluid max-width-100 p-1 border border-color-1" src="' . $img . '" alt="Image Description"></a>
             </td>
             <td data-title="Məhsul">
@@ -65,7 +71,7 @@ class CartController extends Controller
             </td>
             <td class="price" data-label="Qiymət"><span class="currency_azn">' . $productCartItem->price . '</span></td>
 
-            <td data-titl="Miqdarı">
+            <td data-title="Miqdarı">
                 <div class="border rounded-pill py-1 width-122 w-xl-80 px-3 border-color-1">
                     <div class="js-quantity row align-items-center ProductQuantity">
                         <div class="col">
@@ -93,8 +99,7 @@ class CartController extends Controller
                 </div>
             </td>
             <td data-title="Ümumi"><span class="currency_azn">' . $productCartItem->price * $productCartItem->qty . '</span></td>
-
-        </tr>';
+            </tr>';
             }
             $output .= '<tr>
             <td colspan="6" class="border-top space-top-2 justify-content-center">
@@ -146,7 +151,7 @@ class CartController extends Controller
         else{
             $sale_price = number_format($priceList->sale_price - ($priceList->sale_price*$product->discount / 100), 2);
         }
-        
+
         if($piece <= 0){
             $piece = 1;
         }

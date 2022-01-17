@@ -147,7 +147,7 @@ class ProductController extends Controller
     }
     public function save($id = 0)
     {
-        $data = request()->only('product_name', 'meta_title', 'depot', 'sku', 'meta_discription', 'slug', 'product_description',  'discount', 'discount_date', 'one_or_more', 'other_count', 'other_bonus', 'bonus_comment');
+        $data = request()->only('product_name', 'meta_title', 'sku', 'meta_discription', 'slug', 'product_description',  'discount', 'discount_date', 'one_or_more', 'other_count', 'other_bonus', 'bonus_comment');
 
         $data['slug'] = str_slug(request('product_name'));
         request()->merge(['slug' => $data['slug']]);
@@ -158,7 +158,6 @@ class ProductController extends Controller
             'categories' => 'required',
             'sale_price' => 'required',
             'stock_piece' => 'required',
-            'depot' => 'required',
             'slug' => Rule::unique('product', 'slug')->ignore($id)
         ]);
 
@@ -168,13 +167,6 @@ class ProductController extends Controller
 
 
         $data_detail = request()->only('measurement', 'show_new_collection', 'show_hot_deal', 'show_best_seller', 'show_latest_products', 'show_deals_of_the_day', 'show_picked_for_you');
-        $data_price = request()->only('sale_price', 'wholesale_count', 'wholesale_price', 'stock_piece');
-        if(request()->wholesale_price <= 0 || request()->wholesale_count <= 0){
-            $data_price['wholesale_count'] = null;
-            $data_price['wholesale_price'] = null;
-        }
-        // $data_price['default_price'] = 1;
-        // $data_detail = request()->only('show_slider', 'show_new_collection', 'show_hot_deal', 'show_best_seller', 'show_latest_products', 'show_deals_of_the_day', 'show_picked_for_you');
 
         $categories = request('categories');
         $exits_category = Category::where('category_name', $categories)->first();
@@ -280,10 +272,6 @@ class ProductController extends Controller
                 $entry->colors()->attach($colors);
             }
         }
-
-        PriceList::updateOrCreate(['product_id' => $entry->id, 'default_price' => 1],
-            $data_price
-        );
 
 
         if (request()->hasFile('product_images')) {
@@ -466,6 +454,7 @@ class ProductController extends Controller
             'sale_price' => 'required',
             'product_id' => 'required',
             'stock_piece' => 'required',
+            'depot_id' => 'required',
         ]);
 
 
@@ -480,19 +469,22 @@ class ProductController extends Controller
             }
         }
         else {
-            if ($request->size == null && $request->color == 1) {
-                $rows = PriceList::where('product_id', $request->product_id)->where('default_price', 1)->update(['sale_price' => $request->sale_price]);
-                $rows = PriceList::where('product_id', $request->product_id)->where('default_price', 1)->update(['sale_price' => $request->sale_price, 'stock_piece' => $request->stock_piece]);
-            } else {
-                PriceList::updateOrCreate(['color_id' => $request->color, 'size_id' => $request->size,],[
+            PriceList::updateOrCreate(
+                [
                     'product_id' => $request->product_id,
+                    'color_id' => $request->color,
+                    'size_id' => $request->size,
+                    'depot_id' => $request->depot_id,
+                ],
+                [
                     'sale_price' => $request->sale_price,
                     'wholesale_count' => $request->wholesale_price > 0 && $request->wholesale_count ? $request->wholesale_count : null,
                     'wholesale_price' => $request->wholesale_price > 0 && $request->wholesale_count > 0 ? $request->wholesale_price : null,
                     'stock_piece' => $request->stock_piece,
-                ]);
-                $success_output = '<div class="alert alert-success">' . __('admin.Data Inserted') . '</div>';
-            }
+                ]
+            );
+
+            $success_output = '<div class="alert alert-success">' . __('admin.Data Inserted') . '</div>';
         }
         $output = array(
             'error' => $error_array,
@@ -517,7 +509,7 @@ class ProductController extends Controller
     {
         Product::query()->delete();
         $image_rows = ProductImage::all();
-        
+
         foreach ($image_rows as $row) {
             $image_path = app_path("assets/img/products/{$row->image_name}");
             $image_path2 = app_path("assets/img/products/{$row->thumb_name}");

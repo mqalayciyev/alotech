@@ -75,8 +75,10 @@ class HomeController extends Controller
         $products = Product::select('product.*')
             ->leftJoin('product_detail', 'product_detail.product_id', 'product.id')
             ->leftJoin('category_product', 'category_product.product_id', 'product.id')
+            ->leftJoin('price_list', 'price_list.product_id', 'product.id')
             ->whereIn('category_product.category_id', $cat_id)
-            ->where('product.depot', $depot)
+            ->where('price_list.depot_id', $depot)
+            ->groupBy('product.id')
             ->orderBy('updated_at', 'desc')
             ->take(7)
             ->get();
@@ -91,9 +93,11 @@ class HomeController extends Controller
         if ($dynamic_product == 'products_deal_of_day') {
             $products = Product::select('product.*')
                 ->leftJoin('product_detail', 'product_detail.product_id', 'product.id')
+                ->leftJoin('price_list', 'price_list.product_id', 'product.id')
                 ->where('product.discount', '!=', null)
-                ->where('product.depot', $depot)
+                ->where('price_list.depot_id', $depot)
                 ->orderBy('updated_at', 'desc')
+                ->groupBy('product.id')
                 ->take(8)
                 ->get();
 
@@ -104,8 +108,10 @@ class HomeController extends Controller
 
             $products = Product::select('product.*')
                 ->leftJoin('product_detail', 'product_detail.product_id', 'product.id')
-                ->where('product.depot', $depot)
+                ->leftJoin('price_list', 'price_list.product_id', 'product.id')
+                ->where('price_list.depot_id', $depot)
                 ->orderBy('product.best_selling', 'desc')
+                ->groupBy('product.id')
                 ->take(8)
                 ->get();
             return view('user.pages.home_products', compact('products', 'dynamic_product'));
@@ -114,8 +120,10 @@ class HomeController extends Controller
 
             $products = Product::select('product.*')
                 ->leftJoin('product_detail', 'product_detail.product_id', 'product.id')
-                ->where('product.depot', $depot)
+                ->leftJoin('price_list', 'price_list.product_id', 'product.id')
+                ->where('price_list.depot_id', $depot)
                 ->orderBy('product.created_at', 'desc')
+                ->groupBy('product.id')
                 ->take(8)
                 ->get();
             return view('user.pages.home_products', compact('products', 'dynamic_product'));
@@ -127,9 +135,11 @@ class HomeController extends Controller
 
                 $products = Product::select('product.*')
                     ->leftJoin('product_detail', 'product_detail.product_id', 'product.id')
+                    ->leftJoin('price_list', 'price_list.product_id', 'product.id')
                     ->whereIn('product.id', $your_products)
-                    ->where('product.depot', $depot)
+                    ->where('price_list.depot_id', $depot)
                     ->orderBy('updated_at', 'desc')
+                    ->groupBy('product.id')
                     ->take(8)
                     ->get();
             }
@@ -143,10 +153,12 @@ class HomeController extends Controller
                 ->leftJoin('product_detail', 'product_detail.product_id', 'product.id')
                 ->leftJoin('category_product', 'category_product.product_id', 'product.id')
                 ->leftJoin('category', 'category.id', 'category_product.category_id')
+                ->leftJoin('price_list', 'price_list.product_id', 'product.id')
                 ->where('category.slug', $category)
                 ->where('product.id', '!=', $product_id)
-                ->where('product.depot', $depot)
+                ->where('price_list.depot_id', $depot)
                 ->orderBy('updated_at', 'desc')
+                ->groupBy('product.id')
                 ->take(6)
                 ->get();
             return view('user.pages.single_product', compact('products'));

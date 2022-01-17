@@ -20,7 +20,7 @@ class WishlistController extends Controller
         }
         $product_id = request()->get('id');
         $user_id = auth()->id();
-        
+
         $count = WishList::where('product_id', $product_id)->where('user_id', $user_id)->count();
         $message = '';
         if($count > 0){
@@ -35,7 +35,7 @@ class WishlistController extends Controller
             $add->save();
             return response()->json(['status'  => 'success', 'message' => "Məhsul istəklərim siyahısına əlavə edildi."]);
         }
-        
+
 
     }
     public function view_my_wish_list(){
@@ -48,19 +48,24 @@ class WishlistController extends Controller
         }
         $offset = ($page - 1) * 12;
         $id_array = [];
-        
+
         for($i=0; $i<count($wish_lists); $i++){
             array_push($id_array, $wish_lists[$i]->product_id);
         }
-        
+
         $count = Product::select('product.*')
             ->leftJoin('product_detail', 'product_detail.product_id', 'product.id')
+            ->leftJoin('price_list', 'price_list.product_id', 'product.id')
             ->whereIn('product.id', $id_array)
+            ->where('price_list.depot_id', $depot)
+            ->groupBy('product.id')
             ->count();
         $products = Product::select('product.*')
             ->leftJoin('product_detail', 'product_detail.product_id', 'product.id')
+            ->leftJoin('price_list', 'price_list.product_id', 'product.id')
             ->whereIn('product.id', $id_array)
-            ->where('product.depot', $depot)
+            ->where('price_list.depot_id', $depot)
+            ->groupBy('product.id')
             ->offset($offset)
             ->limit(12)
             ->get();

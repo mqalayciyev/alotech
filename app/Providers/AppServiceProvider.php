@@ -29,6 +29,7 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Artisan;
 // use Illuminate\Support\Carbon;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Cookie;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -84,6 +85,9 @@ class AppServiceProvider extends ServiceProvider
 
         View::composer('*', function ($view) {
             $depots = Depot::orderBy('order')->get();
+
+            $default_depot = Cookie::get('depot')  ? Cookie::get('depot') : $depots->where('default', 1)->first()->id;
+
             $website_info = Info::find(1);
             $about = About::find(1);
             $user_id = auth()->id();
@@ -97,6 +101,7 @@ class AppServiceProvider extends ServiceProvider
             else{
                 $compare = 0;
             }
+
             $mytime = Carbon::now();
             $product = Product::select('product.discount_date')
                 ->leftJoin('product_detail', 'product_detail.product_id', 'product.id')
@@ -108,6 +113,7 @@ class AppServiceProvider extends ServiceProvider
             return $view->with([
                 'website_info' => $website_info,
                 'depots' => $depots,
+                'default_depot' => $default_depot,
                 'about' => $about,
                 'shipping_return' => $shipping_return,
                 'wish_lists'=>$wish_lists,

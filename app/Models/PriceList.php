@@ -23,4 +23,8 @@ class PriceList extends Model
     {
         return $this->belongsTo('App\Models\Size');
     }
+    public function depots()
+    {
+        return $this->hasMany(Depot::class, 'id', 'depot_id');
+    }
 }

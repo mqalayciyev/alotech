@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
 <!-- Favicon -->
-<link rel="shortcut icon" href="{{ asset('assets/favicon.png') }}">
+<link rel="icon" href="{{ asset('assets/img/' . $website_info->favicon) }}" type="image/png">
 
 <!-- Google Fonts -->
 <link

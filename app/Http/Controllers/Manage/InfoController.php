@@ -16,8 +16,7 @@ class InfoController extends Controller
     public function save(Request $request)
     {
         $data = $request->except('_token', 'logo');
-        $update = Info::find(1);
-        $update->update($data);
+
         if (request()->hasFile('logo')) {
             $logo = request()->file('logo');
 
@@ -25,12 +24,21 @@ class InfoController extends Controller
 
             $destinationPath = 'assets/img/';
             $logo->move($destinationPath, $filename);
-
-            Info::find(1)->update([
-                'logo' => $filename
-            ]);
+            $data['logo'] = $filename;
 
         }
+        if (request()->hasFile('favicon')) {
+            $logo = request()->file('favicon');
+
+            $filename = 'favicon.' . $logo->extension();
+
+            $destinationPath = 'assets/img/';
+            $logo->move($destinationPath, $filename);
+            $data['favicon'] = $filename;
+        }
+
+        $update = Info::find(1);
+        $update->update($data);
 
         if ($update) {
             $request->session()->flash('message_icon', 'check');

@@ -27,6 +27,14 @@
                                     <p><i class="fa fa-info-circle text-info"></i> Tövsiyyə edilən şəkil ölçüsü 500x500</p>
                                 </div>
                                 <div class="form-group">
+                                    <label for="logo">Favicon:</label>
+
+                                    <input type="file" name="favicon" class="form-control" id="logo">
+                                    <div style="padding: 10px 5px; background-color: rgba(0, 0, 0, 0.178)" >
+                                        <img style="max-width: 200px" src="{{ asset('assets/img/' . old('favicon', $website_info->favicon)) }}"  alt="{{ old('favicon', $website_info->favicon) }}"></div>
+                                    <p><i class="fa fa-info-circle text-info"></i> Tövsiyyə edilən şəkil ölçüsü 200x200</p>
+                                </div>
+                                <div class="form-group">
                                     <label for="title">Title:</label>
                                     <input type="text" name="title" class="form-control" id="title" value="{{ old('title', $website_info->title) }}" required>
                                 </div>

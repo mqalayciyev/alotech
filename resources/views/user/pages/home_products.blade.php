@@ -1,6 +1,6 @@
 @if (count($products))
     @foreach ($products as $product)
-        <li class="col-6 col-md-4 col-lg-3 col-xl product-item products__all">
+        <li class="col-6 col-md-4 col-lg-3 product-item products__all">
             <div class="product-item__outer h-100">
                 <div class="product-item__inner px-xl-4 p-3">
                     <div class="product-item__body pb-xl-2">
@@ -30,13 +30,8 @@
                         <div class="flex-center-between mb-1">
                             <div class="prodcut-price">
                                 @php
-                                    $price = [];
-                                    foreach ($product->price as $object) {
-                                        $price[] = $object->toArray();
-                                    }
+                                    $price = $product->price->where('depot_id', $default_depot)->where('stock_piece', '>', 0)->toArray();
 
-                                    // echo "<pre>";
-                                    //     print_r($price);
 
                                     $filter = array_filter($price, function ($item) {
                                         if ($item['color_id'] > 1 && $item['size_id'] != null) {
@@ -44,19 +39,19 @@
                                         }
                                     });
                                     if(count($filter) == 0){
-                                        $filter = array_filter($price, function ($item) {
-                                            if ($item['color_id'] > 1 || $item['size_id'] != null) {
-                                                return true;
-                                            }
-                                        });
-                                    }
-                                    if(count($filter) == 0){
-                                        $filter = array_filter($price, function ($item) {
-                                            if ($item['default_price'] == 1) {
-                                                return true;
-                                            }
-                                        });
-                                    }
+                                            $filter = array_filter($price, function ($item) {
+                                                if ($item['color_id'] > 1 || $item['size_id'] == null) {
+                                                    return true;
+                                                }
+                                            });
+                                        }
+                                        if(count($filter) == 0){
+                                            $filter = array_filter($price, function ($item) {
+                                                if ($item['color_id'] == 1 || $item['size_id'] == null) {
+                                                    return true;
+                                                }
+                                            });
+                                        }
 
                                 @endphp
 

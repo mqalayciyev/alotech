@@ -141,6 +141,8 @@
 
     </style>
 @endsection
+
+
 @section('content')
     <div class="modal" id="category_modal">
         <div class="modal-dialog">
@@ -275,16 +277,24 @@
                             </select>
                         </div>
                         <div class="form-group">
-                            <input placeholder="Satış Qiyməti" class="form-control numeric" name="sale_price" id="form_sale_price"/>
+                            <input placeholder="Satış Qiyməti" class="form-control" name="sale_price" id="form_sale_price"/>
                         </div>
                         <div class="form-group">
-                            <input placeholder="Topdan satış miqdarı" class="form-control numeric" name="wholesale_count" id="form_wholesale_count"/>
+                            <input placeholder="Topdan satış miqdarı" class="form-control" name="wholesale_count" id="form_wholesale_count"/>
                         </div>
                         <div class="form-group">
-                            <input placeholder="Topdan satış qiyməti" class="form-control numeric" name="wholesale_price" id="form_wholesale_price"/>
+                            <input placeholder="Topdan satış qiyməti" class="form-control" name="wholesale_price" id="form_wholesale_price"/>
                         </div>
                         <div class="form-group">
-                            <input placeholder="Stok sayı" class="form-control numeric" name="stock_piece" id="form_stock_piece"/>
+                            <input placeholder="Stok sayı" class="form-control" name="stock_piece" id="form_stock_piece"/>
+                        </div>
+                        <div class="form-group">
+                            <label for="form_depot_id">Depo</label>
+                            <select class="form-control select3" style="width: 100%;" id="form_depot_id" name="depot_id">
+                                @foreach($depots as $depot)
+                                    <option value="{{ $depot->id }}">{{ $depot->name }}</option>
+                                @endforeach
+                            </select>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -326,10 +336,16 @@
                     <div class="box box-body box-primary">
                         @include('common.errors.validate_admin')
                         @include('common.alert')
-
+                        @if($entry->id>0)
+                            @if (count($entry->price) == 0)
+                                <div class="alert alert-danger">Məhsulun qiymət, stok və anbar parametrləri seçilməyib</div>
+                            @endif
+                        @endif
 
                         <div class="container">
+
                             <div class="jumbotron">
+
                                 <div class="row">
                                     <div class="col-md-4">
                                         <h3>@lang('admin.General')</h3>
@@ -362,7 +378,7 @@
                                             <div class="col-md-12">
                                                 <div class="form-group">
                                                     <label for="product_description">@lang('admin.Description')</label>
-                                                    <textarea class="form-control" id="product_description"
+                                                    <textarea class="form-control product_description" id="product_description"
                                                               placeholder="@lang('admin.Description')"
                                                               name="product_description">{{ old('product_description', $entry->product_description) }}</textarea>
 
@@ -442,18 +458,6 @@
                                             </div>
                                         </div>
                                         <div class="row">
-                                            <div class="col-xs-12">
-                                                <div class="form-group">
-                                                    <label for="depot">Depo</label>
-                                                    <select class="form-control select3" style="width: 100%;" id="depot" name="depot">
-                                                        @foreach($depots as $depot)
-                                                            <option value="{{ $depot->id }}" {{ $entry->depot == $depot->id ? 'selected' : null }}>{{ $depot->name }}</option>
-                                                        @endforeach
-                                                    </select>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="row">
                                             <div class="col-md-12">
                                                 <div class="form-group">
 
@@ -505,66 +509,8 @@
                                         <h3>@lang('admin.Price & Loyalty')</h3>
                                     </div>
                                     <div class="col-md-8">
-                                        {{-- <div class="row">
-                                            <div class="col-md-6">
-                                                <label style="padding-left:0;" for="supply_price"
-                                                       class="col-md-6 text-left">@lang('admin.Supply Price')</label>
-                                                <span class="col-md-6 control-label text-right">
-                                                    <span id="supply_price">0.00</span>₼</span>
-                                            </div>
-                                            <div class="col-md-6"></div>
-                                        </div> --}}
-                                        {{-- <div class="row">
-                                            <div class="col-md-6">
-                                                <div class="form-group">
-                                                    <label style="padding: 7px 0 0 0" for="markup"
-                                                           class="col-md-6 text-left">@lang('admin.Markup')</label>
-                                                    <div class="input-group col-md-6 text-right">
-                                                        <input type="text" class="form-control text-right numeric"
-                                                               id="markup"
-                                                               name="markup" value="{{ old('markup', $entry->markup) }}"
-                                                               placeholder="0.00">
-                                                        <span class="input-group-addon">%</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div> --}}
-                                        {{-- <div class="row">
-                                            <div class="col-md-6">
-                                                <div class="form-group">
-                                                    <label style="padding: 7px 0 0 0" for="retail_price"
-                                                           class="col-md-6 text-left">@lang('admin.Retail Price')</label>
-                                                    <div class="input-group col-md-6 text-right">
-                                                        <input type="text" class="form-control text-right numeric"
-                                                               id="retail_price"
-                                                               name="retail_price"
-                                                               value="{{ old('retail_price', $entry->default_price->retail_price) }}"
-                                                               placeholder="0.00">
-                                                        <span class="input-group-addon">₼</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6"></div>
-                                        </div> --}}
                                         <div class="row">
-                                            <div class="col-md-6">
-                                                <div class="form-group">
-                                                    <label style="padding: 7px 0 0 0" for="sale_price"
-                                                           class="col-md-6 text-left">@lang('admin.Sale Price')</label>
-                                                    <div class="input-group col-md-6 text-right">
-                                                        <input type="text" class="form-control text-right numeric"
-                                                               id="sale_price"
-                                                               name="sale_price"
-                                                               value="{{ old('sale_price', $entry->default_price ? $entry->default_price->sale_price : '') }}"
-                                                               placeholder="0.00">
-                                                        <span class="input-group-addon">₼</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6"></div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="col-md-6">
+                                            <div class="col-md-8">
                                                 <div class="form-group">
                                                     <label style="padding: 7px 0 0 0" for="discount"
                                                            class="col-md-6 text-left">@lang('admin.Discount')</label>
@@ -581,18 +527,16 @@
                                             <div class="col-md-6"></div>
                                         </div>
                                         <div class="row">
-                                            <div class="col-md-6">
+                                            <div class="col-md-8">
                                                 <div class="form-group">
-                                                    <label style="padding: 7px 0 0 0" for="stock_piece"
-                                                           class="col-md-6 text-left">Stok sayı</label>
-                                                    <div class="input-group col-md-6 text-right">
-                                                        <input type="text" class="form-control text-right numeric"
-                                                               id="stock_piece"
-                                                               name="stock_piece"
-                                                               value="{{ old('stock_piece', $entry->default_price ? $entry->default_price->stock_piece : '') }}"
-                                                               placeholder="0.00">
+                                                    <label style="padding: 7px 0 0 0" for="discount_date" class="col-md-6 text-left">Endirimin Son tarixi</label>
+                                                    <div class="input-group col-md-6">
+                                                        <input type="datetime-local" class="form-control"
+                                                               id="discount_date"
+                                                               name="discount_date"
+                                                               value="{{ old('discount_date', $entry->discount_date) ? date('Y-m-d\TH:i', strtotime(old('discount_date', $entry->discount_date))) : '' }}"
+                                                               >
                                                     </div>
-                                                    <hr>
                                                 </div>
                                             </div>
                                             <div class="col-md-6"></div>
@@ -609,6 +553,7 @@
                                                     <table class="table table-bordered table-striped table-hover">
                                                         <thead>
                                                             <tr>
+                                                                <th>Anbar</th>
                                                                 <th>Satış qiyməti</th>
                                                                 <th>Stok sayı</th>
                                                                 <th>Topdan satış miqdarı</th>
@@ -623,6 +568,7 @@
                                                             @foreach ($entry->price as $price)
                                                                 @if ($price->default_price == 0)
                                                                     <tr>
+                                                                        <td>{{ count($price->depots) > 0 ? $price->depots[0]->name : null }}</td>
                                                                         <td>{{ $price->sale_price }}</td>
                                                                         <td>{{ $price->stock_piece }}</td>
                                                                         <td>{{ $price->wholesale_count }}</td>
@@ -643,35 +589,6 @@
 
                                         @endif
                                         <hr>
-
-                                        <div class="row">
-                                            <div class="col-md-6">
-                                                <div class="form-group">
-                                                    <label for="wholesale_count">Topdan satış miqdarı</label>
-                                                    <div class="input-group">
-                                                        <input type="text" class="form-control text-right numeric"
-                                                               id="wholesale_count"
-                                                               name="wholesale_count"
-                                                               placeholder="@lang('admin.Enter piece')"
-                                                               value="{{ old('wholesale_count', $entry->default_price ? $entry->default_price->wholesale_count : '') }}">
-                                                        <span class="input-group-addon">@lang('admin.piece')</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <div class="form-group">
-                                                    <label for="wholesale_price">Topdan satış qiyməti</label>
-                                                    <div class="input-group">
-                                                        <input type="text" class="form-control text-right"
-                                                               id="wholesale_price"
-                                                               name="wholesale_price"
-                                                               value="{{ old('wholesale_price', $entry->default_price ? $entry->default_price->wholesale_price : '') }}"
-                                                               placeholder="0.00">
-                                                        <span class="input-group-addon">₼</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
 
                                     </div>
                                 </div>
@@ -737,22 +654,6 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="row">
-                                            <div class="col-md-6">
-                                                <div class="form-group">
-                                                    <label for="discount_date">Endirimin Son tarixi</label>
-                                                    <div class="input-group">
-                                                        <input type="datetime-local" class="form-control"
-                                                               id="discount_date"
-                                                               name="discount_date"
-                                                               value="{{ old('discount_date', $entry->discount_date) ? date('Y-m-d\TH:i', strtotime(old('discount_date', $entry->discount_date))) : '' }}"
-
-                                                               >
-
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
                                     </div>
                                 </div>
                                 <hr>
@@ -812,17 +713,15 @@
         </section>
     </form>
 @endsection
+
+
+
 @section('footer')
+    @include('manage.layouts.partials.ckeditorService',['uploadUrl'=>route('ckeditorProductUpload'),'editor'=>"product_description"])
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.5/js/i18n/az.js"></script>
     <script>
 
-    CKEDITOR.replace('product_description', {
-            autoGrow_onStartup: true,
-            enterMode: CKEDITOR.ENTER_BR,
-            FullPage : false,
-            allowedContent : true,
-        });       
-        
         function categories(){
             $.ajax({
                 url: "{{ route('manage.product.categories') }}",
@@ -985,6 +884,7 @@
                         $('#form_size_id').val(data.size_id);
                         $('#form_sale_price').val(data.sale_price);
                         $('#form_stock_piece').val(data.stock_piece);
+                        $('#form_depot_id').val(data.depot_id).change()
                         $('#form_wholesale_count').val(data.wholesale_count);
                         $('#form_wholesale_price').val(data.wholesale_price);
                         $("form#price_form").find('input[name="id"]').val(id)
@@ -1108,50 +1008,6 @@
             });
 
 
-            // $('input[name=supply_price]').keyup(function () {
-            //     var supply_price = parseFloat($(this).val());
-            //     var markup = parseFloat($('input[name=markup]').val());
-            //     var retail_price = ((markup * supply_price / 100) + supply_price).toFixed(2);
-            //     retail_price = parseFloat(retail_price);
-            //     $('span#supply_price').text(supply_price);
-            //     if (supply_price) {
-            //         $('span#supply_price').text(supply_price);
-            //         $('input[name=retail_price]').val(supply_price);
-            //         $('input[name=sale_price]').val(supply_price);
-            //     } else {
-            //         $('span#supply_price').text('0.00');
-            //         $('input[name=retail_price]').val('');
-            //         $('input[name=sale_price]').val('');
-            //         $('input[name=markup]').val('');
-            //         $('input[name=discount]').val('');
-            //     }
-            // });
-
-            // $('input[name=markup]').keyup(function () {
-            //     var markup = parseFloat($(this).val());
-            //     var supply_price = parseFloat($('input[name=supply_price]').val());
-            //     var retail_price = ((markup * supply_price / 100) + supply_price).toFixed(2);
-            //     retail_price = parseFloat(retail_price);
-            //     $('input[name=retail_price]').val(retail_price);
-            //     if (retail_price) {
-            //         $('input[name=retail_price]').val(retail_price);
-            //         $('input[name=sale_price]').val(retail_price);
-            //     } else {
-
-            //     }
-            // });
-
-            // $('input[name=discount]').keyup(function () {
-            //     var discount = parseFloat($(this).val());
-            //     var retail_price = parseFloat($('input[name=retail_price]').val());
-            //     var sale_price = (retail_price - (discount * retail_price / 100)).toFixed(2);
-            //     sale_price = parseFloat(sale_price);
-            //     $('input[name=sale_price]').val(sale_price);
-            // });
-
-            // $('input[type="file"]').imageuploadify();
-            // $('.imageuploadify-message').text('{{ __('admin.Drag&Drop Your File(s)Here To Upload') }}');
-            // $('.btn_file_upload').text('{{ __('admin.or select file to upload') }}');
 
             $("input.numeric").keydown(function (event) {
                 if (event.shiftKey == true) {

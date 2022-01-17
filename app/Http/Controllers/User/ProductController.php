@@ -26,7 +26,8 @@ class ProductController extends Controller
         $product = Product::select('product.*')
             ->leftJoin('product_detail', 'product_detail.product_id', 'product.id')
             ->whereSlug($slug_product_name)
-            ->where('product.depot', $depot)
+            ->leftJoin('price_list', 'price_list.product_id', 'product.id')
+            ->where('price_list.depot_id', $depot)
             ->orderBy('updated_at', 'desc')
             ->firstOrFail();
         $rating = Rating::select(DB::raw('avg(rating.rating) AS rating_avg'))
@@ -54,12 +55,17 @@ class ProductController extends Controller
         $count = 0;
 
         $wanted = request()->get('wanted');
-        $count = Product::where('product_name', 'like', "%$wanted%")
+        $count = Product::select('product.*')->leftJoin('price_list', 'price_list.product_id', 'product.id')
+            ->where('product_name', 'like', "%$wanted%")
             ->orWhere('product_description', 'like', "%$wanted%")
+            ->where('price_list.depot_id', $depot)
+            ->groupBy('product.id')
             ->count();
-        $products = Product::where('product_name', 'like', "%$wanted%")
+        $products = Product::select('product.*')->leftJoin('price_list', 'price_list.product_id', 'product.id')
+            ->where('product_name', 'like', "%$wanted%")
             ->orWhere('product_description', 'like', "%$wanted%")
-            ->where('product.depot', $depot)
+            ->where('price_list.depot_id', $depot)
+            ->groupBy('product.id')
             ->offset($offset)
             ->limit(12)
             ->get();
@@ -71,9 +77,11 @@ class ProductController extends Controller
     {
         $depot = Cookie::get('depot')  ? Cookie::get('depot') : Depot::where('default', 1)->first()->id;
         $wanted = request()->get('wanted');
-        $products = Product::where('product_name', 'like', "%$wanted%")
+        $products = Product::select('product.*')->leftJoin('price_list', 'price_list.product_id', 'product.id')
+            ->where('price_list.depot_id', $depot)
+            ->where('product_name', 'like', "%$wanted%")
             ->orWhere('product_description', 'like', "%$wanted%")
-            ->where('product.depot', $depot)
+            ->groupBy('product.id')
             ->take(12)
             ->get();
         request()->flash();
@@ -96,7 +104,7 @@ class ProductController extends Controller
         }
         return response()->json($output);
     }
-    
+
     public function compare(){
         $depot = Cookie::get('depot')  ? Cookie::get('depot') : Depot::where('default', 1)->first()->id;
         $products =[];
@@ -106,7 +114,9 @@ class ProductController extends Controller
             $products = Product::select("product.*")
                 ->leftJoin('product_detail', 'product_detail.product_id', 'product.id')
                 ->whereIn('product.id', $compare)
-                ->where('product.depot', $depot)
+                ->leftJoin('price_list', 'price_list.product_id', 'product.id')
+                ->where('price_list.depot_id', $depot)
+                ->groupBy('product.id')
                 ->get();
         }
 

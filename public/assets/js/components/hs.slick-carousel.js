@@ -243,7 +243,7 @@
 					easing: setEasing ? setEasing : 'linear',
 					fade: setFade ? true : false,
 					
-					infinite: setInfinite ? true : false,
+					infinite: true,
 					initialSlide: setInitialSlide ? setInitialSlide - 1 : 0,
 					slidesToShow: setSlidesToShow ? setSlidesToShow : 1,
 					slidesToScroll: setSlidesToScroll ? setSlidesToScroll : 1,

@@ -18,10 +18,8 @@
     session(['your_products' => $your_products]);
 
 
-    $price = [];
-    foreach ($product->price as $object) {
-        $price[] = $object->toArray();
-    }
+    $price = $product->price->where('depot_id', $default_depot)->toArray();
+
 
     $filter = array_filter($price, function ($item) {
         if ($item['color_id'] > 1 && $item['size_id'] != null) {
@@ -138,8 +136,7 @@
 
                             <div class="mb-2">
                                 <ul class="font-size-14 pl-3 ml-1 text-gray-110">
-                                    @if (count($product->price) > 1)
-                                        @foreach ($product->price->where('default_price', 0) as $item)
+                                    @foreach ($price as $item)
                                             @if ($item)
                                                 @if ($item['wholesale_count'])
                                                     <li style="color: rgba(173,51,53,255)">
@@ -153,24 +150,7 @@
                                                     </li>
                                                 @endif
                                             @endif
-                                        @endforeach
-                                    @else
-                                        @foreach ($price as $item)
-                                            @if ($item)
-                                                @if ($item['wholesale_count'])
-                                                    <li style="color: rgba(173,51,53,255)">
-                                                        @php
-                                                            $item_color = App\Models\Color::find($item['color_id']);
-                                                            $item_size = App\Models\Size::find($item['size_id']);
-                                                            $color_name = $item_color && $item_color->id > 1 ? $item_color->title : '';
-                                                            $size_name = $item_size ? $item_size->name : '';
-                                                        @endphp
-                                                        {!!  '*' . $product->product_name . ' ' . $size_name . ' ' . $color_name . ' ' . $item['wholesale_count'] . ' ' . $product->detail->measurement . ' çox aldıqda satış qiməti ' . $item['wholesale_price'] . '₼' !!}
-                                                    </li>
-                                                @endif
-                                            @endif
-                                        @endforeach
-                                    @endif
+                                    @endforeach
                                     @if ($product->one_or_more)
                                         <li style="color: rgba(173,51,53,255)">{{  '*Məhsulun 1' . $product->detail->measurement . ' yuxarı alışına ' . $product->one_or_more . ' bonus hesabınıza əlavə olunacaq' }}</li>
                                     @endif
@@ -229,12 +209,12 @@
                                     <!-- End Quantity -->
                                 </div>
                                 <div class="mb-3">
-                                    @if (count($product->price->where('color_id', '!=', 1)) > 0)
+                                    @if (count($product->price->where('color_id', '!=', 1)->where('depot_id', $default_depot)) > 0)
                                         @php $colors_array = array(); @endphp
                                         <h6 class="font-size-14">Rəng</h6>
                                         <!-- Select -->
                                         <select class="form-control color-element" data-type="product__single" data-discount="{{ $product->discount }}">
-                                            @foreach ($product->price->where('color_id', '!=', 1) as $colors)
+                                            @foreach ($product->price->where('color_id', '!=', 1)->where('depot_id', $default_depot) as $colors)
                                                 @if (!in_array($colors->color_id, $colors_array) && $colors->color_id != 1)
                                                     <option value="{{ $colors->color_id }}" data-id="{{ $colors->color_id }}">{{ $colors->color->title }}</option>
                                                     @php array_push($colors_array, $colors->color_id); @endphp
@@ -245,11 +225,11 @@
                                     @endif
                                 </div>
                                 <div class="mb-3">
-                                    @if (count($product->price->where('size_id', '!=', null)) > 0)
+                                    @if (count($product->price->where('size_id', '!=', null)->where('depot_id', $default_depot)) > 0)
                                         <h6 class="font-size-14">Ölçü</h6>
                                         <!-- Select -->
                                         <select class="form-control size-element" data-type="product__single" data-discount="{{ $product->discount }}">
-                                            @foreach ($product->price->where('size_id', '!=', null) as $sizes)
+                                            @foreach ($product->price->where('size_id', '!=', null)->where('depot_id', $default_depot) as $sizes)
                                                 <option value="{{ $sizes->size_id }}"  data-id="{{ $sizes->color_id }}">{{ $sizes->size->name }}</option>
                                             @endforeach
                                         </select>
@@ -298,7 +278,7 @@
                         </div>
                         <div class="tab-content">
                             <div id="Description" class="tab-pane fade in active show mx-md-2">
-                                {!! $product->description !!}
+                                {!! $product->product_description !!}
                             </div>
                             <div id="Reviews" class="tab-pane fade mx-md-2">
                                 <div class="mb-4 px-lg-4">

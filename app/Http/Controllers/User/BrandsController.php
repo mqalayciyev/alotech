@@ -21,23 +21,27 @@ class BrandsController extends Controller
         return view('user.pages.brands', compact('brands'));
     }
     public function brands($brand_slug){
+        $depot = Cookie::get('depot')  ? Cookie::get('depot') : Depot::where('default', 1)->first()->id;
         $brands = Brand::select('brand.*')
             ->leftJoin('brand_product', 'brand_product.brand_id', 'brand.id')
             ->leftJoin('product', 'product.id', 'brand_product.product_id')
+            ->leftJoin('price_list', 'price_list.product_id', 'product.id')
+            ->where('price_list.depot_id', $depot)
             ->orderBy('brand.name', 'asc')
-            ->groupBy('brand.name')
+            ->groupBy('brand.id')
             ->get();
 
         $brands_count = array();
 
         for($i=0; $i<count($brands); $i++){
-            $count = ProductBrand::select('*')
+            $productBrand = ProductBrand::select('brand_product.*')
                 ->leftJoin("product", 'product.id', 'brand_product.product_id')
+                ->leftJoin('price_list', 'price_list.product_id', 'product.id')
+                ->where('price_list.depot_id', $depot)
                 ->where('brand_id', $brands[$i]->id)
-                ->where('deleted_at', null)
-                ->count();
-
-            $item = ['id' => $brands[$i]->id, 'count' => $count];
+                ->groupBy('product.id')
+                ->get();
+            $item = ['id' => $brands[$i]->id, 'count' => count($productBrand)];
             array_push($brands_count, $item);
         }
         $brand = Brand::where('slug', $brand_slug)->first();
@@ -45,12 +49,16 @@ class BrandsController extends Controller
         $colors = Color::select('color.*')
             ->leftJoin('color_product', 'color_product.color_id', 'color.id')
             ->leftJoin('brand_product', 'brand_product.product_id', 'color_product.product_id')
+            ->leftJoin('price_list', 'price_list.product_id', 'color_product.product_id')
+            ->where('price_list.depot_id', $depot)
             ->where('brand_product.brand_id', $brand->id)
             ->groupBy('color.name')
             ->get();
         $sizes = Size::select('size.*')
             ->leftJoin('size_product', 'size_product.size_id', 'size.id')
             ->leftJoin('brand_product', 'brand_product.product_id', 'size_product.product_id')
+            ->leftJoin('price_list', 'price_list.product_id', 'size_product.product_id')
+            ->where('price_list.depot_id', $depot)
             ->where('brand_product.brand_id', $brand->id)
             ->groupBy('size.name')
             ->get();
@@ -74,14 +82,18 @@ class BrandsController extends Controller
                 ->leftJoin('brand_product', 'brand_product.product_id', 'product.id')
                 ->leftJoin('brand', 'brand.id', 'brand_product.brand_id')
                 ->where('brand.slug', "LIKE", '%'.$brand_slug.'%')
-                ->where('product.depot', $depot)
+                ->leftJoin('price_list', 'price_list.product_id', 'product.id')
+                ->where('price_list.depot_id', $depot)
+                ->groupBy('product.id')
                 ->count();
             $products = Product::select('product.*')
                 ->leftJoin('product_detail', 'product_detail.product_id', 'product.id')
                 ->leftJoin('brand_product', 'brand_product.product_id', 'product.id')
                 ->leftJoin('brand', 'brand.id', 'brand_product.brand_id')
                 ->where('brand.slug', "LIKE", '%'.$brand_slug.'%')
-                ->where('product.depot', $depot)
+                ->leftJoin('price_list', 'price_list.product_id', 'product.id')
+                ->where('price_list.depot_id', $depot)
+                ->groupBy('product.id')
                 ->offset($offset)
                 ->take(12)
                 ->get();

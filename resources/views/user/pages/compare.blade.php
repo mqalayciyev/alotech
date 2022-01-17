@@ -64,10 +64,7 @@
                                 <th class="th-fixed">Qiymət</th>
                                 @foreach ($products as $product)
                                     @php
-                                        $price = [];
-                                        foreach ($product->price as $object) {
-                                            $price[] = $object->toArray();
-                                        }
+                                        $price = $product->price->where('depot_id', $default_depot)->toArray();
 
                                         // echo "<pre>";
                                         //     print_r($price);
@@ -112,10 +109,7 @@
                                 <th class="th-fixed">Endirimli qiymət</th>
                                 @foreach ($products as $product)
                                     @php
-                                        $price = [];
-                                        foreach ($product->price as $object) {
-                                            $price[] = $object->toArray();
-                                        }
+                                        $price = $product->price->where('depot_id', $default_depot)->toArray();
 
                                         // echo "<pre>";
                                         //     print_r($price);
@@ -127,14 +121,14 @@
                                         });
                                         if(count($filter) == 0){
                                             $filter = array_filter($price, function ($item) {
-                                                if ($item['color_id'] > 1 || $item['size_id'] != null) {
+                                                if ($item['color_id'] > 1 || $item['size_id'] == null) {
                                                     return true;
                                                 }
                                             });
                                         }
                                         if(count($filter) == 0){
                                             $filter = array_filter($price, function ($item) {
-                                                if ($item['default_price'] == 1) {
+                                                if ($item['color_id'] == 1 || $item['size_id'] == null) {
                                                     return true;
                                                 }
                                             });
@@ -157,10 +151,7 @@
                                 <th class="th-fixed">Endirim</th>
                                 @foreach ($products as $product)
                                     @php
-                                        $price = [];
-                                        foreach ($product->price as $object) {
-                                            $price[] = $object->toArray();
-                                        }
+                                        $price = $product->price->where('depot_id', $default_depot)->toArray();
 
                                         // echo "<pre>";
                                         //     print_r($price);
@@ -172,14 +163,14 @@
                                         });
                                         if(count($filter) == 0){
                                             $filter = array_filter($price, function ($item) {
-                                                if ($item['color_id'] > 1 || $item['size_id'] != null) {
+                                                if ($item['color_id'] > 1 || $item['size_id'] == null) {
                                                     return true;
                                                 }
                                             });
                                         }
                                         if(count($filter) == 0){
                                             $filter = array_filter($price, function ($item) {
-                                                if ($item['default_price'] == 1) {
+                                                if ($item['color_id'] == 1 || $item['size_id'] == null) {
                                                     return true;
                                                 }
                                             });
@@ -215,10 +206,7 @@
 
                                 @foreach ($products as $product)
                                 @php
-                                        $price = [];
-                                        foreach ($product->price as $object) {
-                                            $price[] = $object->toArray();
-                                        }
+                                        $price = $product->price->where('depot_id', $default_depot)->toArray();
 
                                         // echo "<pre>";
                                         //     print_r($price);
@@ -230,14 +218,14 @@
                                         });
                                         if(count($filter) == 0){
                                             $filter = array_filter($price, function ($item) {
-                                                if ($item['color_id'] > 1 || $item['size_id'] != null) {
+                                                if ($item['color_id'] > 1 || $item['size_id'] == null) {
                                                     return true;
                                                 }
                                             });
                                         }
                                         if(count($filter) == 0){
                                             $filter = array_filter($price, function ($item) {
-                                                if ($item['default_price'] == 1) {
+                                                if ($item['color_id'] == 1 || $item['size_id'] == null) {
                                                     return true;
                                                 }
                                             });
@@ -283,13 +271,13 @@
                             </tr>
                         </tbody>
                     </table>
-                </div>    
+                </div>
             @else
             <div class="py-3">
                 <h3 class="text-center">Heç bir məhsul yoxdur</h3>
             </div>
             @endif
-            
+
         </div>
     </main>
     <!-- ========== END MAIN CONTENT ========== -->

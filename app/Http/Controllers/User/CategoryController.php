@@ -20,6 +20,7 @@ class CategoryController extends Controller
 {
     public function index($slug_category_name)
     {
+        $depot = Cookie::get('depot')  ? Cookie::get('depot') : Depot::where('default', 1)->first()->id;
         // echo $slug_category_name;
         $category = Category::where('slug', $slug_category_name)->firstOrFail();
         $current_id = $category->id;
@@ -55,22 +56,26 @@ class CategoryController extends Controller
             ->leftJoin('product', 'product.id', 'brand_product.product_id')
             ->leftJoin('category_product', 'category_product.product_id', 'product.id')
             ->leftJoin('category', 'category.id', 'category_product.category_id')
+            ->leftJoin('price_list', 'price_list.product_id', 'product.id')
+            ->where('price_list.depot_id', $depot)
             ->whereIn('category_product.category_id', $cat_id)
             ->orderBy('brand.name', 'asc')
-            ->groupBy('brand.name')
+            ->groupBy('brand.id')
             ->get();
         $brands_count = array();
         for($i=0; $i< count($brands); $i++){
 
-            $count = ProductBrand::select('*')
+            $productBrand = ProductBrand::select('brand_product.*')
                 ->leftJoin("product", 'product.id', 'brand_product.product_id')
                 ->leftJoin('category_product', 'category_product.product_id', 'product.id')
+                ->leftJoin('price_list', 'price_list.product_id', 'product.id')
+                ->where('price_list.depot_id', $depot)
                 ->whereIn('category_product.category_id', $cat_id)
                 ->where('brand_id', $brands[$i]->id)
-                ->where('deleted_at', null)
-                ->count();
+                ->groupBy('product.id')
+                ->get();
 
-            $item = ['id' => $brands[$i]->id, 'count' => $count];
+            $item = ['id' => $brands[$i]->id, 'count' => count($productBrand)];
             array_push($brands_count, $item);
         }
 
@@ -114,14 +119,18 @@ class CategoryController extends Controller
                 ->leftJoin('product_detail', 'product_detail.product_id', 'product.id')
                 ->leftJoin('category_product', 'category_product.product_id', 'product.id')
                 ->whereIn('category_product.category_id', $cat_id)
-                ->where('product.depot', $depot)
+                ->leftJoin('price_list', 'price_list.product_id', 'product.id')
+                ->where('price_list.depot_id', $depot)
+                ->groupBy('product.id')
                 ->count();
 
             $products = Product::select('product.*')
                 ->leftJoin('product_detail', 'product_detail.product_id', 'product.id')
                 ->leftJoin('category_product', 'category_product.product_id', 'product.id')
                 ->whereIn('category_product.category_id', $cat_id)
-                ->where('product.depot', $depot)
+                ->leftJoin('price_list', 'price_list.product_id', 'product.id')
+                ->where('price_list.depot_id', $depot)
+                ->groupBy('product.id')
                 ->offset($offset)
                 ->take(12)
                 ->get();

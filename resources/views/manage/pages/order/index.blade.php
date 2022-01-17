@@ -2,19 +2,9 @@
 @section('title', __('admin.Order Manager'))
 @section('head')
     <!-- DataTables -->
-    <link rel="stylesheet" type="text/css" href="{{ asset('manager/bower_components/datatables/datatables.min.css') }}"/>
+    <link rel="stylesheet" href="{{ asset('manager/bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css') }}">
 @endsection
 @section('content')
-@if (@$manage == 2)
-    <!-- Demo Admin -->
-        @php
-            $display = "none"
-        @endphp
-    @else
-        @php
-            $display = ""
-        @endphp
-    @endif
     <!-- Content Header (Page header) -->
     <section class="content-header">
         <h1>@lang('admin.Orders')</h1>
@@ -67,7 +57,8 @@
 @endsection
 @section('footer')
     <!-- DataTables -->
-    <script type="text/javascript" src="{{ asset('manager/bower_components/datatables/datatables.min.js') }}"></script>
+    <script src="{{ asset('manager/bower_components/datatables.net/js/jquery.dataTables.min.js') }}"></script>
+    <script src="{{ asset('manager/bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js') }}"></script>
     <script>
         $(function () {
             // $.fn.dataTable.ext.errMode = 'throw';

@@ -67,8 +67,5 @@ class Product extends Model
         return $this->hasMany('App\Models\ProductImage');
     }
 
-    public function depots()
-    {
-        return $this->hasMany(Depot::class, 'id', 'depot');
-    }
+
 }

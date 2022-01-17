@@ -169,7 +169,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    
+
                                 </div>
 
                                 <div class="col-md-12">
@@ -188,7 +188,7 @@
                                     <div class="form-group">
                                         <label for="slider_name">@lang('admin.Slider Name')</label>
                                         <textarea class="form-control" id="slider_name"
-                                        placeholder="@lang('admin.Slider Name')" 
+                                        placeholder="@lang('admin.Slider Name')"
                                             name="slider_name">{{ old('slider_name', $flight->slider_name) }}</textarea>
                                     </div>
                                     <div class="form-group">
@@ -207,42 +207,6 @@
                                         </select>
                                     </div>
                                 </div>
-                                {{-- <div class="col-md-6 form-group">
-                                    <label for="image">@lang('admin.Upload Image')</label>
-                                    <input type="file" name="image" class="btn btn-success"> --}}
-                                {{-- <button type="button" class="btn btn-success" data-toggle="modal" data-target="#modal-success">
-                                        @lang('admin.Upload New Image')
-                                    </button>
-                                    <div class="modal fade" id="modal-success">
-                                        <div class="modal-dialog">
-                                            <div class="modal-content">
-                                                <div class="modal-header">
-                                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                        <span aria-hidden="true">&times;</span></button>
-                                                    <h4 class="modal-title">@lang('admin.Upload New Image')</h4>
-                                                </div>
-                                                <div class="modal-body">
-                                                    <div style="width: 100%">
-                                                        <div>
-                                                            <label for="product_images">@lang('admin.Upload Image')</label><br>
-                                                            <input type="file" id="image" name="has_image">
-                                                        </div>
-                                                        <div class="text-center">
-                                                            <div id="upload-demo"></div>
-                                                        </div>
-                                                        <div class="form-group">
-                                                            <button class="upload-result btn btn-success" data-dismiss="modal" type="button"> Şəkili əlavə et</button>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div> --}}
-                                {{-- <div class="thumbnail img-rounded" id="cropped_image">
-                                        <img src="{{ $flight->slider_image != null ? asset("img/sliders/" . $flight->slider_image)
-                                         : 'http://via.placeholder.com/1140x360?text=SliderPhoto(1140x360)' }}" class="img-rounded img-responsive">
-                                    </div>
-                                </div> --}}
                             </div>
                         </div>
                     </div>
@@ -252,27 +216,10 @@
     </form>
 @endsection
 @section('footer')
+    @include('manage.layouts.partials.ckeditorService',['uploadUrl'=>route('ckeditorSliderUpload'),'editor'=>"slider_name"])
     <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/croppie/2.6.2/croppie.js"></script>-->
     <script type="text/javascript">
-        $config = CKEDITOR.replace('slider_name', {
-            autoGrow_onStartup: true,
-            enterMode: CKEDITOR.ENTER_BR,
-            FullPage : false,
-            allowedContent : true,
-            
-        });
-        CKEDITOR.on('instanceReady', function(e) {
-            // First time
-            e.editor.document.getBody().setStyle('background-color', 'rgba(0,0,0,0.3)');
-            e.editor.document.getBody().setStyle('color', 'white');
-            e.editor.document.appendStyleText( 'a { color: white; }' );
-            // in case the user switches to source and back
-            e.editor.on('contentDom', function() {
-                e.editor.document.getBody().setStyle('background-color', 'rgba(0,0,0,0.3)');
-                e.editor.document.getBody().setStyle('color', 'white');   
-                e.editor.document.appendStyleText( 'a { color: white; }' );
-            });
-        }); 
+        // $config =
 
         var image_crop = $('#image_demo').croppie({
             viewport: {
@@ -310,7 +257,7 @@
             let slider_active = $("#slider_active").val()
             let slider_icon = $("#slider_icon")[0].files[0]
             let delete_icon = $("#delete_icon:checked").val() ? 1 : null
-            
+
             let slider_name = $config.getData()
             let slider_slug = $("#slider_slug").val()
             let formData = new FormData();

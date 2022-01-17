@@ -5,7 +5,7 @@
         <div class="tab-pane fade pt-2 active show" id="pills-two-example1" role="tabpanel" aria-labelledby="pills-two-example1-tab" data-target-group="groups">
             <ul class="row list-unstyled products-group no-gutters">
                 @foreach ($products as $array => $product)
-                <li class="col-6 col-md-3 col-wd-2gdot4 product-item products__all">
+                <li class="col-6 col-md-4 col-lg-3 col-wd-2gdot4 product-item products__all">
                     <div class="product-item__outer h-100">
                         <div class="product-item__inner px-xl-4 p-3">
                             <div class="product-item__body pb-xl-2">
@@ -42,10 +42,7 @@
                                 <div class="flex-center-between mb-1">
                                     <div class="prodcut-price">
                                         @php
-                                            $price = [];
-                                            foreach ($product->price as $object) {
-                                                $price[] = $object->toArray();
-                                            }
+                                            $price = $product->price->where('depot_id', $default_depot)->where('stock_piece', '>', 0)->toArray();
 
                                             // echo "<pre>";
                                             //     print_r($price);
@@ -57,14 +54,14 @@
                                             });
                                             if(count($filter) == 0){
                                                 $filter = array_filter($price, function ($item) {
-                                                    if ($item['color_id'] > 1 || $item['size_id'] != null) {
+                                                    if ($item['color_id'] > 1 || $item['size_id'] == null) {
                                                         return true;
                                                     }
                                                 });
                                             }
                                             if(count($filter) == 0){
                                                 $filter = array_filter($price, function ($item) {
-                                                    if ($item['default_price'] == 1) {
+                                                    if ($item['color_id'] == 1 || $item['size_id'] == null) {
                                                         return true;
                                                     }
                                                 });
@@ -139,10 +136,7 @@
                                         </h5>
                                     <div class="prodcut-price mb-2 d-md-none">
                                         @php
-                                            $price = [];
-                                            foreach ($product->price as $object) {
-                                                $price[] = $object->toArray();
-                                            }
+                                            $price = $product->price->where('depot_id', $default_depot)->where('stock_piece', '>', 0)->toArray();
 
                                             // echo "<pre>";
                                             //     print_r($price);
@@ -154,14 +148,14 @@
                                             });
                                             if(count($filter) == 0){
                                                 $filter = array_filter($price, function ($item) {
-                                                    if ($item['color_id'] > 1 || $item['size_id'] != null) {
+                                                    if ($item['color_id'] > 1 || $item['size_id'] == null) {
                                                         return true;
                                                     }
                                                 });
                                             }
                                             if(count($filter) == 0){
                                                 $filter = array_filter($price, function ($item) {
-                                                    if ($item['default_price'] == 1) {
+                                                    if ($item['color_id'] == 1 || $item['size_id'] == null) {
                                                         return true;
                                                     }
                                                 });
@@ -195,10 +189,7 @@
                                 <div class="mb-3">
                                     <div class="prodcut-price mb-2">
                                         @php
-                                            $price = [];
-                                            foreach ($product->price as $object) {
-                                                $price[] = $object->toArray();
-                                            }
+                                            $price = $product->price->where('depot_id', $default_depot)->where('stock_piece', '>', 0)->toArray();
 
                                             // echo "<pre>";
                                             //     print_r($price);
@@ -210,14 +201,14 @@
                                             });
                                             if(count($filter) == 0){
                                                 $filter = array_filter($price, function ($item) {
-                                                    if ($item['color_id'] > 1 || $item['size_id'] != null) {
+                                                    if ($item['color_id'] > 1 || $item['size_id'] == null) {
                                                         return true;
                                                     }
                                                 });
                                             }
                                             if(count($filter) == 0){
                                                 $filter = array_filter($price, function ($item) {
-                                                    if ($item['default_price'] == 1) {
+                                                    if ($item['color_id'] == 1 || $item['size_id'] == null) {
                                                         return true;
                                                     }
                                                 });
@@ -256,7 +247,7 @@
                 @endforeach
             </ul>
         </div>
-        
+
     </div>
     <!-- End Tab Content -->
     <!-- End Shop Body -->
@@ -324,7 +315,7 @@
         </ul>
     </nav>
     <!-- End Shop Pagination -->
-    
+
 @else
     <div class="w-100 mx-auto">
         <h3 class="text-center">@lang('content.There is no any product')</h3>

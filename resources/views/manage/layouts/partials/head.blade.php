@@ -4,7 +4,7 @@
 <!-- Tell the browser to be responsive to screen width -->
 <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
 
-<link rel="icon" href="{{ asset('assets/img/title.png') }}" type="image/png">
+<link rel="icon" href="{{ asset('assets/img/' . $website_info->favicon) }}" type="image/png">
 <!-- Bootstrap 3.3.7 -->
 <link rel="stylesheet" href="{{ asset('manager/bower_components/bootstrap/dist/css/bootstrap.min.css') }}">
 <!-- Font Awesome -->
@@ -33,7 +33,7 @@
 <link rel="stylesheet" href="{{ asset('manager/dist/css/AdminLTE.min.css') }}">
 <link rel="stylesheet" href="{{ asset('manager/dist/css/imageuploadify.min.css') }}">
 <link rel="stylesheet" href="{{ asset('manager/dist/css/croppie.css') }}" />
-<link rel="stylesheet" href="{{ asset('assets/css/jquerysctipttop.css') }}" type="text/css">
+{{-- <link rel="stylesheet" href="{{ asset('assets/css/jquerysctipttop.css') }}" type="text/css"> --}}
 
 
 

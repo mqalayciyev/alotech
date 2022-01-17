@@ -379,6 +379,10 @@ Route::namespace('Manage')->prefix('manage')->group(function () {
         Route::group(["prefix" => "raports"], function () {
             Route::get('/export/{type}', 'OrderController@export')->name('manage.raports.export');
         });
+
+        Route::post("ckeditor_slider_upload", 'CommonControllers@ckEditorSliderUpload')->name("ckeditorSliderUpload");
+        Route::post("ckeditor_products_upload", 'CommonControllers@ckEditorProductUpload')->name("ckeditorProductUpload");
+
     });
 
 });
