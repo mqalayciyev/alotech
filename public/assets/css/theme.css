@@ -21250,6 +21250,14 @@ button:focus {
 /*------------------------------------
   Nav Alignments
 ------------------------------------*/
+@media (min-width: 768px) {
+    .u-header-left-aligned-nav .u-header__nav-last-item {
+        margin-left: auto;
+    }
+    .u-header-left-aligned-nav .u-header__navbar-nav {
+        width: 100%;
+      }
+}
 @media (min-width: 992px) {
   .u-header__navbar-body,
   .u-header__navbar-nav {
@@ -21260,16 +21268,12 @@ button:focus {
     margin-left: 0;
     margin-right: auto;
   }
-  .u-header-left-aligned-nav .u-header__navbar-nav {
-    width: 100%;
-  }
+
   .u-header-left-aligned-nav .u-header__navbar-brand {
     margin-left: 0;
     margin-right: 1rem;
   }
-  .u-header-left-aligned-nav .u-header__nav-last-item {
-    margin-left: auto;
-  }
+
   .u-header-center-aligned-nav__col {
     -ms-flex: 0 0 16.666667%;
         flex: 0 0 16.666667%;
@@ -33920,7 +33924,7 @@ blockquote:not(.blockquote) p {
 
 @media (min-width: 1200px) {
   .product-item:hover .product-item__inner:not(.remove-prodcut-hover) {
-    
+
     width: 100%;
     height: auto;
     min-height: 100%;

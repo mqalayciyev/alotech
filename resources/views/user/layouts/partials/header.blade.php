@@ -133,22 +133,22 @@
                             <div class="col d-none d-xl-block">
                                 <form class="js-focus-state position-relative" action="{{ route('search_product') }}" method="get">
                                     <div class="input-group">
-                                        <input type="search" name="wanted" value="{{ old('wanted') }}" id="searchproduct-item" placeholder="Məhsulları axtar" 
+                                        <input type="search" name="wanted" value="{{ old('wanted') }}" id="searchproduct-item" placeholder="Məhsulları axtar"
                                             class="form-control py-2 pl-5 font-size-15 border-right-0 height-42 border-width-0 rounded-left-pill border-primary search_form_item">
                                         <div class="input-group-append">
                                             <button class="btn btn-dark height-42 py-2 px-3 rounded-right-pill" type="submit" value="1" id="searchProduct1">
                                                 <i class="fas fa-search font-size-20"></i>
                                             </button>
                                         </div>
-                                        
+
                                     </div>
                                     <div class="quick_search_form_result row m-0">
                                         <div class="w-100 loader text-center ">
                                             <img style="max-height: 80px; height: 100%" src="{{ asset('assets/img/search_loader.gif') }}" />
                                         </div>
-                                        
+
                                         <div class="col-12 search_results">
-                                            
+
                                         </div>
                                     </div>
                                 </form>
@@ -189,9 +189,9 @@
                                                         <div class="w-100 loader text-center ">
                                                             <img style="max-height: 80px; height: 100%" src="{{ asset('assets/img/search_loader.gif') }}" />
                                                         </div>
-                                                        
+
                                                         <div class="col-12 search_results">
-                                                            
+
                                                         </div>
                                                     </div>
                                                 </form>
@@ -282,11 +282,12 @@
                     </div>
                 </div>
                 <!-- Vertical-and-secondary-menu -->
-                <div class="box-shadow-1 d-none d-xl-block">
+                <div class="box-shadow-1">
                     <div class="container position-relative">
+                        <div class="row d-block d-md-none">
+                            <div class="col-12"><strong>Menu</strong></div>
+                        </div>
                         <div class="row">
-
-
 
                             <!-- Secondary Menu -->
                             <div class="col secondary-menu">
