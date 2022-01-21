@@ -7,7 +7,6 @@ use App\Mail\ResetPassword;
 // use App\Mail\UserRegistration;
 use App\Models\Cart as CartModel;
 use App\Models\CartProduct;
-use App\Models\Depot;
 use App\Models\PasswordReset;
 use App\Models\UserDetail;
 use App\Models\Product;
@@ -15,7 +14,6 @@ use App\Models\User;
 use Carbon\Carbon;
 use Gloudemans\Shoppingcart\Facades\Cart;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\Hash;
 // use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Str;
@@ -68,16 +66,6 @@ class UserController extends Controller
             session()->put('active_cart_id', $active_cart_id);
 
             if (Cart::count() > 0) {
-                $depot = Cookie::get('depot')  ? Cookie::get('depot') : Depot::where('default', 1)->first()->id;
-                
-                foreach (Cart::content() as $productCartItem) {
-                    $product = Product::find($productCartItem);
-                    if($product){
-                        if($product->depot != $depot){
-                            Cart::remove($productCartItem->rowId);
-                        }
-                    }
-                }
                 foreach (Cart::content() as $cartItem) {
                     $size = $cartItem->options->size;
                     $color = $cartItem->options->color;
@@ -236,17 +224,11 @@ class UserController extends Controller
             'email' => request('email'),
             'mobile' => request('mobile'),
         ]);
-        if(request('phone')){
-            UserDetail::updateOrCreate(['user_id' =>  auth()->id()], [
-                'phone' => request('phone'),
-            ]);
-        }
+        
         return response()->json(['status' => 'success']);
     }
     public function form_detail(Request $request){
         $validator = Validator::make(request()->all(), [
-            'country' => 'required',
-            'state' => 'required',
             'city' => 'required',
             'address' => 'required',
         ], [
@@ -262,8 +244,7 @@ class UserController extends Controller
 
 
         UserDetail::updateOrCreate(['user_id' =>  auth()->id()], [
-                'country' => request('country'),
-                'state' => request('state'),
+                'phone' => request('phone'),
                 'city' => request('city'),
                 'zip_code' => request('zip_code'),
                 'address' => request('address'),

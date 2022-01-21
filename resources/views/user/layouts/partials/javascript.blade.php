@@ -1,8 +1,28 @@
 <script>
+    function priceList (product_id, type) {
+        $.ajax({
+            url: '{{ route('product.price_list') }}',
+            method: 'GET',
+            data: {
+                product_id: product_id
+            },
+            success: function(data) {
+                price_list[type] = data.priceList
+            }
+        });
+    };
+
+    let price_list = [];
+    @if (isset($product))
+        priceList("{{ $product->id }}", "product__single")
+    @endif
+
+
     $(function() {
-        let price_list = [];
+
         let product_amount = [];
         let product_amount_discount = [];
+        console.log(price_list)
 
         $(document).on('change', '.color-element', function() {
 
@@ -21,6 +41,8 @@
                 product_amount['id'] = $("." + type + " .product_amount").data('price-id')
             }
 
+
+            console.log(price_list)
 
 
             $("." + type + " .size-element option").each(function() {
@@ -56,13 +78,12 @@
             let price = []
             if (size) {
                 price = price_list[type].filter(item => item.color_id == color && item.size_id == size)
-                console.log(price)
-                console.log(price_list)
+
                 if (price.length == 0) {
-                    price = price_list[type].filter(item => item.color_id == color && item.size_id == null)
+                    price = price_list[type].filter(item => item.color_id == color && item.size_id ==
+                        null)
                 }
-            }
-            else {
+            } else {
                 price = price_list[type].filter(item => item.color_id == color && item.size_id == null)
             }
 
@@ -71,7 +92,8 @@
                 $("." + type + " .product_amount").html(product_amount[type])
                 $("." + type + " .product_amount").attr('data-price-id', product_amount['id'])
                 if (discount) {
-                    let amount = parseFloat(product_amount[type]) - (parseFloat(product_amount[type]) * parseFloat(discount) / 100)
+                    let amount = parseFloat(product_amount[type]) - (parseFloat(product_amount[type]) *
+                        parseFloat(discount) / 100)
                     $("." + type + " .product_amount_discount").html(amount.toFixed(2))
                 }
 
@@ -79,7 +101,8 @@
                 $("." + type + " .product_amount").html(price[0].sale_price)
                 $("." + type + " .product_amount").attr('data-price-id', price[0].id)
                 if (discount) {
-                    let amount = parseFloat(price[0].sale_price) - (parseFloat(price[0].sale_price) * parseFloat(discount) / 100)
+                    let amount = parseFloat(price[0].sale_price) - (parseFloat(price[0].sale_price) *
+                        parseFloat(discount) / 100)
                     $("." + type + " .product_amount_discount").html(amount.toFixed(2))
                 }
             }
@@ -103,14 +126,16 @@
             if (colors_exist > 0) {
                 let size = id
                 let color = $("." + type + " .color-element").val()
-                let price = price_list[type].filter(item => item.size_id == size && item.color_id == color)
+                let price = price_list[type].filter(item => item.size_id == size && item.color_id ==
+                    color)
 
 
                 if (price.length != 0) {
                     $("." + type + " .product_amount").html(price[0].sale_price)
                     $("." + type + " .product_amount").attr('data-price-id', price[0].id)
                     if (discount) {
-                        let amount = parseFloat(price[0].sale_price) - (parseFloat(price[0].sale_price) * parseFloat(discount) / 100)
+                        let amount = parseFloat(price[0].sale_price) - (parseFloat(price[0]
+                            .sale_price) * parseFloat(discount) / 100)
                         $("." + type + " .product_amount_discount").html(amount.toFixed(2))
                     }
 
@@ -126,7 +151,8 @@
                     $("." + type + " .product_amount").attr('data-price-id', product_amount['id'])
 
                     if (discount) {
-                        let amount = parseFloat(product_amount[type]) - (parseFloat(product_amount[type]) * parseFloat(discount) / 100)
+                        let amount = parseFloat(product_amount[type]) - (parseFloat(product_amount[
+                            type]) * parseFloat(discount) / 100)
                         $("." + type + " .product_amount_discount").html(amount.toFixed(2))
                     }
 
@@ -135,30 +161,17 @@
                     $("." + type + " .product_amount").html(price[0].sale_price)
                     $("." + type + " .product_amount").attr('data-price-id', price[0].id)
                     if (discount) {
-                        let amount = parseFloat(price[0].sale_price) - (parseFloat(price[0].sale_price) * parseFloat(discount) / 100)
+                        let amount = parseFloat(price[0].sale_price) - (parseFloat(price[0]
+                            .sale_price) * parseFloat(discount) / 100)
                         $("." + type + " .product_amount_discount").html(amount.toFixed(2))
                     }
 
                 }
             }
         })
-        @if (isset($product))
-            priceList("{{ $product->id }}", "product__single")
-        @endif
 
 
-        function priceList(product_id, type) {
-            $.ajax({
-                url: '{{ route('product.price_list') }}',
-                method: 'GET',
-                data: {
-                    product_id: product_id
-                },
-                success: function(data) {
-                    price_list[type] = data.priceList
-                }
-            });
-        };
+
         $(document).on('click', '.quick-view', function() {
             let id = $(this).attr('data-id');
 
@@ -204,19 +217,18 @@
 
                 selected_color = $('.' + type).find(".color-element").val()
                 selected_size = $('.' + type).find(".size-element").val()
-            }
-            else {
+            } else {
                 piece = 1
-                amount = $("." + type).find('.product_amount').html()
+                amount = $(this).closest("." + type).find('.product_amount').html()
                 if (discount) {
-                    amount = $("." + type).find('.product_amount_discount').html()
+                    amount = $(this).closest("." + type).find('.product_amount_discount').html()
                 }
 
-                priceId = $("." + type).find('.product_amount').attr('data-price-id')
-                selected_color = $("." + type).find('.product_amount').data('color')
-                selected_size = $("." + type).find('.product_amount').data('size')
+                priceId = $(this).closest("." + type).find('.product_amount').attr('data-price-id')
+                selected_color = $(this).closest("." + type).find('.product_amount').data('color')
+                selected_size = $(this).closest("." + type).find('.product_amount').data('size')
             }
-
+            console.log(type)
 
             $.ajax({
                 url: '{{ route('cart.add_to_cart') }}',
@@ -241,8 +253,7 @@
                         $('.show_cartCount').html(data.count);
 
                         toastr.success(data.message);
-                    }
-                    else {
+                    } else {
                         let msg = "";
                         let message = data.message;
 
@@ -293,8 +304,7 @@
                             "progressBar": true
                         }
                         toastr.success(data.message);
-                    }
-                    else if (data.status == 'info') {
+                    } else if (data.status == 'info') {
                         toastr.options = {
                             "closeButton": true,
                             "progressBar": true

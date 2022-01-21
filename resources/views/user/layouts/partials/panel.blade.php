@@ -281,18 +281,3 @@
             <span class="fas fa-arrow-up u-go-to__inner"></span>
         </a>
         <!-- End Go to Top -->
-
-        <div class="depots {{ Cookie::get('depot') ? null : 'show' }}">
-            <div class="bg-overlay"></div>
-            <div class="depots-body p-3">
-                <div class="depots-close">
-                    <button class="close-depot"><i class="fas fa-times"></i></button>
-                </div>
-                <div class="depots-items">
-                    @foreach ($depots as $item)
-                        <div class="depots-item"><a class="{{ Cookie::get('depot') == $item->id  ? 'font-weight-bold active' : null }}" href="{{ route('set.depot', $item->id)  }}">{{ $item->name }}</a></div>
-                    @endforeach
-
-                </div>
-            </div>
-        </div>

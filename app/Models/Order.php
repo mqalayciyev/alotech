@@ -18,4 +18,9 @@ class Order extends Model
     {
         return $this->belongsTo('App\Models\Cart');
     }
+
+    public function userCity()
+    {
+        return $this->hasMany('App\Models\City', 'city', 'id');
+    }
 }

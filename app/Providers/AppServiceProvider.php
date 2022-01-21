@@ -16,9 +16,7 @@ use App\Models\Slider;
 use App\Models\Contact;
 use App\Models\Product;
 use App\Models\Category;
-use App\Models\Customer;
-use App\Models\Depot;
-use App\Models\Supplier;
+use App\Models\City;
 use App\Models\WishList;
 use App\Models\ShippingReturn;
 use Illuminate\Support\Facades\Auth;
@@ -29,7 +27,6 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Artisan;
 // use Illuminate\Support\Carbon;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\Cookie;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -67,8 +64,6 @@ class AppServiceProvider extends ServiceProvider
                     'total_order_yohbr' => Order::where('status', 'Your order has been received')->count(),
                     'total_product' => Product::count(),
                     'total_brand' => Brand::count(),
-                    'total_supplier' => Supplier::count(),
-                    'total_customer' => Customer::count(),
                     'total_tag' => Tag::count(),
                     'total_category' => Category::count(),
                     'total_user' => User::count(),
@@ -84,10 +79,8 @@ class AppServiceProvider extends ServiceProvider
         });
 
         View::composer('*', function ($view) {
-            $depots = Depot::orderBy('order')->get();
 
-            $default_depot = Cookie::get('depot')  ? Cookie::get('depot') : $depots->where('default', 1)->first()->id;
-
+            $city = City::all();
             $website_info = Info::find(1);
             $about = About::find(1);
             $user_id = auth()->id();
@@ -111,9 +104,8 @@ class AppServiceProvider extends ServiceProvider
                 ->first();
 
             return $view->with([
+                'city' => $city,
                 'website_info' => $website_info,
-                'depots' => $depots,
-                'default_depot' => $default_depot,
                 'about' => $about,
                 'shipping_return' => $shipping_return,
                 'wish_lists'=>$wish_lists,

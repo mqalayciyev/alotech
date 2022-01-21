@@ -244,15 +244,16 @@
                             }
                             $('#form_output').html(error_html).hide().fadeIn('slow');
                         } else {
-                            $('#form_output').html(data.success).hide().fadeIn('slow').fadeTo(2000, 0.50);
-                            $('#form')[0].reset();
-                            $('#action').val('{{ __('admin.Save Category') }}');
-                            $('.modal-title').text('{{ __('admin.Add New Category') }}');
-                            $('#button_action').val('insert');
-                            $('#index_table').DataTable().ajax.reload();
-                            setTimeout(() => {
-                                $('#form_modal').modal('hide');
-                            }, 1000)
+                            // $('#form_output').html(data.success).hide().fadeIn('slow').fadeTo(2000, 0.50);
+                            // $('#form')[0].reset();
+                            // $('#action').val('{{ __('admin.Save Category') }}');
+                            // $('.modal-title').text('{{ __('admin.Add New Category') }}');
+                            // $('#button_action').val('insert');
+                            // $('#index_table').DataTable().ajax.reload();
+                            // setTimeout(() => {
+                            //     $('#form_modal').modal('hide');
+                            // }, 1000)
+                            window.location.reload()
                         }
                     }
                 });

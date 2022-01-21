@@ -16,7 +16,7 @@ class CategoryController extends Controller
     {
         $entry = new Category;
         $categories = Category::all();
-        
+
         return view('manage.pages.category.index', compact('categories', 'entry'));
     }
 
@@ -35,11 +35,11 @@ class CategoryController extends Controller
                 if($row->top_id != null && $row->second_id == null){
                     $name = $row->top_category->category_name;
                 }
-                
+
                 return $name;
             })
             ->addColumn('image', function ($row) {
-                return $row->image->image_name ? "<img style='width: 50px;' src='".asset('assets/img/category/'. $row->image->image_name)."' alt='".$row->image->image_name."'>" : "<img src='http://via.placeholder.com/50x50' alt='catgory_image'>";
+                return $row->category_image ? "<img style='width: 50px;' src='".asset('assets/img/category/'. $row->category_image)."' alt='".$row->category_image."'>" : "<img style='width: 50px;' src='" . asset('assets/img/woocommerce-placeholder-300x300.png') . "' alt='catgory_image'>";
             })
             ->addColumn('category_view', function ($row) {
                 return $row->category_view ? "Göstərilir" : null;
@@ -68,10 +68,10 @@ class CategoryController extends Controller
         $success_output = '';
 
         $data = request()->only('category_name', 'category_view', 'slug', 'top_id', 'no_order_amount');
-        
+
         if(request('top_id')){
             $category = Category::find(request('top_id'));
-            
+
             if($category->top_id){
                 $data['top_id'] = $category->top_id;
                 $data['second_id'] = $category->id;
@@ -107,17 +107,28 @@ class CategoryController extends Controller
 
         }
         if(request()->has('category_image_delete')){
-            $image = CategoryImage::where('category_id', $entry->id)->first();
-            $image_path = 'assets/img/category/' . $image->image_name;
-
-            if(file_exists($image_path))
-            {
-                unlink($image_path);
+            $rows = Category::where('id', $entry->id)->first();
+            if($rows){
+                $image_path = app_path("assets/img/category/{$rows->category_image}");
+                if(file_exists($image_path))
+                {
+                    unlink($image_path);
+                }
             }
-
-            CategoryImage::where('category_id', $entry->id)->delete();
+            Category::where('id', $entry->id)->update([
+                'category_image' => null
+            ]);
         }
         if(request()->hasFile('category_image')){
+            $rows = Category::where('id', $entry->id)->first();
+            if($rows){
+                $image_path = app_path("assets/img/category/{$rows->category_image}");
+                if(file_exists($image_path))
+                {
+                    unlink($image_path);
+                }
+            }
+
             $file = $request->file('category_image');
 
             $filename = $data['slug'] . '_' . time().'.'.request()->file('category_image')->getClientOriginalName();
@@ -125,19 +136,9 @@ class CategoryController extends Controller
             $destinationPath = 'assets/img/category/';
             $file->move($destinationPath, $filename);
 
-            $image = CategoryImage::where('category_id', $entry->id)->first();
-
-            if($image){
-                CategoryImage::where('category_id', $entry->id)->update([
-                    'image_name' => $filename
-                ]);
-            }
-            else{
-                CategoryImage::create([
-                    'category_id' => $entry->id,
-                    'image_name' => $filename
-                ]);
-            }
+            Category::where('id', $entry->id)->update([
+                'category_image' => $filename
+            ]);
         }
         $output = array(
             'error' => $error_array,
@@ -151,9 +152,8 @@ class CategoryController extends Controller
     {
         $id = $request->input('id');
         $rows = Category::find($id);
-        $image = CategoryImage::where('category_id', $id)->first();
-        if($image){
-            $img = asset('assets/img/category/' . $image->image_name);
+        if($rows->category_image){
+            $img = asset('assets/img/category/' . $rows->category_image);
         }
         else{
             $img = asset('assets/img/woocommerce-placeholder-300x300.png');
@@ -172,6 +172,11 @@ class CategoryController extends Controller
     public function delete_data(Request $request)
     {
         $rows = Category::find($request->input('id'));
+        $image_path = app_path("assets/img/category/{$rows->category_image}");
+        if(file_exists($image_path))
+        {
+            unlink($image_path);
+        }
         if ($rows->delete()) {
             echo __('admin.Data Deleted');
         }
@@ -181,6 +186,13 @@ class CategoryController extends Controller
     {
         $id_array = $request->input('id');
         $rows = Category::whereIn('id', $id_array);
+        foreach ($rows as $row) {
+            $image_path = app_path("assets/img/category/{$row->category_image}");
+            if(file_exists($image_path))
+            {
+                unlink($image_path);
+            }
+        }
         if ($rows->delete()) {
             echo __('admin.Data Deleted');
         }

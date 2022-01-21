@@ -42,7 +42,7 @@
                                 <div class="flex-center-between mb-1">
                                     <div class="prodcut-price">
                                         @php
-                                            $price = $product->price->where('depot_id', $default_depot)->where('stock_piece', '>', 0)->toArray();
+                                            $price = $product->price->where('stock_piece', '>', 0)->toArray();
 
                                             // echo "<pre>";
                                             //     print_r($price);
@@ -55,6 +55,13 @@
                                             if(count($filter) == 0){
                                                 $filter = array_filter($price, function ($item) {
                                                     if ($item['color_id'] > 1 || $item['size_id'] == null) {
+                                                        return true;
+                                                    }
+                                                });
+                                            }
+                                            if(count($filter) == 0){
+                                                $filter = array_filter($price, function ($item) {
+                                                    if ($item['color_id'] == 1 || $item['size_id'] != null) {
                                                         return true;
                                                     }
                                                 });
@@ -136,7 +143,7 @@
                                         </h5>
                                     <div class="prodcut-price mb-2 d-md-none">
                                         @php
-                                            $price = $product->price->where('depot_id', $default_depot)->where('stock_piece', '>', 0)->toArray();
+                                            $price = $product->price->where('stock_piece', '>', 0)->toArray();
 
                                             // echo "<pre>";
                                             //     print_r($price);
@@ -149,6 +156,13 @@
                                             if(count($filter) == 0){
                                                 $filter = array_filter($price, function ($item) {
                                                     if ($item['color_id'] > 1 || $item['size_id'] == null) {
+                                                        return true;
+                                                    }
+                                                });
+                                            }
+                                            if(count($filter) == 0){
+                                                $filter = array_filter($price, function ($item) {
+                                                    if ($item['color_id'] == 1 || $item['size_id'] != null) {
                                                         return true;
                                                     }
                                                 });
@@ -189,7 +203,7 @@
                                 <div class="mb-3">
                                     <div class="prodcut-price mb-2">
                                         @php
-                                            $price = $product->price->where('depot_id', $default_depot)->where('stock_piece', '>', 0)->toArray();
+                                            $price = $product->price->where('stock_piece', '>', 0)->toArray();
 
                                             // echo "<pre>";
                                             //     print_r($price);
@@ -202,6 +216,13 @@
                                             if(count($filter) == 0){
                                                 $filter = array_filter($price, function ($item) {
                                                     if ($item['color_id'] > 1 || $item['size_id'] == null) {
+                                                        return true;
+                                                    }
+                                                });
+                                            }
+                                            if(count($filter) == 0){
+                                                $filter = array_filter($price, function ($item) {
+                                                    if ($item['color_id'] == 1 || $item['size_id'] != null) {
                                                         return true;
                                                     }
                                                 });

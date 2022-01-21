@@ -108,8 +108,8 @@
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label for="payment_door">Qapıda ödəniş:</label>
-                                <textarea name="payment_door" class="form-control" id="payment_door" placeholder="Qapıda ödəniş">{{ old('payment_door', $website_info->payment_door) }}</textarea>
+                                <label for="payment_door">Ödəniş məlumatı:</label>
+                                <textarea name="payment_door" class="form-control" id="payment_door" placeholder="Ödəniş məlumatı">{{ old('payment_door', $website_info->payment_door) }}</textarea>
                             </div>
                             <div class="form-group">
                                 <label for="delivery">Çatdırılma şərti:</label>

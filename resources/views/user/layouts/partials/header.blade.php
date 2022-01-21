@@ -248,8 +248,8 @@
                                         <li class="top-category-item">
                                             <a class="top-category-item-link" href="javascript:void(0);">
                                                 <img class="icon-filter category-icon" style='width: 20px;'
-                                                    src='{{ $category->image->image_name ? asset('assets/img/category/' . $category->image->image_name) : asset('assets/img/category/product-category-icon.png') }}'
-                                                    alt='{{ $category->image->image_name }}'>
+                                                    src='{{ $category->category_image ? asset('assets/img/category/' . $category->category_image) : asset('assets/img/category/product-category-icon.png') }}'
+                                                    alt='{{ $category->category_image }}'>
                                                 <span>{{ $category->category_name }}</span>
                                                 <i class="fas fa-chevron-right"></i>
                                             </a>
@@ -333,11 +333,6 @@
                                             </li>
                                             <!-- End Gift Cards -->
 
-                                            <li class="nav-item u-header__nav-last-item">
-                                                <a class="text-gray-90 set-depot font-weight-bold" href="javascript:void(0)">
-                                                    {{ Cookie::get('depot')  ? $depots->where('id', Cookie::get('depot'))->first()->name : $depots->where('default', 1)->first()->name }}
-                                                </a>
-                                            </li>
 
                                         </ul>
                                     </div>

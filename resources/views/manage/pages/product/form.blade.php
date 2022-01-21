@@ -288,14 +288,6 @@
                         <div class="form-group">
                             <input placeholder="Stok sayı" class="form-control" name="stock_piece" id="form_stock_piece"/>
                         </div>
-                        <div class="form-group">
-                            <label for="form_depot_id">Depo</label>
-                            <select class="form-control select3" style="width: 100%;" id="form_depot_id" name="depot_id">
-                                @foreach($depots as $depot)
-                                    <option value="{{ $depot->id }}">{{ $depot->name }}</option>
-                                @endforeach
-                            </select>
-                        </div>
                     </div>
                     <div class="modal-footer">
                         <input type="hidden" name="id" value="0">
@@ -338,7 +330,7 @@
                         @include('common.alert')
                         @if($entry->id>0)
                             @if (count($entry->price) == 0)
-                                <div class="alert alert-danger">Məhsulun qiymət, stok və anbar parametrləri seçilməyib</div>
+                                <div class="alert alert-danger">Məhsulun qiymət və stok parametrləri seçilməyib</div>
                             @endif
                         @endif
 
@@ -553,7 +545,6 @@
                                                     <table class="table table-bordered table-striped table-hover">
                                                         <thead>
                                                             <tr>
-                                                                <th>Anbar</th>
                                                                 <th>Satış qiyməti</th>
                                                                 <th>Stok sayı</th>
                                                                 <th>Topdan satış miqdarı</th>
@@ -568,7 +559,6 @@
                                                             @foreach ($entry->price as $price)
                                                                 @if ($price->default_price == 0)
                                                                     <tr>
-                                                                        <td>{{ count($price->depots) > 0 ? $price->depots[0]->name : null }}</td>
                                                                         <td>{{ $price->sale_price }}</td>
                                                                         <td>{{ $price->stock_piece }}</td>
                                                                         <td>{{ $price->wholesale_count }}</td>
@@ -884,7 +874,6 @@
                         $('#form_size_id').val(data.size_id);
                         $('#form_sale_price').val(data.sale_price);
                         $('#form_stock_piece').val(data.stock_piece);
-                        $('#form_depot_id').val(data.depot_id).change()
                         $('#form_wholesale_count').val(data.wholesale_count);
                         $('#form_wholesale_price').val(data.wholesale_price);
                         $("form#price_form").find('input[name="id"]').val(id)

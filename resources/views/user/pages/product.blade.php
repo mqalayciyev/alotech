@@ -18,7 +18,7 @@
     session(['your_products' => $your_products]);
 
 
-    $price = $product->price->where('depot_id', $default_depot)->toArray();
+    $price = $product->price->toArray();
 
 
     $filter = array_filter($price, function ($item) {
@@ -28,14 +28,21 @@
     });
     if(count($filter) == 0){
         $filter = array_filter($price, function ($item) {
-            if ($item['color_id'] > 1 || $item['size_id'] != null) {
+            if ($item['color_id'] > 1 || $item['size_id'] == null) {
                 return true;
             }
         });
     }
     if(count($filter) == 0){
         $filter = array_filter($price, function ($item) {
-            if ($item['default_price'] == 1) {
+            if ($item['color_id'] == 1 || $item['size_id'] != null) {
+                return true;
+            }
+        });
+    }
+    if(count($filter) == 0){
+        $filter = array_filter($price, function ($item) {
+            if ($item['color_id'] == 1 || $item['size_id'] == null) {
                 return true;
             }
         });
@@ -129,8 +136,13 @@
                                 </a>
                             </div>
                             @foreach ($product->brands as $brand)
-                                <a class="d-inline-block max-width-150 ml-n2 mb-2" href="{{ route('brand.product', $brand->name) }}" title="{{ $brand->name }}">
-                                    <img class="img-fluid" src="{{ asset('assets/img/brand/' . $brand->image) }}" alt="Image Description" >
+                                <a class="d-inline-block max-width-150 ml-n2 mb-2" href="{{ route('brand.product', $brand->slug) }}" title="{{ $brand->name }}">
+                                    @if ($brand->image)
+                                    <img class="img-fluid" src="{{ asset('assets/img/brand/' . $brand->image ) }}" alt="Image Description" >
+                                    @else
+                                    {{ $brand->name }}
+                                    @endif
+
                                 </a>
                             @endforeach
 
@@ -209,12 +221,12 @@
                                     <!-- End Quantity -->
                                 </div>
                                 <div class="mb-3">
-                                    @if (count($product->price->where('color_id', '!=', 1)->where('depot_id', $default_depot)) > 0)
+                                    @if (count($product->price->where('color_id', '!=', 1)) > 0)
                                         @php $colors_array = array(); @endphp
                                         <h6 class="font-size-14">Rəng</h6>
                                         <!-- Select -->
                                         <select class="form-control color-element" data-type="product__single" data-discount="{{ $product->discount }}">
-                                            @foreach ($product->price->where('color_id', '!=', 1)->where('depot_id', $default_depot) as $colors)
+                                            @foreach ($product->price->where('color_id', '!=', 1) as $colors)
                                                 @if (!in_array($colors->color_id, $colors_array) && $colors->color_id != 1)
                                                     <option value="{{ $colors->color_id }}" data-id="{{ $colors->color_id }}">{{ $colors->color->title }}</option>
                                                     @php array_push($colors_array, $colors->color_id); @endphp
@@ -225,11 +237,11 @@
                                     @endif
                                 </div>
                                 <div class="mb-3">
-                                    @if (count($product->price->where('size_id', '!=', null)->where('depot_id', $default_depot)) > 0)
+                                    @if (count($product->price->where('size_id', '!=', null)) > 0)
                                         <h6 class="font-size-14">Ölçü</h6>
                                         <!-- Select -->
                                         <select class="form-control size-element" data-type="product__single" data-discount="{{ $product->discount }}">
-                                            @foreach ($product->price->where('size_id', '!=', null)->where('depot_id', $default_depot) as $sizes)
+                                            @foreach ($product->price->where('size_id', '!=', null) as $sizes)
                                                 <option value="{{ $sizes->size_id }}"  data-id="{{ $sizes->color_id }}">{{ $sizes->size->name }}</option>
                                             @endforeach
                                         </select>

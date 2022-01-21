@@ -105,7 +105,7 @@
                                                         <div class="flex-center-between mb-1">
                                                             <div class="prodcut-price">
                                                                 @php
-                                                                    $price = $product->price->where('depot_id', $default_depot)->toArray();
+                                                                    $price = $product->price->toArray();
 
                                                                     // echo "<pre>";
                                                                     //     print_r($price);
@@ -118,6 +118,13 @@
                                                                     if(count($filter) == 0){
                                                                         $filter = array_filter($price, function ($item) {
                                                                             if ($item['color_id'] > 1 || $item['size_id'] == null) {
+                                                                                return true;
+                                                                            }
+                                                                        });
+                                                                    }
+                                                                    if(count($filter) == 0){
+                                                                        $filter = array_filter($price, function ($item) {
+                                                                            if ($item['color_id'] == 1 || $item['size_id'] != null) {
                                                                                 return true;
                                                                             }
                                                                         });
@@ -200,7 +207,7 @@
                                                                 </h5>
                                                             <div class="prodcut-price mb-2 d-md-none">
                                                                 @php
-                                                                    $price = $product->price->where('depot_id', $default_depot)->toArray();
+                                                                    $price = $product->price->toArray();
 
                                                                     // echo "<pre>";
                                                                     //     print_r($price);

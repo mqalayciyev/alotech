@@ -89,9 +89,11 @@ class SlideshowController extends Controller
         // return request();
         if(request()->hasFile('image')){
             $rows = Slider::find($id);
-            $image_path = app_path("assets/img/sliders/{$rows->slider_image}");
-            if (File::exists($image_path)) {
-                unlink($image_path);
+            if ($rows) {
+                $image_path = app_path("assets/img/sliders/{$rows->slider_image}");
+                if (File::exists($image_path)) {
+                    unlink($image_path);
+                }
             }
 
             $image = request()->file('image');

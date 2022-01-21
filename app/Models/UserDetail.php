@@ -14,4 +14,9 @@ class UserDetail extends Model
     {
         return $this->belongsTo('App\Models\User');
     }
+
+    public function userCity()
+    {
+        return $this->hasMany('App\Models\City', 'city', 'id');
+    }
 }

@@ -9,10 +9,8 @@ use App\Models\Product;
 use App\Models\ProductDetail;
 use App\Models\ProductBrand;
 use App\Models\Color;
-use App\Models\Depot;
 use App\Models\Size;
 use ArrayObject;
-use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\DB;
 
 
@@ -20,8 +18,6 @@ class CategoryController extends Controller
 {
     public function index($slug_category_name)
     {
-        $depot = Cookie::get('depot')  ? Cookie::get('depot') : Depot::where('default', 1)->first()->id;
-        // echo $slug_category_name;
         $category = Category::where('slug', $slug_category_name)->firstOrFail();
         $current_id = $category->id;
         $sub_categories = Category::where('top_id', $category->id)->get();
@@ -56,8 +52,6 @@ class CategoryController extends Controller
             ->leftJoin('product', 'product.id', 'brand_product.product_id')
             ->leftJoin('category_product', 'category_product.product_id', 'product.id')
             ->leftJoin('category', 'category.id', 'category_product.category_id')
-            ->leftJoin('price_list', 'price_list.product_id', 'product.id')
-            ->where('price_list.depot_id', $depot)
             ->whereIn('category_product.category_id', $cat_id)
             ->orderBy('brand.name', 'asc')
             ->groupBy('brand.id')
@@ -68,8 +62,6 @@ class CategoryController extends Controller
             $productBrand = ProductBrand::select('brand_product.*')
                 ->leftJoin("product", 'product.id', 'brand_product.product_id')
                 ->leftJoin('category_product', 'category_product.product_id', 'product.id')
-                ->leftJoin('price_list', 'price_list.product_id', 'product.id')
-                ->where('price_list.depot_id', $depot)
                 ->whereIn('category_product.category_id', $cat_id)
                 ->where('brand_id', $brands[$i]->id)
                 ->groupBy('product.id')
@@ -100,7 +92,6 @@ class CategoryController extends Controller
 
     public function products()
     {
-        $depot = Cookie::get('depot')  ? Cookie::get('depot') : Depot::where('default', 1)->first()->id;
         $page = request('page');
         $filter_data = request('filter_data');
         // return $filter_data;
@@ -119,18 +110,12 @@ class CategoryController extends Controller
                 ->leftJoin('product_detail', 'product_detail.product_id', 'product.id')
                 ->leftJoin('category_product', 'category_product.product_id', 'product.id')
                 ->whereIn('category_product.category_id', $cat_id)
-                ->leftJoin('price_list', 'price_list.product_id', 'product.id')
-                ->where('price_list.depot_id', $depot)
-                ->groupBy('product.id')
                 ->count();
 
             $products = Product::select('product.*')
                 ->leftJoin('product_detail', 'product_detail.product_id', 'product.id')
                 ->leftJoin('category_product', 'category_product.product_id', 'product.id')
                 ->whereIn('category_product.category_id', $cat_id)
-                ->leftJoin('price_list', 'price_list.product_id', 'product.id')
-                ->where('price_list.depot_id', $depot)
-                ->groupBy('product.id')
                 ->offset($offset)
                 ->take(12)
                 ->get();
@@ -147,7 +132,6 @@ class CategoryController extends Controller
                     ->leftJoin('category_product', 'category_product.product_id', 'product.id')
                     ->whereIn('category_product.category_id', $cat_id)
                     ->where('brand_product.brand_id', $id)
-                    ->where('product.depot', $depot)
                     ->orderBy('product.updated_at', 'desc')
                     ->count();
                 $products = Product::select('product.*')
@@ -156,7 +140,6 @@ class CategoryController extends Controller
                     ->leftJoin('category_product', 'category_product.product_id', 'product.id')
                     ->whereIn('category_product.category_id', $cat_id)
                     ->where('brand_product.brand_id', $id)
-                    ->where('product.depot', $depot)
                     ->orderBy('product.updated_at', 'desc')
                     ->offset($offset)
                     ->limit(12)
@@ -170,7 +153,6 @@ class CategoryController extends Controller
                     ->leftJoin('category_product', 'category_product.product_id', 'product.id')
                     ->whereIn('category_product.category_id', $cat_id)
                     ->where('size_product.size_id', $id)
-                    ->where('product.depot', $depot)
                     ->orderBy('product.updated_at', 'desc')
                     ->count();
                 $products = Product::select('product.*')
@@ -178,7 +160,6 @@ class CategoryController extends Controller
                     ->leftJoin('category_product', 'category_product.product_id', 'product.id')
                     ->whereIn('category_product.category_id', $cat_id)
                     ->where('size_product.size_id', $id)
-                    ->where('product.depot', $depot)
                     ->orderBy('product.updated_at', 'desc')
                     ->offset($offset)
                     ->limit(12)
@@ -192,7 +173,6 @@ class CategoryController extends Controller
                     ->leftJoin('category_product', 'category_product.product_id', 'product.id')
                     ->whereIn('category_product.category_id', $cat_id)
                     ->where('color_product.color_id', $id)
-                    ->where('product.depot', $depot)
                     ->orderBy('product.updated_at', 'desc')
                     ->count();
                 $products = Product::select('product.*')
@@ -200,7 +180,6 @@ class CategoryController extends Controller
                     ->leftJoin('category_product', 'category_product.product_id', 'product.id')
                     ->whereIn('category_product.category_id', $cat_id)
                     ->where('color_product.color_id', $id)
-                    ->where('product.depot', $depot)
                     ->orderBy('product.updated_at', 'desc')
                     ->offset($offset)
                     ->limit(12)
@@ -217,7 +196,6 @@ class CategoryController extends Controller
                     ->whereIn('category_product.category_id', $cat_id)
                     ->where('price_list.sale_price', '<=', $max_price)
                     ->where('price_list.sale_price', '>=', $min_price)
-                    ->where('product.depot', $depot)
                     ->orderBy('product.updated_at', 'desc')
                     ->count();
                 $products = Product::select('product.*')
@@ -227,7 +205,6 @@ class CategoryController extends Controller
                     ->whereIn('category_product.category_id', $cat_id)
                     ->where('price_list.sale_price', '<=', $max_price)
                     ->where('price_list.sale_price', '>=', $min_price)
-                    ->where('product.depot', $depot)
                     ->orderBy('product.updated_at', 'desc')
                     ->offset($offset)
                     ->limit(12)
@@ -241,7 +218,6 @@ class CategoryController extends Controller
                     ->leftJoin('category_product', 'category_product.product_id', 'product.id')
                     ->leftJoin('price_list', 'price_list.product_id', 'product.id')
                     ->whereIn('category_product.category_id', $cat_id)
-                    ->where('product.depot', $depot)
                     ->orderBy($sorting_name, $order)
                     ->groupBy('product.id')
                     ->count();
@@ -250,7 +226,6 @@ class CategoryController extends Controller
                     ->leftJoin('category_product', 'category_product.product_id', 'product.id')
                     ->leftJoin('price_list', 'price_list.product_id', 'product.id')
                     ->whereIn('category_product.category_id', $cat_id)
-                    ->where('product.depot', $depot)
                     ->orderBy($sorting_name, $order)
                     ->offset($offset)
                     ->groupBy('product.id')

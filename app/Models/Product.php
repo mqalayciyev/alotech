@@ -16,11 +16,6 @@ class Product extends Model
         return $this->belongsToMany('App\Models\Category', 'category_product');
     }
 
-    public function suppliers()
-    {
-        return $this->belongsToMany('App\Models\Supplier', 'supplier_product');
-    }
-
     public function tags()
     {
         return $this->belongsToMany('App\Models\Tag', 'tag_product');

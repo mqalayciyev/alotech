@@ -242,7 +242,13 @@
                                                 Şəhər
                                                 <span class="text-danger">*</span>
                                             </label>
-                                            <input type="text" class="form-control" name="city" placeholder="Şəhər" value="{{ old('city', $user_detail->city) }}">
+                                            <select name="city" class="form-control" id="city">
+                                                <option value="">Şəhər</option>
+                                                @foreach ($city as $item)
+                                                <option value="{{ $item->id }}" {{ $user_detail->city == $item->id ? 'selected' : null }}>{{ $item->name }}</option>
+                                                @endforeach
+                                            </select>
+                                            {{-- <input type="text"  name="city" placeholder="Şəhər" value="{{ old('city', $user_detail->city) }}"> --}}
                                         </div>
                                         <!-- End Input -->
                                     </div>
@@ -281,8 +287,29 @@
                                         </div>
                                         <!-- End Input -->
                                     </div>
-
                                     <div class="w-100"></div>
+                                    <div class="col-12">
+                                        <!-- Input -->
+                                        <div class="js-form-message mb-6">
+                                            <label class="form-label">
+                                                Çatdırılma Zamanı
+                                            </label>
+                                            <div class="row">
+                                                <label class="delivery_info">
+                                                    <input type="radio" name="delivery_day"> 18 yanvar
+                                                </label>
+                                            </div>
+                                            <div class="row">
+                                                <label class="delivery_info">
+                                                    <input type="radio" name="delivery_time">
+                                                </label>
+                                            </div>
+                                            <input type="text" class="form-control" name="phone" placeholder="+994 ** *** ** **" value="{{ old('phone', $user_detail->phone) }}">
+                                        </div>
+                                        <!-- End Input -->
+                                    </div>
+
+
                                 </div>
                                 <!-- End Billing Form -->
                             </div>

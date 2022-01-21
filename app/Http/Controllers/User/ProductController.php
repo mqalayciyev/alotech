@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Models\Product;
 use App\Models\ColorProduct;
 use App\Models\Category;
-use App\Models\Depot;
 use App\Models\PriceList;
 use App\Models\StockList;
 use App\Models\Review;
@@ -15,19 +14,14 @@ use App\Models\SizeProduct;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Cookie;
 
 class ProductController extends Controller
 {
     public function index($slug_product_name)
     {
-        $depot = Cookie::get('depot')  ? Cookie::get('depot') : Depot::where('default', 1)->first()->id;
-
         $product = Product::select('product.*')
             ->leftJoin('product_detail', 'product_detail.product_id', 'product.id')
             ->whereSlug($slug_product_name)
-            ->leftJoin('price_list', 'price_list.product_id', 'product.id')
-            ->where('price_list.depot_id', $depot)
             ->orderBy('updated_at', 'desc')
             ->firstOrFail();
         $rating = Rating::select(DB::raw('avg(rating.rating) AS rating_avg'))
@@ -45,8 +39,6 @@ class ProductController extends Controller
     public function search()
     {
 
-        $depot = Cookie::get('depot')  ? Cookie::get('depot') : Depot::where('default', 1)->first()->id;
-
         $page = 1;
         if(request()->get('page')){
             $page = request()->get('page');
@@ -55,17 +47,13 @@ class ProductController extends Controller
         $count = 0;
 
         $wanted = request()->get('wanted');
-        $count = Product::select('product.*')->leftJoin('price_list', 'price_list.product_id', 'product.id')
+        $count = Product::select('product.*')
             ->where('product_name', 'like', "%$wanted%")
             ->orWhere('product_description', 'like', "%$wanted%")
-            ->where('price_list.depot_id', $depot)
-            ->groupBy('product.id')
             ->count();
-        $products = Product::select('product.*')->leftJoin('price_list', 'price_list.product_id', 'product.id')
+        $products = Product::select('product.*')
             ->where('product_name', 'like', "%$wanted%")
             ->orWhere('product_description', 'like', "%$wanted%")
-            ->where('price_list.depot_id', $depot)
-            ->groupBy('product.id')
             ->offset($offset)
             ->limit(12)
             ->get();
@@ -75,13 +63,10 @@ class ProductController extends Controller
     }
     public function quick_search()
     {
-        $depot = Cookie::get('depot')  ? Cookie::get('depot') : Depot::where('default', 1)->first()->id;
         $wanted = request()->get('wanted');
-        $products = Product::select('product.*')->leftJoin('price_list', 'price_list.product_id', 'product.id')
-            ->where('price_list.depot_id', $depot)
+        $products = Product::select('product.*')
             ->where('product_name', 'like', "%$wanted%")
             ->orWhere('product_description', 'like', "%$wanted%")
-            ->groupBy('product.id')
             ->take(12)
             ->get();
         request()->flash();
@@ -106,7 +91,6 @@ class ProductController extends Controller
     }
 
     public function compare(){
-        $depot = Cookie::get('depot')  ? Cookie::get('depot') : Depot::where('default', 1)->first()->id;
         $products =[];
         if(isset($_COOKIE['compare'])){
             $cookie = $_COOKIE['compare'];
@@ -114,9 +98,6 @@ class ProductController extends Controller
             $products = Product::select("product.*")
                 ->leftJoin('product_detail', 'product_detail.product_id', 'product.id')
                 ->whereIn('product.id', $compare)
-                ->leftJoin('price_list', 'price_list.product_id', 'product.id')
-                ->where('price_list.depot_id', $depot)
-                ->groupBy('product.id')
                 ->get();
         }
 
@@ -272,7 +253,7 @@ class ProductController extends Controller
     public function price_list (Request $request)
     {
         $product_id = $request->get('product_id');
-        $priceList = PriceList::where('product_id', $product_id)->where('default_price', 0)->get();
+        $priceList = PriceList::where('product_id', $product_id)->get();
 
         return response()->json(['priceList' => $priceList]);
     }

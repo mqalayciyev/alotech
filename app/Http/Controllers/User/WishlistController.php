@@ -3,11 +3,9 @@
 namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
-use App\Models\Depot;
 use App\Models\Product;
 use App\Models\WishList;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Cookie;
 
 class WishlistController extends Controller
 {
@@ -22,7 +20,7 @@ class WishlistController extends Controller
         $user_id = auth()->id();
 
         $count = WishList::where('product_id', $product_id)->where('user_id', $user_id)->count();
-        $message = '';
+
         if($count > 0){
             WishList::where('product_id', $product_id)->where('user_id', $user_id)->delete();
             return response()->json(['status'  => 'info', 'message' => "Məhsul istəklərim siyahısıdan silindi"]);
@@ -39,7 +37,6 @@ class WishlistController extends Controller
 
     }
     public function view_my_wish_list(){
-        $depot = Cookie::get('depot')  ? Cookie::get('depot') : Depot::where('default', 1)->first()->id;
         $user_id = auth()->id();
         $wish_lists = WishList::select('product_id')->where('user_id', $user_id)->get();
          $page = 1;
@@ -55,17 +52,11 @@ class WishlistController extends Controller
 
         $count = Product::select('product.*')
             ->leftJoin('product_detail', 'product_detail.product_id', 'product.id')
-            ->leftJoin('price_list', 'price_list.product_id', 'product.id')
             ->whereIn('product.id', $id_array)
-            ->where('price_list.depot_id', $depot)
-            ->groupBy('product.id')
             ->count();
         $products = Product::select('product.*')
             ->leftJoin('product_detail', 'product_detail.product_id', 'product.id')
-            ->leftJoin('price_list', 'price_list.product_id', 'product.id')
             ->whereIn('product.id', $id_array)
-            ->where('price_list.depot_id', $depot)
-            ->groupBy('product.id')
             ->offset($offset)
             ->limit(12)
             ->get();

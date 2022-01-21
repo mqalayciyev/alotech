@@ -11,10 +11,8 @@ use App\Models\ColorProduct;
 use App\Models\SizeProduct;
 use App\Models\PriceList;
 use App\Models\Color;
-use App\Models\Depot;
 use App\Models\Size;
 use Gloudemans\Shoppingcart\Facades\Cart;
-use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\Validator;
 
 class CartController extends Controller
@@ -27,21 +25,6 @@ class CartController extends Controller
 
     public function my_cart()
     {
-        $depot = Cookie::get('depot')  ? Cookie::get('depot') : Depot::where('default', 1)->first()->id;
-        if (count(Cart::content()) > 0) {
-            foreach (Cart::content() as $productCartItem) {
-                $product = Product::select('product.*', 'price_list.depot_id')
-                    ->leftJoin('price_list', 'price_list.product_id', 'product.id')
-                    ->where('product.id',  $productCartItem->id)
-                    ->where('price_list.id',  $productCartItem->options->price_id)
-                    ->first();
-                if($product){
-                    if($product->depot_id != $depot){
-                        Cart::remove($productCartItem->rowId);
-                    }
-                }
-            }
-        }
 
         if (count(Cart::content()) > 0) {
             $output = '';
@@ -173,7 +156,7 @@ class CartController extends Controller
                 $color = '';
                 if($productCartItem->options->color > 1){
                     $colors = Color::where('id', $productCartItem->options->color)->firstOrFail();
-                    $color = '<span style="background-color: ' . $colors->name . '">' . $colors->title .'</span>' ;
+                    $color = $colors->title;
                 }
                 $size = '';
                 if($productCartItem->options->size > 0){
@@ -253,8 +236,10 @@ class CartController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json(['status' => 'error', 'message' => $validator->errors()]);
+            return response()->json(['status' => 'error', 'message' => ["Bu məhsul anbarda qalmayıb"]]);
         }
+
+        // return request();
 
         $piece = request()->get('piece');
 
@@ -262,20 +247,19 @@ class CartController extends Controller
             $piece = 1;
         }
         $priceId = request()->get('priceId');
-        if(!$priceId){
-            $priceId = PriceList::where('product_id', request()->get('id'))->where('default_price', 1)->first()->id;
-        }
         $amount = request()->get('amount');
         $size = request()->get('size');
         $color = request()->get('color');
+
         if(!$color){
             $color = 1;
         }
+
         $product = Product::find(request()->get('id'));
 
         $priceList = PriceList::find($priceId);
 
-        if($priceList->stock_piece == 0){
+        if($priceList->stock_piece < 1){
             return response()->json(['status' => 'error', 'message' => ['Məhsul stokda yoxdur']]);
         }
         else{
@@ -425,7 +409,7 @@ class CartController extends Controller
                 $color = '';
                 if($productCartItem->options->color > 1){
                     $colors = Color::where('id', $productCartItem->options->color)->firstOrFail();
-                    $color = '<span style="background-color: ' . $colors->name . '">' . $colors->title .'</span>' ;
+                    $color = $colors->title;
                 }
                 $size = '';
                 if($productCartItem->options->size > 0){

@@ -25,7 +25,6 @@ use Illuminate\Support\Facades\Auth;
 
 Route::namespace('User')->group(function () {
     Route::get('/', 'HomeController@index')->name('home');
-    Route::get('/set-depot/{depot}', 'HomeController@setDepot')->name('set.depot');
     Route::get('/category-products', 'HomeController@categoryProducts')->name('homepage.category.products');
     Route::get('/products', 'HomeController@products')->name('homepage.products');
     Route::get('/get_product', 'HomeController@get_product')->name('get_product');
@@ -349,15 +348,14 @@ Route::namespace('Manage')->prefix('manage')->group(function () {
             Route::get('/mass_remove', 'SupplierController@mass_remove')->name('manage.supplier.mass_remove');
         });
 
-        Route::group(['prefix' => 'depot'], function () {
-            Route::get('/', 'DepotController@index')->name('manage.depot');
-            Route::get('/index_data', 'DepotController@index_data')->name('manage.depot.index_data');
-            Route::post('/reorder', 'DepotController@reorder')->name('manage.depot.reorder');
-            Route::get('/new', 'DepotController@form')->name('manage.depot.new');
-            Route::get('/edit/{id}', 'DepotController@form')->name('manage.depot.edit');
-            Route::post('/save/{id?}', 'DepotController@save')->name('manage.depot.save');
-            Route::get('/delete_data', 'DepotController@delete_data')->name('manage.depot.delete_data');
-            Route::get('/mass_remove', 'DepotController@mass_remove')->name('manage.depot.mass_remove');
+        Route::group(['prefix' => 'city'], function () {
+            Route::get('/', 'CityController@index')->name('manage.city');
+            Route::get('/index_data', 'CityController@index_data')->name('manage.city.index_data');
+            Route::get('/new', 'CityController@form')->name('manage.city.new');
+            Route::get('/edit/{id}', 'CityController@form')->name('manage.city.edit');
+            Route::post('/save/{id?}', 'CityController@save')->name('manage.city.save');
+            Route::get('/delete_data', 'CityController@delete_data')->name('manage.city.delete_data');
+            Route::get('/mass_remove', 'CityController@mass_remove')->name('manage.city.mass_remove');
         });
 
         Route::group(['prefix' => 'order'], function () {

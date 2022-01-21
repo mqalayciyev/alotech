@@ -119,9 +119,11 @@ class BannerController extends Controller
 
             $rows = Banner::find($id);
             
-            $image_path = app_path("assets/img/banners/{$rows->banner_image}");
+            if($rows){
+                $image_path = app_path("assets/img/banners/{$rows->banner_image}");
             if (File::exists($image_path)) {
                 unlink($image_path);
+            }
             }
 
             $image = request()->file('image');

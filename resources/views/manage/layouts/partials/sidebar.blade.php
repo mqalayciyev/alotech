@@ -56,9 +56,9 @@
                     </span>
                 </a>
             </li>
-            <li class="{{ url()->current() == route('manage.depot') ? 'active' : '' }}">
-                <a href="{{ route('manage.depot') }}">
-                    <i class="fa fa-database"></i> <span>Depo</span>
+            <li class="{{ url()->current() == route('manage.city') ? 'active' : '' }}">
+                <a href="{{ route('manage.city') }}">
+                    <i class="fa fa-building"></i> <span>Şəhərlər</span>
                 </a>
             </li>
             {{-- <li class="{{ url()->current() == route('manage.supplier') ? 'active' : '' }}">

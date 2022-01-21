@@ -12,7 +12,6 @@ use App\Models\Size;
 use App\Models\SizeProduct;
 use App\Models\Color;
 use App\Models\ColorProduct;
-use App\Models\Depot;
 use App\Models\Tag;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
@@ -45,7 +44,7 @@ class ProductController extends Controller
                 return $image;
             })
             ->editColumn('sale_price', function ($row) {
-                return $row->default_price->sale_price;
+                return $row->price->first() ? $row->price->first()->sale_price : null;
             })
             ->addColumn('action', function ($row) {
                 return '<div>
@@ -120,10 +119,9 @@ class ProductController extends Controller
         $sizes = Size::all();
         $colors = Color::all();
         $images = ProductImage::all();
-        $depots = Depot::orderBy('order')->get();
         // echo "<pre>";
         // print_r($entry->colors);
-        return view('manage.pages.product.form', compact('entry', 'product_colors', 'product_sizes', 'categories', 'product_categories', 'images', 'brands', 'depots', 'tags', 'colors', 'sizes',  'entry_category', 'product_brands'));
+        return view('manage.pages.product.form', compact('entry', 'product_colors', 'product_sizes', 'categories', 'product_categories', 'images', 'brands', 'tags', 'colors', 'sizes',  'entry_category', 'product_brands'));
     }
     public function categories()
     {
@@ -156,8 +154,7 @@ class ProductController extends Controller
             'product_name' => 'required',
             'measurement' => 'required',
             'categories' => 'required',
-            'sale_price' => 'required',
-            'stock_piece' => 'required',
+            'brand' => 'required',
             'slug' => Rule::unique('product', 'slug')->ignore($id)
         ]);
 
@@ -276,25 +273,10 @@ class ProductController extends Controller
 
         if (request()->hasFile('product_images')) {
             $images = ProductImage::where('product_id', $id);
-            $image_path = app_path("assets/img/products/{$images->image_name}");
-            $image_path2 = app_path("assets/img/products/{$images->thumb_name}");
-            $image_path3 = app_path("assets/img/products/{$images->main_name}");
-            if(file_exists($image_path))
-            {
-                unlink($image_path);
-            }
-            if(file_exists($image_path2))
-            {
-                unlink($image_path2);
-            }
-            if(file_exists($image_path3))
-            {
-                unlink($image_path3);
-            }
+
+
             $product_images = request()->file('product_images');
             $product_images = request()->product_images;
-            // $cover = request()->cover;
-            // $count = 0;
 
             foreach ($product_images as $array => $product_image) {
                 $filename = 'product-' . $array . '_' . $entry->id . '_' . time() . '.webp';
@@ -330,15 +312,11 @@ class ProductController extends Controller
                     $product_image_model->image_name = $filename;
                     $product_image_model->color_id = request('image_color_id');
 
-                    // if($count === $cover){
-                    //     $product_image_model->cover = $cover;
-                    // }
 
                     $product_image_model->main_name = $filename_main;
                     $product_image_model->thumb_name = $filename_thumb;
                     $product_image_model->save();
 
-                    // $count++;
                 }
             }
         }
@@ -454,7 +432,6 @@ class ProductController extends Controller
             'sale_price' => 'required',
             'product_id' => 'required',
             'stock_piece' => 'required',
-            'depot_id' => 'required',
         ]);
 
 
@@ -474,7 +451,6 @@ class ProductController extends Controller
                     'product_id' => $request->product_id,
                     'color_id' => $request->color,
                     'size_id' => $request->size,
-                    'depot_id' => $request->depot_id,
                 ],
                 [
                     'sale_price' => $request->sale_price,
