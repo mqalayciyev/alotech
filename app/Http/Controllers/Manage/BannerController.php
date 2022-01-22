@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Image;
 use Yajra\DataTables\Facades\DataTables;
-use Illuminate\Support\Facades\File; 
+use Illuminate\Support\Facades\File;
 
 class BannerController extends Controller
 {
@@ -69,8 +69,8 @@ class BannerController extends Controller
                 ['w' => 500, 'h' => 303]
             ],
             'center' => [
-                ['w' => 1200, 'h' => 350],
-                ['w' => 500, 'h' => 146]
+                ['w' => 1200, 'h' => 250],
+                ['w' => 500, 'h' => 104]
             ],
             'bottom' => [
                 ['w' => 380, 'h' => 250],
@@ -104,8 +104,8 @@ class BannerController extends Controller
                 ['w' => 500, 'h' => 303]
             ],
             'center' => [
-                ['w' => 1200, 'h' => 350],
-                ['w' => 500, 'h' => 146]
+                ['w' => 1200, 'h' => 250],
+                ['w' => 500, 'h' => 104]
             ],
             'bottom' => [
                 ['w' => 380, 'h' => 250],
@@ -118,7 +118,7 @@ class BannerController extends Controller
         if (request()->hasFile('image')) {
 
             $rows = Banner::find($id);
-            
+
             if($rows){
                 $image_path = app_path("assets/img/banners/{$rows->banner_image}");
             if (File::exists($image_path)) {
@@ -169,8 +169,8 @@ class BannerController extends Controller
         $image_path = app_path("assets/img/banners/{$rows->banner_image}");
         if (File::exists($image_path)) {
             unlink($image_path);
-        }       
-        
+        }
+
         if ($rows->forceDelete()) {
             echo __('admin.Data Deleted');
         }

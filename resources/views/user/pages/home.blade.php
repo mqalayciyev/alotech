@@ -135,7 +135,7 @@
             <div class="mb-8">
                 <a href="{{ $banner_center->banner_slug }}" class="d-block text-gray-90">
                     <div class="bg-img-hero pt-3"
-                        style="background-image: url({{ asset('assets/img/banners/' . $banner_center->banner_image) }}); height: 150px;">
+                        style="background-image: url({{ asset('assets/img/banners/' . $banner_center->banner_image) }}); height: 250px;">
                     </div>
                 </a>
             </div>
