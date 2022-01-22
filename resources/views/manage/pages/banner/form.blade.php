@@ -168,13 +168,13 @@
 
                             <div class="row" style="justify-content: center; display: flex">
                                 <div class="col-md-6 form-group">
-                                    {{-- <div class="form-group">
+                                    <div class="form-group">
                                         <label for="banner_name">@lang('admin.Banner Name')</label>
                                         <input type="text" class="form-control" id="banner_name"
                                                placeholder="@lang('admin.Banner Name')"
                                                name="banner_name"
                                                value="{{ old('banner_name', $flight->banner_name) }}">
-                                    </div> --}}
+                                    </div>
                                     <div class="form-group">
                                         <label for="banner_slug">@lang('admin.Banner Slug')</label>
                                         <input type="text" class="form-control" id="banner_slug"
@@ -247,11 +247,13 @@
             event.preventDefault()
             let id = '{{ @$flight->id ? @$flight->id : 0 }}'
             let banner_active = $("#banner_active").val()
+            let banner_name = $("#banner_name").val()
             let banner_slug = $("#banner_slug").val()
             let formData = new FormData();
             formData.append("_token", "{{ csrf_token() }}");
             formData.append('id', id);
             formData.append('banner_active', banner_active);
+            formData.append('banner_name', banner_name);
             formData.append('banner_slug', banner_slug);
             formData.append('type', '{{ $type }}');
 

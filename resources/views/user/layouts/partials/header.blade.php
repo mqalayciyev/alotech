@@ -214,7 +214,12 @@
                                             <a href="{{ route('my_account') }}" class="text-gray-90"
                                                 data-toggle="tooltip" data-placement="top" title="Hesabım">
                                                 <i class="font-size-22 far fa-user"></i>
+                                                
                                             </a>
+                                            @if (auth()->user())
+                                            <span style="right: 0px; left: inherit" data-toggle="tooltip" data-placement="top" title="Bonuslarım" class="width-22 height-22 bg-dark position-absolute d-flex align-items-center justify-content-center rounded-circle left-12 top-8 font-weight-bold font-size-12 text-white">{{ auth()->user()->bonus }}</span>
+                                            @endif
+                                            
                                         </li>
                                         <li class="col pr-xl-0 px-2 px-sm-3">
                                             <a href="{{ route('cart') }}"

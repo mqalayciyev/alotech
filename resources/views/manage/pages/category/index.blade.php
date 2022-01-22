@@ -82,9 +82,9 @@
                                             <div class="form-group">
                                                 <input type="checkbox" name="category_view" value="1" id="category_view"> <label for="category_view">Bu kategoriyanı ana səhifədə göstər</label>
                                             </div>
-                                            <div class="form-group">
+                                            {{-- <div class="form-group">
                                                 <input type="checkbox" name="no_order_amount" value="1" id="no_order_amount"> <label for="no_order_amount">Minimum sifariş məbləği aid edilməsin</label>
-                                            </div>
+                                            </div> --}}
                                             <div class="form-group">
                                                 <img id="category_image_view" width="100" height="126"><br>
                                                 <div>
@@ -129,7 +129,9 @@
                                     <th>@lang('admin.Created at')</th>
                                     <th>@lang('admin.Action')</th>
                                     <th>
-
+                                        <button type="button" id="select_all" data-check="0" title="Hamısını seç" class="btn btn-danger btn-xs">
+                                            <i class="fa fa-square"></i>
+                                        </button>
                                         <button type="button" {{ $disabled }} title="@lang('admin.Select and Delete')"
                                             name="bulk_delete" id="bulk_delete" class="btn btn-danger btn-xs"><i
                                                 class="fa fa-trash"></i></button>
@@ -342,6 +344,24 @@
 
                 var val = $(this).val();
                 $("input[name=slug]").val(val);
+            });
+
+            $(document).on('click', '#select_all', function () {
+                let check = $(this).data('check')
+                if(check == 1){
+                    $('.checkbox').each(function () {
+                        $(this).prop('checked', false)
+                    });
+                    $(this).html('<i class="fa fa-square"></i>')
+                    $(this).data('check', 0)
+                }
+                else{
+                    $('.checkbox').each(function () {
+                        $(this).prop('checked', true)
+                    });
+                    $(this).data('check', 1)
+                    $(this).html('<i class="fa fa-check-square"></i>')
+                }
             });
 
         });

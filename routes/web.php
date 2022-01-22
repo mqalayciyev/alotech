@@ -90,6 +90,7 @@ Route::namespace('User')->group(function () {
     Route::middleware(['auth'])->group(function () {
         Route::get('/account', 'UserController@index')->name('my_account');
         Route::get('/payments', 'PaymentController@index')->name('payment');
+        Route::get('/payment/city', 'PaymentController@city')->name('payment.city');
         Route::post('/pay', 'PaymentController@pay')->name('pay');
         Route::post('/user/sign-out', 'UserController@logout')->name('logout');
         Route::get('/orders', 'OrderController@index')->name('orders');

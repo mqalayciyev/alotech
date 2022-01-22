@@ -161,6 +161,20 @@
                                                         </div>
                                                     </div>
                                                     <div class="product-item__footer">
+                                                        @if ($product->price->sum('stock_piece') > 0)
+                                                        <p class="mb-2 text-center"><i class="fas fa-check text-success"></i> Mövcuddur</p>
+                                                    @else
+                                                        @if ($product->order_arrival)
+                                                            @php
+                                                                Carbon::setLocale('az');
+                                                                $arrival = Carbon::createFromDate($product->order_arrival);
+                                                                $now = Carbon::now();
+                                                            @endphp
+                                                            <p class="mb-2 text-center"><i class="fas fa-truck text-danger"></i> {{ $arrival->diffForHumans($now) }} çatacaq</p>
+                                                        @else
+                                                            <p class="mb-2 text-center"><i class="fas fa-times text-danger"></i> Mövcud deyil</p>
+                                                        @endif
+                                                    @endif
                                                         <div class="border-top pt-2 flex-center-between flex-wrap">
                                                             <input type="hidden" name="id" value="{{ $product->id }}">
                                                             <a href="javascript:void(0)" class="text-gray-6 font-size-13 add-to-compare" data-id="{{ $product->id }}"><i class="fa fa-retweet font-size-15"></i></a>
@@ -247,13 +261,11 @@
                                                                 @endforeach
                                                                 @endif
                                                             </div>
-                                                            {{-- <ul class="font-size-12 p-0 text-gray-110 mb-4 d-none d-md-block">
-                                                                <li class="line-clamp-1 mb-1 list-bullet">Brand new and high quality</li>
-                                                                <li class="line-clamp-1 mb-1 list-bullet">Made of supreme quality, durable EVA crush
-                                                                    resistant, anti-shock material.</li>
-                                                                <li class="line-clamp-1 mb-1 list-bullet">20 MP Electro and 28 megapixel CMOS rear
-                                                                    camera</li>
-                                                            </ul> --}}
+
+                                                            <div style="max-height: 150px; overflow: hidden;">
+                                                                {{ strip_tags($product->product_description) }}
+                                                             </div>
+
                                                         </div>
                                                     </div>
                                                     <div class="product-item__footer col-md-3 d-md-block">
@@ -315,6 +327,21 @@
                                                             <a href="javascript:void(0)" class="text-gray-6 font-size-13 add-to-compare" data-id="{{ $product->id }}"><i class="fa fa-retweet font-size-15"></i> Müqaisə</a>
                                                             <a href="javascript:void(0)" class="text-gray-6 font-size-13 add-wish-list" data-id="{{ $product->id }}"><i class="fa fa-heart font-size-15 mr-1"></i> Seçilmişlər</a>
                                                         </div>
+
+                                                        @if ($product->price->sum('stock_piece') > 0)
+                                                        <p class="my-2 text-center"><i class="fas fa-check text-success"></i> Mövcuddur</p>
+                                                    @else
+                                                        @if ($product->order_arrival)
+                                                            @php
+                                                                Carbon::setLocale('az');
+                                                                $arrival = Carbon::createFromDate($product->order_arrival);
+                                                                $now = Carbon::now();
+                                                            @endphp
+                                                            <p class="my-2 text-center"><i class="fas fa-truck text-danger"></i> {{ $arrival->diffForHumans($now) }} çatacaq</p>
+                                                        @else
+                                                            <p class="my-2 text-center"><i class="fas fa-times text-danger"></i> Mövcud deyil</p>
+                                                        @endif
+                                                    @endif
                                                     </div>
                                                 </div>
                                             </div>

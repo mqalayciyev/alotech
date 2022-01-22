@@ -3,67 +3,77 @@
 @section('content')
 
 
-<aside id="sidebarCategory">
-    <div class="sidebar-category-close bg-overlay"></div>
+    <aside id="sidebarCategory">
+        <div class="sidebar-category-close bg-overlay"></div>
 
-    <div class="d-block w-75 filter-content">
+        <div class="d-block w-75 filter-content">
             <!-- Toggle Button -->
             <div class="d-flex align-items-center py-3 bg-white">
-                <button type="button" class="close sidebar-category-close ml-auto" >
+                <button type="button" class="close sidebar-category-close ml-auto">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
 
-        <div class="mb-6">
-            <div class="border-bottom border-color-1 mb-5">
-                <h3 class="section-title section-title__sm mb-0 pb-2 font-size-18">Filtr</h3>
-            </div>
-            <div class="border-bottom pb-4 mb-4">
-                <h4 class="font-size-14 mb-3 font-weight-bold">Marka</h4>
-                @foreach ($brands as $brand)
-                    @for ($i = 0; $i < count($brands_count); $i++)
-                        @if ($brand->id === $brands_count[$i]['id'])
-                            <p>
-                                <a class="filter--link" href="{{ route('brand.product', $brand->slug) }}" id="{{ $brand->id }}">{{ $brand->name }} ( {{ $brands_count[$i]['count'] }} )</a>
-                            </p>
-                        @endif
-                    @endfor
-                @endforeach
-            </div>
-            @if (count($colors->where('id', '!=', 1)) > 0)
+            <div class="mb-6">
+                <div class="border-bottom border-color-1 mb-5">
+                    <h3 class="section-title section-title__sm mb-0 pb-2 font-size-18">Filtr</h3>
+                </div>
                 <div class="border-bottom pb-4 mb-4">
-                    <h4 class="font-size-14 mb-3 font-weight-bold">Rəng</h4>
-                    @foreach ($colors->where('id', '!=', 1) as $color)
-                        <label class="d-block filter-label">
-                            {{ $color->title }}
-                            <input type="radio" name="color" class="color_filter filter-item-radio"
-                                data-id="{{ $color->id }}" value={{ $color->id }} />
-                        </label>
+                    <h4 class="font-size-14 mb-3 font-weight-bold">Marka</h4>
+                    @foreach ($brands as $brand)
+                        @for ($i = 0; $i < count($brands_count); $i++)
+                            @if ($brand->id === $brands_count[$i]['id'])
+                                <p>
+                                    <a class="filter--link" href="{{ route('brand.product', $brand->slug) }}"
+                                        id="{{ $brand->id }}">{{ $brand->name }} ( {{ $brands_count[$i]['count'] }}
+                                        )</a>
+                                </p>
+                            @endif
+                        @endfor
                     @endforeach
                 </div>
-            @endif
-            @if (count($sizes) > 0)
-                <div class="border-bottom pb-4 mb-4">
-                    <h4 class="font-size-14 mb-3 font-weight-bold">Ölçü</h4>
-                    @foreach ($sizes as $size)
-                        <label class="d-block filter-label">
-                            {{ $size->name }}
-                            <input type="radio" name="size" class="size_filter filter-item-radio"
-                                data-id="{{ $size->id }}" value={{ $size->id }} />
-
-                        </label>
-                    @endforeach
+                @if (count($colors->where('id', '!=', 1)) > 0)
+                    <div class="border-bottom pb-4 mb-4">
+                        <h4 class="font-size-14 mb-3 font-weight-bold">Rəng</h4>
+                        <!-- Checkboxes -->
+                        @foreach ($colors->where('id', '!=', 1) as $color)
+                            <div class="form-group d-flex align-items-center justify-content-between mb-2 pb-1">
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" class="custom-control-input colors" name="color"
+                                        id="nav-color-{{ $color->id }}" value="{{ $color->id }}">
+                                    <label class="custom-control-label"
+                                        for="nav-color-{{ $color->id }}">{{ $color->title }}</label>
+                                </div>
+                            </div>
+                        @endforeach
+                        <!-- End Checkboxes -->
+                    </div>
+                @endif
+                @if (count($sizes) > 0)
+                    <div class="border-bottom pb-4 mb-4">
+                        <h4 class="font-size-14 mb-3 font-weight-bold">Ölçü</h4>
+                        <!-- Checkboxes -->
+                        @foreach ($sizes as $size)
+                            <div class="form-group d-flex align-items-center justify-content-between mb-2 pb-1">
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" class="custom-control-input sizes" name="size"
+                                        id="nav-size-{{ $size->id }}" value="{{ $size->id }}">
+                                    <label class="custom-control-label"
+                                        for="nav-size-{{ $size->id }}">{{ $size->name }}
+                                    </label>
+                                </div>
+                            </div>
+                        @endforeach
+                        <!-- End Checkboxes -->
+                    </div>
+                @endif
+                <div class="range-slider">
+                    <button type="button" class="btn px-4 btn-primary-dark-w py-2 rounded-lg filter-products">Filtr</button>
+                    <a href="{{ url()->current() }}" class="btn px-4 btn-secondary py-2 rounded-lg">Təmizlə</a>
                 </div>
-            @endif
-            <div class="range-slider">
-                {{-- <h4 class="font-size-14 mb-3 font-weight-bold">Qiymət Aralığı</h4>
-                <div id="price-slider-1" ></div>
-                <hr> --}}
-                <a href="{{ url()->current() }}" class="btn px-4 btn-primary-dark-w py-2 rounded-lg">@lang('content.Clear All')</a>
             </div>
         </div>
-    </div>
-</aside>
+    </aside>
 
     <!-- ========== MAIN CONTENT ========== -->
     <main id="content" role="main">
@@ -75,11 +85,16 @@
                 <div class="my-md-3">
                     <nav aria-label="breadcrumb">
                         <ol class="breadcrumb mb-3 flex-nowrap flex-xl-wrap overflow-auto overflow-xl-visble">
-                            <li  class="breadcrumb-item flex-shrink-0 flex-xl-shrink-1"><a href="/">@lang('content.Home')</a></li>
-                            <li class="breadcrumb-item flex-shrink-0 flex-xl-shrink-1"><i class="fas fa-chevron-right"></i></li>
-                            <li  class="breadcrumb-item flex-shrink-0 flex-xl-shrink-1"><a href="{{ route('brands') }}">Brendlər</a></li>
-                            <li class="breadcrumb-item flex-shrink-0 flex-xl-shrink-1"><i class="fas fa-chevron-right"></i></li>
-                            <li class="breadcrumb-item flex-shrink-0 flex-xl-shrink-1 active" aria-current="page">{{ $brand_name }}</li>
+                            <li class="breadcrumb-item flex-shrink-0 flex-xl-shrink-1"><a href="/">@lang('content.Home')</a>
+                            </li>
+                            <li class="breadcrumb-item flex-shrink-0 flex-xl-shrink-1"><i class="fas fa-chevron-right"></i>
+                            </li>
+                            <li class="breadcrumb-item flex-shrink-0 flex-xl-shrink-1"><a
+                                    href="{{ route('brands') }}">Brendlər</a></li>
+                            <li class="breadcrumb-item flex-shrink-0 flex-xl-shrink-1"><i class="fas fa-chevron-right"></i>
+                            </li>
+                            <li class="breadcrumb-item flex-shrink-0 flex-xl-shrink-1 active" aria-current="page">
+                                {{ $brand_name }}</li>
                         </ol>
                     </nav>
                 </div>
@@ -101,7 +116,9 @@
                                 @for ($i = 0; $i < count($brands_count); $i++)
                                     @if ($brand->id === $brands_count[$i]['id'])
                                         <p class="m-0">
-                                            <a class="filter--link" href="{{ route('brand.product', $brand->slug) }}" id="{{ $brand->id }}">{{ $brand->name }} ( {{ $brands_count[$i]['count'] }} )</a>
+                                            <a class="filter--link" href="{{ route('brand.product', $brand->slug) }}"
+                                                id="{{ $brand->id }}">{{ $brand->name }} (
+                                                {{ $brands_count[$i]['count'] }} )</a>
                                         </p>
                                     @endif
                                 @endfor
@@ -110,34 +127,42 @@
                         @if (count($colors->where('id', '!=', 1)) > 0)
                             <div class="border-bottom pb-4 mb-4">
                                 <h4 class="font-size-14 mb-3 font-weight-bold">Rəng</h4>
+                                <!-- Checkboxes -->
                                 @foreach ($colors->where('id', '!=', 1) as $color)
-                                    <label class="d-block filter-label">
-                                        {{ $color->title }}
-                                        <input type="radio" name="color" class="color_filter filter-item-radio"
-                                            data-id="{{ $color->id }}" value={{ $color->id }} />
-                                    </label>
+                                    <div class="form-group d-flex align-items-center justify-content-between mb-2 pb-1">
+                                        <div class="custom-control custom-checkbox">
+                                            <input type="checkbox" class="custom-control-input colors" name="color"
+                                                id="color-{{ $color->id }}" value="{{ $color->id }}">
+                                            <label class="custom-control-label"
+                                                for="color-{{ $color->id }}">{{ $color->title }}</label>
+                                        </div>
+                                    </div>
                                 @endforeach
+                                <!-- End Checkboxes -->
                             </div>
                         @endif
                         @if (count($sizes) > 0)
                             <div class="border-bottom pb-4 mb-4">
                                 <h4 class="font-size-14 mb-3 font-weight-bold">Ölçü</h4>
+                                <!-- Checkboxes -->
                                 @foreach ($sizes as $size)
-                                    <label class="d-block filter-label">
-                                        {{ $size->name }}
-                                        <input type="radio" name="size" class="size_filter filter-item-radio"
-                                            data-id="{{ $size->id }}" value={{ $size->id }} />
-
-                                    </label>
+                                    <div class="form-group d-flex align-items-center justify-content-between mb-2 pb-1">
+                                        <div class="custom-control custom-checkbox">
+                                            <input type="checkbox" class="custom-control-input sizes" name="size"
+                                                id="size-{{ $size->id }}" value="{{ $size->id }}">
+                                            <label class="custom-control-label"
+                                                for="size-{{ $size->id }}">{{ $size->name }}
+                                            </label>
+                                        </div>
+                                    </div>
                                 @endforeach
+                                <!-- End Checkboxes -->
                             </div>
                         @endif
                         <div class="range-slider">
-                            {{-- <h4 class="font-size-14 mb-3 font-weight-bold">Qiymət Aralığı</h4>
-                            <div id="price-slider-2" ></div>
-                            <hr> --}}
-                            <a href="{{ url()->current() }}"
-                                class="btn px-4 btn-primary-dark-w py-2 rounded-lg">@lang('content.Clear All')</a>
+                            <button type="button"
+                                class="btn px-4 btn-primary-dark-w py-2 rounded-lg filter-products">Filtr</button>
+                            <a href="{{ url()->current() }}" class="btn px-4 btn-secondary py-2 rounded-lg">Təmizlə</a>
                         </div>
                     </div>
                 </div>
@@ -188,7 +213,8 @@
                         </div>
                         <div class="d-xl-none">
                             <!-- Account Sidebar Toggle Button -->
-                            <a id="sidebarNavToggler1" class="btn btn-sm py-1 font-weight-normal" href="javascript:void(0)" role="button">
+                            <a id="sidebarNavToggler1" class="btn btn-sm py-1 font-weight-normal" href="javascript:void(0)"
+                                role="button">
                                 <i class="fas fa-sliders-h"></i> <span class="ml-1">Filtr</span>
                             </a>
                             <!-- End Account Sidebar Toggle Button -->
@@ -209,24 +235,9 @@
 
 @section('script')
     <script>
-        let filter_data = [];
+        let filter_data = new Object();
 
         $(function() {
-
-
-            $(document).on('change', '.selectpicker', function() {
-                var brand_slug = '{{ $brand_slug }}';
-                var sorting_name = $(this).val();
-                var order = $(this).find(":selected").attr('data-order');
-
-                filter_data[0] = 'brand_sorting'
-                filter_data[1] = sorting_name
-                filter_data[2] = order
-                products(1, '{{ $brand_slug }}', filter_data);
-
-            });
-
-
 
             $(document).on('click', '.pagination-page', function() {
                 let page = $(this).data('page')
@@ -254,92 +265,59 @@
             };
 
 
-            $(document).on('change', '.size_filter', function() {
-                var id = $(this).val();
-                var brand_slug = '{{ $brand_slug }}';
-                filter_data[0] = 'size_filter'
-                filter_data[1] = id
+            // $(document).on('change', '.size_filter', function() {
+            //     var id = $(this).val();
+            //     var brand_slug = '{{ $brand_slug }}';
+            //     filter_data[0] = 'size_filter'
+            //     filter_data[1] = id
+            //     products(1, '{{ $brand_slug }}', filter_data);
+            // });
+            // $(document).on('change', '.color_filter', function() {
+            //     var id = $(this).val();
+            //     var brand_slug = '{{ $brand_slug }}';
+            //     filter_data[0] = 'color_filter'
+            //     filter_data[1] = id
+            //     products(1, '{{ $brand_slug }}', filter_data);
+            // });
+
+            $(document).on('click', '.filter-products', function() {
+                let colors = [];
+                let sizes = [];
+                $('.colors:checked').each(function() {
+                    colors.push($(this).val());
+                });
+                $('.sizes:checked').each(function() {
+                    sizes.push($(this).val());
+                });
+                filter_data['colors'] = colors
+                filter_data['sizes'] = sizes
+
                 products(1, '{{ $brand_slug }}', filter_data);
             });
-            $(document).on('change', '.color_filter', function() {
-                var id = $(this).val();
-                var brand_slug = '{{ $brand_slug }}';
-                filter_data[0] = 'color_filter'
-                filter_data[1] = id
+
+            $(document).on('change', '.selectpicker', function() {
+                var category_name = '{{ $brand_slug }}';
+                var sorting_name = $(this).val();
+                var order = $(this).find(":selected").attr('data-order');
+                let sorting = new Object()
+                sorting.sorting_name = sorting_name
+                sorting.order = order
+
+                filter_data['sorting'] = sorting
                 products(1, '{{ $brand_slug }}', filter_data);
+
             });
 
 
-            // PRICE SLIDER
-            var slider1 = document.getElementById('price-slider-1');
-            if (slider1) {
-                noUiSlider.create(slider1, {
-                    start: [0, 1000],
-                    connect: true,
-                    tooltips: [true, true],
-                    format: {
-                        to: function(value) {
-                            return value.toFixed(2);
-                        },
-                        from: function(value) {
-                            return value
-                        },
-                    },
-                    range: {
-                        'min': 0,
-                        'max': 3000
-                    }
-                });
-
-
-                document.getElementById('price-slider-1').addEventListener('click', function() {
-                    var values = slider1.noUiSlider.get();
-                    var brand_slug = '{{ $brand_slug }}';
-                    filter_data[0] = 'price_filter'
-                    filter_data[1] = values
-                    products(1, '{{ $brand_slug }}', filter_data);
-                });
-            }
-            var slider2 = document.getElementById('price-slider-2');
-            if (slider2) {
-                noUiSlider.create(slider2, {
-                    start: [0, 1000],
-                    connect: true,
-                    tooltips: [true, true],
-                    format: {
-                        to: function(value) {
-                            return value.toFixed(2);
-                        },
-                        from: function(value) {
-                            return value
-                        },
-                    },
-                    range: {
-                        'min': 0,
-                        'max': 3000
-                    }
-                });
-
-
-                document.getElementById('price-slider-2').addEventListener('click', function() {
-                    var values = slider12.noUiSlider.get();
-                    var brand_slug = '{{ $brand_slug }}';
-                    filter_data[0] = 'price_filter'
-                    filter_data[1] = values
-                    products(1, '{{ $brand_slug }}', filter_data);
-                });
-            }
-
-
-            $(document).on('click', '#sidebarNavToggler1', function(){
+            $(document).on('click', '#sidebarNavToggler1', function() {
                 $("#sidebarCategory").addClass('active')
                 $("body").css('overflow', 'hidden')
             })
-            $(document).on('click', '.sidebar-category-close', function(){
+            $(document).on('click', '.sidebar-category-close', function() {
                 $("#sidebarCategory").removeClass('active')
                 $("body").css('overflow', 'auto')
             })
-            
+
         });
     </script>
 @endsection

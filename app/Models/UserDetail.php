@@ -17,6 +17,6 @@ class UserDetail extends Model
 
     public function userCity()
     {
-        return $this->hasMany('App\Models\City', 'city', 'id');
+        return $this->hasOne('App\Models\City', 'id', 'city');
     }
 }

@@ -83,101 +83,41 @@ class BrandsController extends Controller
                 ->get();
         }
         else{
-            $type = $filter_data[0];
-            if($type == 'size_filter'){
-                $id = $filter_data[1];
-                $count = Product::select('product.*')
-                    ->leftJoin('size_product', 'size_product.product_id', 'product.id')
-                    ->leftJoin('brand_product', 'brand_product.product_id', 'product.id')
-                    ->leftJoin('brand', 'brand.id', 'brand_product.brand_id')
-                    ->where('brand.slug', $brand_slug)
-                    ->where('size_product.size_id', $id)
-                    ->orderBy('product.updated_at', 'desc')
-                    ->count();
-                $products = Product::select('product.*')
-                    ->leftJoin('size_product', 'size_product.product_id', 'product.id')
-                    ->leftJoin('brand_product', 'brand_product.product_id', 'product.id')
-                    ->leftJoin('brand', 'brand.id', 'brand_product.brand_id')
-                    ->where('brand.slug', $brand_slug)
-                    ->where('size_product.size_id', $id)
-                    ->orderBy('product.updated_at', 'desc')
-                    ->offset($offset)
-                    ->limit(12)
-                    ->get();
 
+            $colors = isset($filter_data['colors']) ? $filter_data['colors'] : null;
+            $sizes = isset($filter_data['sizes']) ? $filter_data['sizes'] : null;
+            $sorting = isset($filter_data['sorting']) ? $filter_data['sorting'] : null;
+
+            $query = Product::with(['brands', 'colors', 'sizes', 'price', 'categories']);
+
+            $query->whereHas('brands', function($q) use ($brand_slug) {
+                $q->where('brand.slug', $brand_slug);
+            });
+
+            if($colors){
+                $query->whereHas('colors', function($q) use ($colors) {
+                    $q->whereIn('color.id', $colors);
+                });
             }
-            elseif($type == 'color_filter'){
-                $id = $filter_data[1];
-                $count = Product::select('product.*')
-                    ->leftJoin('color_product', 'color_product.product_id', 'product.id')
-                    ->leftJoin('brand_product', 'brand_product.product_id', 'product.id')
-                    ->leftJoin('brand', 'brand.id', 'brand_product.brand_id')
-                    ->where('brand.slug', $brand_slug)
-                    ->where('color_product.color_id', $id)
-                    ->orderBy('product.updated_at', 'desc')
-                    ->count();
-                $products = Product::select('product.*')
-                    ->leftJoin('color_product', 'color_product.product_id', 'product.id')
-                    ->leftJoin('brand_product', 'brand_product.product_id', 'product.id')
-                    ->leftJoin('brand', 'brand.id', 'brand_product.brand_id')
-                    ->where('brand.slug', $brand_slug)
-                    ->where('color_product.color_id', $id)
-                    ->orderBy('product.updated_at', 'desc')
-                    ->offset($offset)
-                    ->limit(12)
-                    ->get();
+            if($sizes){
+                $query->whereHas('sizes', function($q) use ($sizes) {
+                    $q->whereIn('size.id', $sizes);
+                });
             }
-            elseif($type == 'price_filter'){
-                $minmax_price = $filter_data[1];
-                $min_price = $minmax_price[0];
-                $max_price = $minmax_price[1];
-                $count = Product::select('product.*')
-                    ->leftJoin('product_detail', 'product_detail.product_id', 'product.id')
-                    ->leftJoin('category_product', 'category_product.product_id', 'product.id')
-                    ->leftJoin('brand_product', 'brand_product.product_id', 'product.id')
-                    ->leftJoin('price_list', 'price_list.product_id', 'product.id')
-                    ->leftJoin('brand', 'brand.id', 'brand_product.brand_id')
-                    ->where('sale_price', '<=', $max_price)
-                    ->where('sale_price', '>=', $min_price)
-                    ->where('brand.slug', $brand_slug)
-                    ->orderBy('product.updated_at', 'desc')
-                    ->count();
-                $products = Product::select('product.*')
-                    ->leftJoin('product_detail', 'product_detail.product_id', 'product.id')
-                    ->leftJoin('category_product', 'category_product.product_id', 'product.id')
-                    ->leftJoin('brand_product', 'brand_product.product_id', 'product.id')
-                    ->leftJoin('price_list', 'price_list.product_id', 'product.id')
-                    ->leftJoin('brand', 'brand.id', 'brand_product.brand_id')
-                    ->where('sale_price', '<=', $max_price)
-                    ->where('sale_price', '>=', $min_price)
-                    ->where('brand.slug', $brand_slug)
-                    ->orderBy('product.updated_at', 'desc')
-                    ->offset($offset)
-                    ->limit(12)
-                    ->get();
+            if($sorting){
+                if($sorting['sorting_name'] == 'created_at'){
+                    $query->orderBy($sorting['sorting_name'], $sorting['order']);
+                }
+                else{
+                    $query->join('price_list', 'price_list.product_id', 'product.id')
+                        ->orderBy('price_list.' . $sorting['sorting_name'], $sorting['order'])
+                        ->groupBy('product.id');
+                }
             }
-            elseif($type == 'brand_sorting'){
-                $sorting_name = $filter_data[1];
-                $order = $filter_data[2];
-                $count = Product::select('product.*')
-                    ->leftJoin('brand_product', 'brand_product.product_id', 'product.id')
-                    ->leftJoin('price_list', 'price_list.product_id', 'product.id')
-                    ->leftJoin('brand', 'brand.id', 'brand_product.brand_id')
-                    ->where('brand.slug', $brand_slug)
-                    ->orderBy($sorting_name, $order)
-                    ->groupBy('product.id')
-                    ->count();
-                $products = Product::select('product.*')
-                    ->leftJoin('brand_product', 'brand_product.product_id', 'product.id')
-                    ->leftJoin('price_list', 'price_list.product_id', 'product.id')
-                    ->leftJoin('brand', 'brand.id', 'brand_product.brand_id')
-                    ->where('brand.slug', $brand_slug)
-                    ->orderBy($sorting_name, $order)
-                    ->groupBy('product.id')
-                    ->offset($offset)
-                    ->limit(12)
-                    ->get();
-            }
+            $count = $query->count();
+            
+            $products = $query->offset($offset)->limit(12)->get();
+
         }
 
 

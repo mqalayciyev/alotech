@@ -34166,6 +34166,8 @@ blockquote:not(.blockquote) p {
 
 .sidebar-navbar .dropdown-current + .dropdown-list {
   padding: 0 0.875rem 0.875rem;
+  max-height: 250px;
+  overflow: auto;
 }
 
 .sidebar-navbar .dropdown-current + .dropdown-list li:not(:nth-last-child(1)) .dropdown-item,
@@ -37778,6 +37780,25 @@ blockquote:not(.blockquote) p {
     opacity: 1;
 }
 
-label.delivery_info{
-        
+.delivery_info{
+    display: inline-block;
+}
+.delivery_info label{
+    border: 1px solid #dddddd;
+    border-radius: 1.4rem;
+    padding: 0.67rem 1rem;
+    cursor: pointer;
+}
+.delivery_info input[type='radio']{
+    visibility: hidden;
+    position: absolute;
+}
+
+.delivery_info input[type=radio]:checked + label{
+    border-color: #66afe9;
+}
+
+
+.hide-show{
+    cursor: pointer;
 }

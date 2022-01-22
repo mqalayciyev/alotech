@@ -143,39 +143,38 @@ class InvoiceController extends Controller
             ->filename($client->name . ' ' . $customer->name)
             ->addItems($items)
             ->notes(json_encode($notes))
-            ->logo('true')
             ->save('public');
 
 
 
-        $base64File = "data:application/pdf;base64," . base64_encode($invoice->stream());
-        $filename = "invoice.pdf";
+        // $base64File = "data:application/pdf;base64," . base64_encode($invoice->stream());
+        // $filename = "invoice.pdf";
 
             
         
 
-        $data = json_encode(array(
-            'phone' => $order->mobile,
-            'body' => $base64File,
-            'filename' => $filename,
-            'caption'=>'SP-' . $order->id
-        ));
+        // $data = json_encode(array(
+        //     'phone' => $order->mobile,
+        //     'body' => $base64File,
+        //     'filename' => $filename,
+        //     'caption'=>'SP-' . $order->id
+        // ));
         
-        $token = '6pb2shvqdz5zpcqq';
-        $instanceId = '381151';
-        
-        
-        $url = 'https://eu138.chat-api.com/instance'.$instanceId.'/sendFile?token='.$token;
-        // Make a POST request
-        $options = stream_context_create(['http' => [
-                'method'  => 'POST',
-                'header'  => 'Content-type: application/json',
-                'content' => $data
-            ]
-        ]);
+        // $token = '6pb2shvqdz5zpcqq';
+        // $instanceId = '381151';
         
         
-        $result = file_get_contents($url, false, $options);
+        // $url = 'https://eu138.chat-api.com/instance'.$instanceId.'/sendFile?token='.$token;
+        // // Make a POST request
+        // $options = stream_context_create(['http' => [
+        //         'method'  => 'POST',
+        //         'header'  => 'Content-type: application/json',
+        //         'content' => $data
+        //     ]
+        // ]);
+        
+        
+        // $result = file_get_contents($url, false, $options);
         return response()->json(['status' => 'success']);
     }
     public function warehouse (){
@@ -247,34 +246,34 @@ class InvoiceController extends Controller
 
 
 
-        $base64File = "data:application/pdf;base64," . base64_encode($invoice->stream());
-        $filename = "invoice.pdf";
+        // $base64File = "data:application/pdf;base64," . base64_encode($invoice->stream());
+        // $filename = "invoice.pdf";
 
             
         
 
-        $data = json_encode(array(
-            'phone' => request('number'),
-            'body' => $base64File,
-            'filename' => $filename,
-            'caption'=>'SP-' . $order->id
-        ));
+        // $data = json_encode(array(
+        //     'phone' => request('number'),
+        //     'body' => $base64File,
+        //     'filename' => $filename,
+        //     'caption'=>'SP-' . $order->id
+        // ));
         
-        $token = '6pb2shvqdz5zpcqq';
-        $instanceId = '381151';
-        
-        
-        $url = 'https://eu138.chat-api.com/instance'.$instanceId.'/sendFile?token='.$token;
-        // Make a POST request
-        $options = stream_context_create(['http' => [
-                'method'  => 'POST',
-                'header'  => 'Content-type: application/json',
-                'content' => $data
-            ]
-        ]);
+        // $token = '6pb2shvqdz5zpcqq';
+        // $instanceId = '381151';
         
         
-        $result = file_get_contents($url, false, $options);
+        // $url = 'https://eu138.chat-api.com/instance'.$instanceId.'/sendFile?token='.$token;
+        // // Make a POST request
+        // $options = stream_context_create(['http' => [
+        //         'method'  => 'POST',
+        //         'header'  => 'Content-type: application/json',
+        //         'content' => $data
+        //     ]
+        // ]);
+        
+        
+        // $result = file_get_contents($url, false, $options);
         return response()->json(['status' => 'success']);
     }
     public function courier (){
@@ -288,30 +287,30 @@ class InvoiceController extends Controller
 
         $order = Order::with('cart.cart_products.product')->find(request('id'));
 
-        $message = 'Müştəri: ' . $order->first_name . ' ' . $order->last_name . "\r\n" .
-            'Mobil: ' . $order->mobile . "\r\n" .
-            'Telefon: ' . $order->phone . "\r\n" .
-            'Ünvan: ' .  $order->address . "\r\n" .
-            'Sifariş nömrəsi: SP-' .  $order->id . "\r\n" .
-            'Ödəniş növü: ' .  $order->bank;
-        $data = [
-            'phone' => request('number'), // Receivers phone
-            'body' => $message, // Message
-        ];
-        $json = json_encode($data); // Encode data to JSON
-        // URL for request POST /message
-        $token = '6pb2shvqdz5zpcqq';
-        $instanceId = '381151';
-        $url = 'https://api.chat-api.com/instance'.$instanceId.'/message?token='.$token;
-        // Make a POST request
-        $options = stream_context_create(['http' => [
-                'method'  => 'POST',
-                'header'  => 'Content-type: application/json',
-                'content' => $json
-            ]
-        ]);
+        // $message = 'Müştəri: ' . $order->first_name . ' ' . $order->last_name . "\r\n" .
+        //     'Mobil: ' . $order->mobile . "\r\n" .
+        //     'Telefon: ' . $order->phone . "\r\n" .
+        //     'Ünvan: ' .  $order->address . "\r\n" .
+        //     'Sifariş nömrəsi: SP-' .  $order->id . "\r\n" .
+        //     'Ödəniş növü: ' .  $order->bank;
+        // $data = [
+        //     'phone' => request('number'), // Receivers phone
+        //     'body' => $message, // Message
+        // ];
+        // $json = json_encode($data); // Encode data to JSON
+        // // URL for request POST /message
+        // $token = '6pb2shvqdz5zpcqq';
+        // $instanceId = '381151';
+        // $url = 'https://api.chat-api.com/instance'.$instanceId.'/message?token='.$token;
+        // // Make a POST request
+        // $options = stream_context_create(['http' => [
+        //         'method'  => 'POST',
+        //         'header'  => 'Content-type: application/json',
+        //         'content' => $json
+        //     ]
+        // ]);
         
-        $result = file_get_contents($url, false, $options);
+        // $result = file_get_contents($url, false, $options);
         return response()->json(['status' => 'success']);
     }
 }

@@ -11,7 +11,7 @@ class Order extends Model
     protected $table = 'order';
     protected $fillable = [
         'cart_id', 'order_amount', 'status',
-        'first_name', 'last_name', 'email', 'address', 'city', 'country', 'zip_code', 'phone', 'mobile', 'bank', 'installment_number', 'bonus_amount', 'shipping'
+        'first_name', 'last_name', 'email', 'address', 'city', 'country', 'zip_code', 'phone', 'mobile', 'bank', 'installment_number', 'bonus_amount', 'shipping', 'delivery_day', 'delivery_time'
     ];
 
     public function cart()
@@ -21,6 +21,6 @@ class Order extends Model
 
     public function userCity()
     {
-        return $this->hasMany('App\Models\City', 'city', 'id');
+        return $this->hasOne('App\Models\City', 'id', 'city');
     }
 }

@@ -528,6 +528,7 @@
                                                                name="discount_date"
                                                                value="{{ old('discount_date', $entry->discount_date) ? date('Y-m-d\TH:i', strtotime(old('discount_date', $entry->discount_date))) : '' }}"
                                                                >
+                                                               <span class="input-group-addon"><i class="fa fa-times" onclick="document.getElementById('discount_date').value = null"></i></span>
                                                     </div>
                                                 </div>
                                             </div>
@@ -678,6 +679,25 @@
                                                     </select>
                                                 </div>
                                             </div>
+                                        </div>
+
+                                        <hr>
+                                        <div class="row">
+                                            <div class="col-md-8">
+                                                <div class="form-group">
+                                                    <label style="padding: 7px 0 0 0" for="order_arrival" class="col-md-6 text-left">Sifarişin gəlmə vaxtı</label> 
+                                                    <div class="input-group col-md-6">
+                                                        <input type="datetime-local" class="form-control"
+                                                               id="order_arrival"
+                                                               name="order_arrival"
+                                                               value="{{ old('order_arrival', $entry->order_arrival) ? date('Y-m-d\TH:i', strtotime(old('order_arrival', $entry->order_arrival))) : '' }}"
+                                                               >
+                                                               <span class="input-group-addon"><i class="fa fa-times" onclick="document.getElementById('order_arrival').value = null"></i></span>
+                                                               
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6"></div>
                                         </div>
                                     </div>
                                 </div>

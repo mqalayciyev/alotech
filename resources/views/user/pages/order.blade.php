@@ -106,8 +106,8 @@
                                     <span>{{ number_format($cart_product->amount, 2) }}‎ <i>₼</i></span>
                                 </td>
                                 <td class="price text-center">
-                                    {!! $cart_product->size ? '<p>Ölçü: <span>' . $cart_product->size->name . '</span></p>' : '' !!}
-                                    {!! $cart_product->color_id > 1 ? '<p>Rəng: <span style="background-color: ' . $cart_product->color->name . '">' . $cart_product->color->title . '</span></p>' : '' !!}
+                                    {!! $cart_product->size ? '<p>Ölçü: ' . $cart_product->size->name . '</p>' : '' !!}
+                                    {!! $cart_product->color_id > 1 ? '<p>Rəng: ' . $cart_product->color->title . '</p>' : '' !!}
                                 </td>
                                 <td class="qty text-center">
                                     <span>{{ $cart_product->piece }}</span>

@@ -8,12 +8,15 @@ use App\Mail\OrderStatus;
 use App\Models\Order;
 use App\Models\Info;
 use App\Models\User;
+use App\Models\City;
 
 use DB;
 use App\Models\Cart as CartModel;
 use App\Models\CartProduct;
 use App\Models\PriceList;
 use App\Models\Product;
+use App\Models\UserDetail;
+use Carbon\Carbon;
 use Gloudemans\Shoppingcart\Facades\Cart;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Cookie;
@@ -31,30 +34,10 @@ class PaymentController extends Controller
         }
 
 
-
-        $no_order_amount = [];
-
-        $cartProducts = CartProduct::where('cart_id', session('active_cart_id'))->get();
-
-        foreach ($cartProducts as $cartProduct) {
-            if (!isset($cartProduct->product->categories[0]->top_category->no_order_amount)) {
-                if (!in_array($cartProduct->product->categories[0]->no_order_amount, $no_order_amount)) {
-                    $no_order_amount[] = $cartProduct->product->categories[0]->no_order_amount;
-                }
-            } else {
-                if (!in_array($cartProduct->product->categories[0]->top_category->no_order_amount, $no_order_amount)) {
-                    $no_order_amount[] = $cartProduct->product->categories[0]->top_category->no_order_amount;
-                }
-            }
-        }
         $method = 1;
 
-        if (!in_array(0, $no_order_amount)) {
-            $method = 1;
-        } else {
-            if (Cart::total() < $info->min_order_amount) {
-                return back()->with(['warning', 'Minimum sifariş məbləği ' . $info->min_order_amount . 'AZN-dir']);
-            }
+        if (Cart::total() < $info->min_order_amount) {
+            return back()->with(['warning', 'Minimum sifariş məbləği ' . $info->min_order_amount . 'AZN-dir']);
         }
 
 
@@ -66,9 +49,57 @@ class PaymentController extends Controller
 
         return view('user.pages.payment', compact('user_detail', 'method'));
     }
+    public function city()
+    {
+        $city = City::find(request('city'));
+
+
+
+        $delivery_amount = 0;
+        $delivery_days = '';
+        $delivery_time = '';
+        if($city){
+            if (strpos($city->delivery_days, '-')) {
+                $days = explode('-', $city->delivery_days);
+            } else {
+                $days[] = $city->delivery_days;
+            }
+    
+            $start = $days[0];
+            $end = $days[count($days) - 1];
+    
+            for ($i = $start; $i <= $end; $i++) {
+                $days_array[] = $i;
+            }
+
+            $delivery_amount = $city->delivery_amount ? $city->delivery_amount : 0;
+
+            foreach ($days_array as $key => $day) {
+                $delivery_days .= '<div class="checkbox delivery_info">
+                <input type="radio" id="day-' . $key . '"
+                    name="delivery_day"
+                    value="' . Carbon::now()->addDays($day)->format('d-m-Y') . '">
+                <label
+                    for="day-' . $key . '">' .  date('d', strtotime(Carbon::now()->addDays($day))) . ' ' . __('content.month.' . date('F', strtotime(Carbon::now()->addDays($day)))) . '</label>
+            </div>';
+            }
+    
+            foreach ($city->delivery_time as $key => $item) {
+                $delivery_time .= '<div class="checkbox delivery_info">
+                <input type="radio" name="delivery_time"
+                    id="time-' . $key . '"
+                    value="' . $item['start'] . '-' . $item['end'] . '">
+                <label
+                    for="time-' . $key . '">' . $item['start'] . ' - ' . $item['end'] . '</label>
+            </div>';
+            }
+        }
+
+        return response()->json(['delivery_amount' => $delivery_amount, 'delivery_days' => $delivery_days, 'delivery_time' => $delivery_time]);
+    }
     public function pay()
     {
-
+        
         $active_cart_id = session('active_cart_id');
 
 
@@ -77,7 +108,8 @@ class PaymentController extends Controller
 
             $product = Product::where('id', $value->product_id)->first();
             if ($product) {
-                $priceList = PriceList::find($value->options->price_id);
+                
+                $priceList = PriceList::find($value->price_id);
 
                 if ($priceList->stock_piece == 0) {
                     return redirect()->route('cart')
@@ -113,7 +145,6 @@ class PaymentController extends Controller
             'address' => 'required',
             'city' => 'required',
             'payment_method' => 'required',
-            'delivery_method' => 'required',
         ], $messages);
 
         $info = Info::find(1);
@@ -125,11 +156,7 @@ class PaymentController extends Controller
             $bonus = 0;
         }
 
-        if (request('delivery_method') == 1) {
-            $shipping = request('standart_delivery_amount');
-        } else {
-            $shipping = request('fast_delivery_amount');
-        }
+        $shipping = request('delivery_amount');
 
         $amount = number_format((Cart::subtotal() + $shipping - $bonus_amount), 2);
 
@@ -146,6 +173,8 @@ class PaymentController extends Controller
         $order['order_amount'] = $amount;
         $order['bonus_amount'] = $bonus_amount;
         $order['shipping'] = $shipping;
+        $order['delivery_day'] = request('delivery_day');
+        $order['delivery_time'] = request('delivery_time');
         $order['status'] = 'Your order has been received';
 
         // User::find(auth()->id())->update([
@@ -189,7 +218,7 @@ class PaymentController extends Controller
             foreach ($cartProduct as $value) {
                 $product = Product::where('id', $value->product_id)->first();
                 if ($product) {
-                    $priceList = PriceList::find($value->options->price_id);
+                    $priceList = PriceList::find($value->price_id);
                     PriceList::where('id', $value->options->price_id)->update(['stock_piece' => $priceList->stock_piece - $value->piece]);
                 }
             }

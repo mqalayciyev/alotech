@@ -145,7 +145,7 @@ class ProductController extends Controller
     }
     public function save($id = 0)
     {
-        $data = request()->only('product_name', 'meta_title', 'sku', 'meta_discription', 'slug', 'product_description',  'discount', 'discount_date', 'one_or_more', 'other_count', 'other_bonus', 'bonus_comment');
+        $data = request()->only('product_name', 'order_arrival', 'meta_title', 'sku', 'meta_discription', 'slug', 'product_description',  'discount', 'discount_date', 'one_or_more', 'other_count', 'other_bonus', 'bonus_comment');
 
         $data['slug'] = str_slug(request('product_name'));
         request()->merge(['slug' => $data['slug']]);

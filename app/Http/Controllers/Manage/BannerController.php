@@ -96,7 +96,7 @@ class BannerController extends Controller
             return response()->json(['status' => 'error', 'message' => 'Link boş ola bilməz']);
         }
 
-        $data = request()->only('banner_slug', 'banner_active', 'type');
+        $data = request()->only('banner_slug', 'banner_name', 'banner_active', 'type');
         $id = request('id');
         $arr = [
             'top' => [

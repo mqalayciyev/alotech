@@ -41,6 +41,9 @@
                                     <th></th>
                                     <th width="125px">@lang('admin.Action')</th>
                                     <th>
+                                        <button type="button" id="select_all" data-check="0" title="Hamısını seç" class="btn btn-danger btn-xs">
+                                            <i class="fa fa-square"></i>
+                                        </button>
                                         <button type="button" {{ $disabled }} title="@lang('admin.Select and Delete')" name="bulk_delete"
                                                 id="bulk_delete"
                                                 class="btn btn-danger btn-xs"><i class="fa fa-trash"></i></button>
@@ -171,6 +174,24 @@
                     }
                 } else {
                     return false;
+                }
+            });
+
+            $(document).on('click', '#select_all', function () {
+                let check = $(this).data('check')
+                if(check == 1){
+                    $('.checkbox').each(function () {
+                        $(this).prop('checked', false)
+                    });
+                    $(this).html('<i class="fa fa-square"></i>')
+                    $(this).data('check', 0)
+                }
+                else{
+                    $('.checkbox').each(function () {
+                        $(this).prop('checked', true)
+                    });
+                    $(this).data('check', 1)
+                    $(this).html('<i class="fa fa-check-square"></i>')
                 }
             });
         });

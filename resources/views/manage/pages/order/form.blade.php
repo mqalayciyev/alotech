@@ -84,8 +84,15 @@
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <label for="city">Şəhər</label>
-                                    <input type="text" class="form-control" id="city" placeholder="Şəhər" name="city"
-                                        value="{{ old('city', $entry->city) }}">
+                                    <select name="city" class="form-control" id="city">
+                                        <option value="">Şəhər</option>
+                                        @foreach ($city as $item)
+                                            <option value="{{ $item->id }}"
+                                                {{ isset($entry->city) && $entry->city == $item->id ? 'selected' : null }}>{{ $item->name }}</option>
+                                        @endforeach
+                                    </select>
+                                    {{-- <input type="text" class="form-control" id="city" placeholder="Şəhər" name="city"
+                                        value="{{ old('city', $entry->city) }}"> --}}
                                 </div>
                             </div>
                             <!--<div class="col-md-4">-->
@@ -95,13 +102,13 @@
                             <!--            value="{{ old('country', $entry->country) }}">-->
                             <!--    </div>-->
                             <!--</div>-->
-                            <!--<div class="col-md-4">-->
-                            <!--    <div class="form-group">-->
-                            <!--        <label for="zip_code">Poçt kodu</label>-->
-                            <!--        <input type="text" class="form-control" id="zip_code" placeholder="Poçt kodu"-->
-                            <!--            name="zip_code" value="{{ old('zip_code', $entry->zip_code) }}">-->
-                            <!--    </div>-->
-                            <!--</div>-->
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="zip_code">Poçt kodu</label>
+                                    <input type="text" class="form-control" id="zip_code" placeholder="Poçt kodu"
+                                        name="zip_code" value="{{ old('zip_code', $entry->zip_code) }}">
+                                </div>
+                            </div>
                         </div>
                         <div class="row">
                             <div class="col-md-12">
@@ -110,6 +117,20 @@
                                     <input type="text" class="form-control" id="address"
                                         placeholder="@lang('admin.Address')" name="address"
                                         value="{{ old('address', $entry->address) }}">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <div class="form-group">
+                                    <label for="address">Qeydlər</label>
+                                    @if ($entry->delivery_day || $entry->delivery_time)
+                                        <p style="color: red; font-weight: bold;">*Müştəri məhsulu bu tarixə çatdırılmasını istəyir: {{ $entry->delivery_time }} {{ $entry->delivery_day }}</p>
+                                    @endif
+                                    @if ($entry->call_me == 1)
+                                        <p style="color: red; font-weight: bold;">*Müştəri menejerlə əlaqə saxlamaq istəyir</p>
+                                    @endif
+                                    
                                 </div>
                             </div>
                         </div>
@@ -214,8 +235,8 @@
                                     </td>
                                     <td>{{ $cart_product->amount  }}</td>
                                     <td>
-                                        {!! $cart_product->size ? '<p>Ölçü: <span>' . $cart_product->size->name . '</span></p>' : '' !!}
-                                        {!! $cart_product->color_id > 1 ? '<p>Rəng: <span style="background-color: ' . $cart_product->color->name . '">' . $cart_product->color->title . '</span></p>' : '' !!}
+                                        {!! $cart_product->size ? '<p>Ölçü: ' . $cart_product->size->name . '</p>' : '' !!}
+                                        {!! $cart_product->color_id > 1 ? '<p>Rəng: ' . $cart_product->color->title . '</p>' : '' !!}
                                     </td>
                                     <td>{{ $cart_product->piece }}</td>
                                     <td>{{ $cart_product->amount * $cart_product->piece }} ₼</td>

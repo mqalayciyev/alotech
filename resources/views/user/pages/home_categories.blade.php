@@ -97,6 +97,20 @@
                             </div>
                         </div>
                         <div class="product-item__footer">
+                            @if ($product->price->sum('stock_piece') > 0)
+                            <p class="mb-2 text-center"><i class="fas fa-check text-success"></i> Mövcuddur</p>
+                        @else
+                            @if ($product->order_arrival)
+                                @php
+                                    Carbon::setLocale('az');
+                                    $arrival = Carbon::createFromDate($product->order_arrival);
+                                    $now = Carbon::now();
+                                @endphp
+                                <p class="mb-2 text-center"><i class="fas fa-truck text-danger"></i> {{ $arrival->diffForHumans($now) }} çatacaq</p>
+                            @else
+                                <p class="mb-2 text-center"><i class="fas fa-times text-danger"></i> Mövcud deyil</p>
+                            @endif
+                        @endif
                             <div class="border-top pt-2 flex-center-between flex-wrap">
                                 <input type="hidden" name="id" value="{{ $product->id }}">
                                 <a href="javascript:void(0)" class="text-gray-6 font-size-13 add-to-compare" data-id="{{ $product->id }}"><i class="fa fa-retweet font-size-15"></i> Müqayisə</a>
@@ -210,6 +224,20 @@
                                         </div>
                                     </div>
                                     <div class="product-item__footer">
+                                        @if ($product->price->sum('stock_piece') > 0)
+                                        <p class="mb-2 text-center"><i class="fas fa-check text-success"></i> Mövcuddur</p>
+                                    @else
+                                        @if ($product->order_arrival)
+                                            @php
+                                                Carbon::setLocale('az');
+                                                $arrival = Carbon::createFromDate($product->order_arrival);
+                                                $now = Carbon::now();
+                                            @endphp
+                                            <p class="mb-2 text-center"><i class="fas fa-truck text-danger"></i> {{ $arrival->diffForHumans($now) }} çatacaq</p>
+                                        @else
+                                            <p class="mb-2 text-center"><i class="fas fa-times text-danger"></i> Mövcud deyil</p>
+                                        @endif
+                                    @endif
                                         <div class="border-top pt-2 flex-center-between flex-wrap">
                                             <input type="hidden" name="id" value="{{ $product->id }}">
                                             <a href="javascript:void(0)" class="text-gray-6 font-size-13 add-to-compare" data-id="{{ $product->id }}"><i class="fa fa-retweet font-size-15"></i></a>

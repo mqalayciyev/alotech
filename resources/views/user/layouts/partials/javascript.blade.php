@@ -22,7 +22,6 @@
 
         let product_amount = [];
         let product_amount_discount = [];
-        console.log(price_list)
 
         $(document).on('change', '.color-element', function() {
 
@@ -41,8 +40,6 @@
                 product_amount['id'] = $("." + type + " .product_amount").data('price-id')
             }
 
-
-            console.log(price_list)
 
 
             $("." + type + " .size-element option").each(function() {
@@ -228,7 +225,6 @@
                 selected_color = $(this).closest("." + type).find('.product_amount').data('color')
                 selected_size = $(this).closest("." + type).find('.product_amount').data('size')
             }
-            console.log(type)
 
             $.ajax({
                 url: '{{ route('cart.add_to_cart') }}',

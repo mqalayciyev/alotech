@@ -46,6 +46,9 @@
                                 <th>@lang('admin.Updated at')</th>
                                 <th width="125px">@lang('admin.Action')</th>
                                 <th>
+                                    <button type="button" id="select_all" data-check="0" title="Hamısını seç" class="btn btn-danger btn-xs">
+                                        <i class="fa fa-square"></i>
+                                    </button>
                                     <button type="button" {{ $disabled }} title="@lang('admin.Select and Delete')" name="bulk_delete"
                                             id="bulk_delete"
                                             class="btn btn-danger btn-xs"><i class="fa fa-trash"></i></button>
@@ -67,7 +70,7 @@
     <script src="{{ asset('manager/bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js') }}"></script>
     <script>
         $(function () {
-            
+
             $('#index_table').DataTable({
                 aLengthMenu: [[25, 50, 75, 100, 150, 200], [25, 50, 75, 100, 150, 200]],
                 iDisplayLength: 25,
@@ -157,6 +160,24 @@
             $("input[name=name]").change(function () {
                 var val = $(this).val();
                 $("input[name=slug]").val(val);
+            });
+
+            $(document).on('click', '#select_all', function () {
+                let check = $(this).data('check')
+                if(check == 1){
+                    $('.checkbox').each(function () {
+                        $(this).prop('checked', false)
+                    });
+                    $(this).html('<i class="fa fa-square"></i>')
+                    $(this).data('check', 0)
+                }
+                else{
+                    $('.checkbox').each(function () {
+                        $(this).prop('checked', true)
+                    });
+                    $(this).data('check', 1)
+                    $(this).html('<i class="fa fa-check-square"></i>')
+                }
             });
 
         });
