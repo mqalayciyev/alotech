@@ -1,6 +1,7 @@
 @extends('manage.layouts.master')
 @section('title', __('admin.Product Manager'))
 @section('head')
+    <link rel="stylesheet" href="{{ asset('manager/bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css') }}">
     <style>
         .panel{
             margin-top: 25px;
@@ -455,18 +456,20 @@
 
                                                     <p><i class="fa fa-info-circle text-info"></i> Tövsiyyə edilən şəkil ölçüsü 1000x943</p>
                                                     <label for="product_images">@lang('admin.Upload Images')</label><br>
-                                                    <div class="form-group">
-                                                        <select class="form-control" name="image_color_id" id="image_color_id">
-                                                            @foreach ($entry->colors as $color)
-                                                                <option value="{{ $color->id }}" style="background-color: {{ $color->name }}">{{ $color->title }}</option>
-                                                            @endforeach
-                                                        </select>
-                                                    </div>
                                                     <small>@lang('admin.Drag to rearrange. Drop an image outside of the upload area to delete.')</small>
                                                     <input type="file" id="product_images" name="product_images[]"
                                                            multiple="true">
                                                     <hr>
-                                                    <div id="all_images"></div>
+                                                    <table id="index_table" class="table table-bordered table-striped table-hover">
+                                                        <thead>
+                                                            <tr>
+                                                                <th></th>
+                                                                <th>Şəkil</th>
+                                                                <th>Rəng</th>
+                                                                <th></th>
+                                                            </tr>
+                                                        </thead>
+                                                    </table>
                                                 </div>
                                             </div>
                                         </div>
@@ -685,7 +688,7 @@
                                         <div class="row">
                                             <div class="col-md-8">
                                                 <div class="form-group">
-                                                    <label style="padding: 7px 0 0 0" for="order_arrival" class="col-md-6 text-left">Sifarişin gəlmə vaxtı</label> 
+                                                    <label style="padding: 7px 0 0 0" for="order_arrival" class="col-md-6 text-left">Sifarişin gəlmə vaxtı</label>
                                                     <div class="input-group col-md-6">
                                                         <input type="datetime-local" class="form-control"
                                                                id="order_arrival"
@@ -693,7 +696,7 @@
                                                                value="{{ old('order_arrival', $entry->order_arrival) ? date('Y-m-d\TH:i', strtotime(old('order_arrival', $entry->order_arrival))) : '' }}"
                                                                >
                                                                <span class="input-group-addon"><i class="fa fa-times" onclick="document.getElementById('order_arrival').value = null"></i></span>
-                                                               
+
                                                     </div>
                                                 </div>
                                             </div>
@@ -722,6 +725,7 @@
             </div>
         </section>
     </form>
+
 @endsection
 
 
@@ -729,6 +733,8 @@
 @section('footer')
     @include('manage.layouts.partials.ckeditorService',['uploadUrl'=>route('ckeditorProductUpload'),'editor'=>"product_description"])
 
+    <script src="{{ asset('manager/bower_components/datatables.net/js/jquery.dataTables.min.js') }}"></script>
+    <script src="{{ asset('manager/bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js') }}"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.5/js/i18n/az.js"></script>
     <script>
 
@@ -750,6 +756,9 @@
         $(function () {
 
 
+
+
+
             if($("#product_name").val().trim() !== '' || $("#meta-discription").val().trim() !== ''){
                 let metaView = $("#meta-view")
                 $(metaView).find(".title").html($("#product_name").val().trim())
@@ -767,19 +776,69 @@
                 $(metaView).find(".discription").html(discription)
             })
 
-            load_images();
-
-            function load_images() {
-                var id = {{ $entry->id }}
-                $.ajax({
-                    url: "{{ route('manage.product.load_images') }}",
-                    method: "POST",
-                    data: {id: id},
-                    success: function (data) {
-                        $('#all_images').html(data);
+            $('#index_table').DataTable({
+                    order: [[0, "asc"]],
+                    processing: true,
+                    serverSide: true,
+                    searching: false,
+                    info: false,
+                    paging: false,
+                    ajax: '{{ route('manage.product.load_images',  $entry->id) }}',
+                    columns: [
+                        {data: 'cover', searchable: false, orderable: false},
+                        {data: 'image', orderable: false, searchable: false},
+                        {data: 'colors', orderable: false, searchable: false},
+                        {data: 'action', orderable: false, searchable: false},
+                    ],
+                    language: {
+                        "sEmptyTable": "{{ __('admin.No data available in table') }}",
+                        "sInfo": "{{ __('admin.Showing _START_ to _END_ of _TOTAL_ entries') }}",
+                        "sInfoEmpty": "{{ __('admin.Showing 0 to 0 of 0 entries') }}",
+                        "sInfoFiltered": "({{ __('admin.filtered from _MAX_ total entries') }})",
+                        "sInfoPostFix": "",
+                        "sInfoThousands": ",",
+                        "sLengthMenu": "{{ __('admin.Show _MENU_ entries') }}",
+                        "sLoadingRecords": "{{ __('admin.Loading...') }}",
+                        "sProcessing": "{{ __('admin.Processing...') }}",
+                        "sSearch": "{{ __('admin.Search:') }}",
+                        "sZeroRecords": "{{ __('admin.No matching records found') }}",
+                        "oPaginate": {
+                            "sFirst": "{{ __('admin.First') }}",
+                            "sLast": "{{ __('admin.Last') }}",
+                            "sNext": "{{ __('admin.Next') }}",
+                            "sPrevious": "{{ __('admin.Previous') }}"
+                        },
+                        "oAria": {
+                            "sSortAscending": "{{ __('admin.: activate to sort column ascending') }}",
+                            "sSortDescending": "{{ __('admin.: activate to sort column descending') }}"
+                        }
                     }
                 });
-            }
+
+            $(document).on('click', '.down-up', function () {
+                var id = $(this).data('id');
+                $.ajax({
+                        url: '{{ route('manage.product.images.cover_change') }}',
+                        method: 'POST',
+                        data: {id: id},
+                        success: function () {
+                            $('#index_table').DataTable().ajax.reload();
+                        }
+                });
+            });
+            $(document).on('change', '.change_color', function () {
+                console.log('ok')
+                var id = $(this).data('id');
+                var color_id = $(this).val();
+                $.ajax({
+                        url: '{{ route('manage.product.images.change_color') }}',
+                        method: 'POST',
+                        data: {id: id, color_id: color_id},
+                        success: function () {
+                            $('#index_table').DataTable().ajax.reload();
+                        }
+                });
+            });
             $(document).on('click', '.btn_close', function () {
                 var id = $(this).attr('id');
                 if (confirm('{{ __('admin.Are you sure you want to delete this data?') }}')) {
@@ -788,8 +847,7 @@
                         method: 'POST',
                         data: {id: id},
                         success: function () {
-                            load_images();
-                            alert('{{ __('admin.Data Deleted') }}');
+                            $('#index_table').DataTable().ajax.reload();
                         }
                     });
 

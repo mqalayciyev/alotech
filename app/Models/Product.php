@@ -55,11 +55,11 @@ class Product extends Model
 
     public function image()
     {
-        return $this->hasOne('App\Models\ProductImage')->withDefault();
+        return $this->hasOne('App\Models\ProductImage')->orderBy('cover', 'desc');
     }
     public function images()
     {
-        return $this->hasMany('App\Models\ProductImage');
+        return $this->hasMany('App\Models\ProductImage')->orderBy('cover', 'desc');
     }
 
 

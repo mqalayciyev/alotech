@@ -193,8 +193,10 @@ Route::namespace('Manage')->prefix('manage')->group(function () {
             Route::get('/filter/{id}', 'ProductController@filter')->name('manage.product.filter');
             Route::get('/filter_data/{id}', 'ProductController@filter_data')->name('manage.product.filter_data');
             Route::post('/save/{id?}', 'ProductController@save')->name('manage.product.save');
+            Route::post('/cover_change', 'ProductController@cover_change')->name('manage.product.images.cover_change');
+            Route::post('/change_color', 'ProductController@change_color')->name('manage.product.images.change_color');
             Route::post('/remove_image', 'ProductController@remove_image')->name('manage.product.remove_image');
-            Route::post('/load_images', 'ProductController@load_images')->name('manage.product.load_images');
+            Route::get('/load_images/{id?}', 'ProductController@load_images')->name('manage.product.load_images');
             Route::get('/categories', 'ProductController@categories')->name('manage.product.categories');
             Route::post('/price_post_data', 'ProductController@price_post_data')->name('manage.product.price_post_data');
             Route::get('/price_fetch_data', 'ProductController@price_fetch_data')->name('manage.product.price_fetch_data');

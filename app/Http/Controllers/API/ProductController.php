@@ -56,7 +56,6 @@ class ProductController extends Controller
                 'product_name' => 'required',
                 'product_code' => 'required',
                 'measurement' => 'required',
-                'stock_list' => 'required',
                 'price_list' => 'required',
                 'category_id' => 'required',
                 'brand_id' => 'required',
@@ -75,18 +74,16 @@ class ProductController extends Controller
                     'product_name' => $product['product_name'],
                     'deleted_at' => null,
                     'discount_date' => $product['discount_date'],
-                    'discount' => $product['discount']
+                    'discount' => $product['discount'],
+                    'order_arrival' => $product['order_arrival'],
+                    'product_description' => $product['product_description'],
+                    'slug' => str_slug($product['product_name'])
                 );
                 $data_detail = array(
                     'measurement' => $product['measurement']
                 );
+
                 $data_price = [];
-                if(isset($product['product_description'])){
-                    $data['product_description'] = $product['product_description'];
-                }
-
-                $data['slug'] = str_slug($product['product_name']);
-
 
 
                 $category = $product['category_id'];
@@ -180,6 +177,7 @@ class ProductController extends Controller
                     $data_price['sale_price'] = $price['sale_price'];
                     $data_price['wholesale_count'] = $price['wholesale_count'];
                     $data_price['wholesale_price'] = $price['wholesale_price'];
+                    $data_price['stock_piece'] = $price['stock_piece'];
                     if(!$price['sale_price'] ){
                         $data_price['sale_price'] = 0;
                     }
@@ -187,53 +185,7 @@ class ProductController extends Controller
 
                     $data_price['color_id'] = $color_id;
                     $data_price['size_id'] = $size_id;
-                    if(!$price['size_name'] && !$price['color_name']){
-                        PriceList::updateOrCreate(['product_id' => $entry->id, 'default_price' => 1],
-                            $data_price
-                        );
-                    }
-                    else{
-                        PriceList::updateOrCreate(['product_id' => $entry->id, 'default_price' => 0, 'color_id' => $color_id, 'size_id' => $size_id],
-                            $data_price
-                        );
-                    }
-                }
-                foreach ($product['stock_list'] as $stock) {
-                    $color_id = null;
-                    $size_id = null;
-                    if($stock['size_name']){
-                        $size_exist = Size::updateOrCreate(['name' => $stock['size_name'] ]);
-                        SizeProduct::updateOrcreate([
-                            'size_id' => $size_exist->id,
-                            'product_id' => $entry->id,
-                        ]);
-                        $size_id = $size_exist->id;
-                    }
-                    
-                    if($stock['color_name'] ){
-                        $color_exist = Color::updateOrCreate(['name' => $stock['color_name']], ['title' => $stock['color_title'] ] );
-                        ColorProduct::updateOrcreate([
-                            'color_id' => $color_exist->id,
-                            'product_id' => $entry->id,
-                        ]);
-                        $color_id = $color_exist->id;
-                    }
-                    else{
-                        Color::updateOrCreate(['id' => 1],['title' => 'none', 'name' => 'none']);
-                        ColorProduct::updateOrcreate([
-                            'color_id' => 1,
-                            'product_id' => $entry->id,
-                        ]);
-                        $color_id = 1;
-                    }
-
-
-                    $stock_piece = $stock['stock_piece'];
-                    if(!$stock['stock_piece'] ){
-                        $stock_piece = 0;
-                    }
-
-                    PriceList::updateOrCreate(['product_id' => $entry->id, 'color_id' => $color_id, 'size_id' => $size_id], ['stock_piece' => $stock_piece]);
+                    PriceList::updateOrCreate(['product_id' => $entry->id, 'color_id' => $color_id, 'size_id' => $size_id], $data_price);
                 }
 
             }

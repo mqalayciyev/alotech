@@ -378,29 +378,40 @@ class ProductController extends Controller
         }
     }
 
-    public function load_images(Request $request)
+    public function load_images(Request $request, $id)
     {
-        $id = $request->get('id');
-        $images = ProductImage::where('product_id', $id)->get();
-        if (count($images) > 0) {
-            foreach ($images as $array => $image) {
-                $output = '<div class="img_border" style="position: relative; display: inline-block;">
-                            <div class="preview_img" style="display: inline-block;">
-                                <img src="';
-                $output .= $image->image_name != null ? asset("assets/img/products/" . $image->image_name) : "http://via.placeholder.com/50x50?text=ProductPhoto";
 
-                $output .= '" class="thumbnail pull-left img-responsive" style="height:100px; margin-right:20px;">';
-                $output .= '</div>
-                            <div class="btn_close" id="' . $image->id . '"
-                                 style="display: inline-block; position: absolute; left: 5px; z-index: 1;">
-                                <i class="fa fa-close"></i>
-                            </div>
-                        </div>';
-                echo $output;
-            }
-        } else {
-            echo __('admin.There is no any photos');
-        }
+        $rows = ProductImage::where('product_id', $id)->orderBy('cover', 'desc');
+
+        return DataTables::eloquent($rows)
+            ->editColumn('image', function ($row) {
+                $image = '<img src="';
+                $image .= $row->image_name != null ? asset("assets/img/products/" . $row->image_name) : "http://via.placeholder.com/50x50?text=ProductPhoto";
+                $image .= '" class="img-responsive" style="width: 50px; height: auto;">';
+                return $image;
+            })
+            ->addColumn('colors', function ($row) {
+                $product = Product::find($row->product_id);
+                $colors = '';
+                if(count($product->colors)){
+                    $colors .= '<select class="form-control change_color" name="change_color" data-id="' . $row->id . '">
+                    <option value="">Rəng Seç</option>';
+                    foreach ($product->colors as $color) {
+                        $selected = $row->color_id == $color->id ? 'selected' : null;
+                        $colors .= '<option value="'. $color->id . '" ' . $selected . '  style="background-color: ' . $color->name . '">' . $color->title . '</option>';
+                    }
+                    $colors .= '</select>';
+                }
+                return $colors;
+            })
+            ->addColumn('action', function ($row) {
+                return '<div>
+                <button type="button" class="down-up btn btn-success btn-sm" data-id="' . $row->id . '"><i class="fa fa-sort-asc"></i></button>
+                <a href="javascript:void(0);" class="btn btn-sm btn-danger btn_close" id="' . $row->id . '"> <i class="fa fa-remove"></i> ' . __('admin.Delete') . '</a>
+                </div>';
+            })
+            ->rawColumns(['image', 'action', 'colors'])
+            ->toJson();
     }
 
     public function remove_image(Request $request)
@@ -504,5 +515,20 @@ class ProductController extends Controller
             }
         }
         return back();
+    }
+
+    public function cover_change()
+    {
+        $id = request('id');
+        $flight = ProductImage::find($id);
+        ProductImage::where('product_id', $flight->product_id)->update(['cover' => 0]);
+        ProductImage::where('id', $id)->update(['cover' => 1]);
+
+    }
+    public function change_color()
+    {
+        $id = request('id');
+        $color_id = request('color_id');
+        ProductImage::where('id', $id)->update(['color_id' => $color_id]);
     }
 }
