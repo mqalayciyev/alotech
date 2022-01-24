@@ -48,7 +48,7 @@
                                     <input type="hidden" class="delivery_amount" name="delivery_amount" value="{{ number_format($delivery, 2) }}" />
                                     <input type="hidden" class="bonus_amount" name="bonus_amount" value="{{ number_format($website_info->bonus_amount * auth()->user()->bonus, 2) }}" />
 
-                                    
+
                                     <!-- Product Content -->
                                     <table class="table">
                                         <tfoot>
@@ -311,11 +311,11 @@
                                                         }
                                                         $start = $days[0];
                                                         $end = $days[count($days) - 1];
-                                                        
+
                                                         for ($i = $start; $i <= $end; $i++) {
                                                             $days_array[] = $i;
                                                         }
-                                                        
+
                                                     @endphp
 
                                                     @foreach ($days_array as $key => $day)
@@ -398,6 +398,7 @@
                     $(".delivery-days-section").html(data.delivery_days)
                     $(".delivery-time-section").html(data.delivery_time)
                     $(".delivery_amount").val(data.delivery_amount)
+                    $(".delivery-amount").html(data.delivery_amount)
                     amount()
                 }
             })
