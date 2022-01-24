@@ -44,9 +44,9 @@
                                         <h3 class="section-title mb-0 pb-2 font-size-25">Sifarişiniz</h3>
                                     </div>
                                     <!-- End Title -->
-                                    <input type="hidden" class="total_amount" name="total_amount" value="{{ number_format(Cart::total(), 2) }}" />
-                                    <input type="hidden" class="delivery_amount" name="delivery_amount" value="{{ number_format($delivery, 2) }}" />
-                                    <input type="hidden" class="bonus_amount" name="bonus_amount" value="{{ number_format($website_info->bonus_amount * auth()->user()->bonus, 2) }}" />
+                                    <input type="hidden" class="total_amount" name="total_amount" value="{{ Cart::total() }}" />
+                                    <input type="hidden" class="delivery_amount" name="delivery_amount" value="{{ $delivery }}" />
+                                    <input type="hidden" class="bonus_amount" name="bonus_amount" value="{{ $website_info->bonus_amount * auth()->user()->bonus }}" />
 
 
                                     <!-- Product Content -->

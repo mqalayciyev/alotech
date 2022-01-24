@@ -64,10 +64,10 @@ class PaymentController extends Controller
             } else {
                 $days[] = $city->delivery_days;
             }
-    
+
             $start = $days[0];
             $end = $days[count($days) - 1];
-    
+
             for ($i = $start; $i <= $end; $i++) {
                 $days_array[] = $i;
             }
@@ -83,7 +83,7 @@ class PaymentController extends Controller
                     for="day-' . $key . '">' .  date('d', strtotime(Carbon::now()->addDays($day))) . ' ' . __('content.month.' . date('F', strtotime(Carbon::now()->addDays($day)))) . '</label>
             </div>';
             }
-    
+
             foreach ($city->delivery_time as $key => $item) {
                 $delivery_time .= '<div class="checkbox delivery_info">
                 <input type="radio" name="delivery_time"
@@ -99,7 +99,7 @@ class PaymentController extends Controller
     }
     public function pay()
     {
-        
+
         $active_cart_id = session('active_cart_id');
 
 
@@ -108,7 +108,7 @@ class PaymentController extends Controller
 
             $product = Product::where('id', $value->product_id)->first();
             if ($product) {
-                
+
                 $priceList = PriceList::find($value->price_id);
 
                 if ($priceList->stock_piece == 0) {
@@ -158,7 +158,7 @@ class PaymentController extends Controller
 
         $shipping = request('delivery_amount');
 
-        $amount = number_format((Cart::subtotal() + $shipping - $bonus_amount), 2);
+        $amount = (Cart::subtotal() + $shipping - $bonus_amount);
 
         if ($amount < 0) {
             $bonus = abs($amount) / $info->bonus_amount;
@@ -219,7 +219,7 @@ class PaymentController extends Controller
                 $product = Product::where('id', $value->product_id)->first();
                 if ($product) {
                     $priceList = PriceList::find($value->price_id);
-                    PriceList::where('id', $value->options->price_id)->update(['stock_piece' => $priceList->stock_piece - $value->piece]);
+                    PriceList::where('id', $value->price_id)->update(['stock_piece' => $priceList->stock_piece - $value->piece]);
                 }
             }
 
@@ -418,8 +418,8 @@ class PaymentController extends Controller
             foreach ($cartProduct as $value) {
                 $product = Product::where('id', $value->product_id)->first();
                 if ($product) {
-                    $priceList = PriceList::find($value->options->price_id);
-                    PriceList::where('id', $value->options->price_id)->update(['stock_piece' => $priceList->stock_piece - $value->piece]);
+                    $priceList = PriceList::find($value->price_id);
+                    PriceList::where('id', $value->price_id)->update(['stock_piece' => $priceList->stock_piece - $value->piece]);
                 }
             }
 

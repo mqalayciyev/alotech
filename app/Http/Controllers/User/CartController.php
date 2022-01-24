@@ -132,7 +132,7 @@ class CartController extends Controller
             $sale_price = $wholesale_price;
         }
         else{
-            $sale_price = number_format($priceList->sale_price - ($priceList->sale_price*$product->discount / 100), 2);
+            $sale_price = $priceList->sale_price - ($priceList->sale_price*$product->discount / 100);
         }
 
         if($piece <= 0){
