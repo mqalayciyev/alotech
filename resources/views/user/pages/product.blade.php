@@ -104,7 +104,7 @@
 
                         <div id="sliderSyncingThumb"
                             class="js-slick-carousel u-slick u-slick--slider-syncing u-slick--slider-syncing-size u-slick--gutters-1 u-slick--transform-off"
-                            data-infinite="true" data-slides-show="5" data-is-thumbs="true"
+                            data-infinite="false" data-slides-show="5" data-is-thumbs="true"
                             data-nav-for="#sliderSyncingNav">
                             @foreach ($images as $image)
                                 <div class="js-slide image-color-{{ $image->color_id }}" style="cursor: pointer;">
