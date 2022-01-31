@@ -355,13 +355,12 @@
                                                            value="{{ old('product_name', $entry->product_name) }}">
                                                 </div>
                                             </div>
-                                            <div class="col-md-6" style="visibility: hidden">
+                                            <div class="col-md-6" >
                                                 <div class="form-group">
                                                     <label for="slug">@lang('admin.Slug')</label>
-                                                    <input type="hidden" name="original_slug"
-                                                           value="{{ old('slug', $entry->slug) }}">
                                                     <input type="text" class="form-control" id="slug"
                                                            placeholder="@lang('admin.Slug')"
+                                                           readonly
                                                            name="slug"
                                                            value="{{ old('slug', $entry->slug) }}">
                                                 </div>
@@ -384,14 +383,14 @@
                                                 <p class="url" style="word-wrap: break-word; color: green; font-size: 15px; font-weight: 200; margin: 0;">
                                                     {{ env('APP_URL') . 'product/' . $entry->slug }}
                                                 </p>
-                                                <small class="discription"></small>
+                                                <small class="description"></small>
                                             </div>
                                         </div>
                                         <div class="row">
                                             <div class="col-md-12">
                                                 <div class="form-group">
                                                     <label for="meta-description">Seo description</label>
-                                                    <input type="text" id="meta-discription" name="meta_discription" placeholder="Məhsulun təsviri qısa mətn." class="form-control" value="{{ old('meta_title', $entry->meta_discription) }}">
+                                                    <input type="text" id="meta-description" name="meta_description" placeholder="Məhsulun təsviri qısa mətn." class="form-control" value="{{ old('meta_title', $entry->meta_description) }}">
                                                 </div>
                                             </div>
                                         </div>
@@ -702,6 +701,59 @@
                                             </div>
                                             <div class="col-md-6"></div>
                                         </div>
+
+                                    </div>
+                                </div>
+                                <hr>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <h3>Tövsiyyə edilən məhsullar və Kompaniya məhsulları</h3>
+                                        <span>Bu məhsula tövsiyyə olunan digər məhsulları kompaniya məhsullarını və kompaniyanın endirim faizini daxil edin</span>
+                                    </div>
+                                    <div class="col-md-8">
+
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <div class="form-group">
+                                                    <label for="product_related">Bu məhsulla alınanlar</label>
+                                                    <select class="form-control" id="product_related" name="related_id[]"
+                                                            data-placeholder="Məhsulları seçin"
+                                                            multiple="multiple">
+                                                        @foreach($products as $product)
+                                                            <option  value="{{ old('related_id', $product->id) }}" {{ collect(old('related_id', $product_related))->contains($product->id) ? 'selected' : '' }}>{{ $product->product_name }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <hr>
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <div class="form-group">
+                                                    <label for="product_company">Bu məhsula aid kompaniya məhsulları</label>
+                                                    <select class="form-control" id="product_company" name="company_price_id[]"
+                                                            data-placeholder="Məhsulları seçin"
+                                                            multiple="multiple">
+                                                        @foreach($company_product_price as $price)
+                                                            <option  value="{{ old('company_price_id', $price->id) }}" {{ collect(old('company_price_id', $product_company))->contains($price->id) ? 'selected' : '' }}>{{ $price->product->product_name }} ( {{ $price->sale_price }} AZN ) ( {{ $price->stock_piece }} ) {{ $price->color ? '( ' . $price->color->title . ' )' : null }} {{ $price->size ? '( ' . $price->size->name . ' )' : null }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-8">
+                                                <div class="form-group">
+                                                    <label style="padding: 7px 0 0 0" for="company_discount" class="col-md-6 text-left">Kompaniya endirim məbləği: </label>
+                                                    <div class="input-group col-md-6">
+                                                        <input type="text" id="company_discount" placeholder="Kompaniya endirim məbləği" class="form-control" style="max-width: 250px" name="company_discount" value="{{ $entry->company_discount ? $entry->company_discount->discount : null  }}">
+                                                        <span class="input-group-addon">₼</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6"></div>
+                                        </div>
+
                                     </div>
                                 </div>
                             </div>
@@ -762,7 +814,7 @@
             if($("#product_name").val().trim() !== '' || $("#meta-discription").val().trim() !== ''){
                 let metaView = $("#meta-view")
                 $(metaView).find(".title").html($("#product_name").val().trim())
-                $(metaView).find(".discription").html($("#meta-discription").val().trim())
+                $(metaView).find(".description").html($("#meta-description").val().trim())
             }
 
             $("#product_name").on('keyup', function(event){
@@ -770,10 +822,10 @@
                 let metaView = $("#meta-view")
                 $(metaView).find(".title").html(title)
             })
-            $("#meta-discription").on('keyup', function(event){
+            $("#meta-description").on('keyup', function(event){
                 let discription = $(event.target).val()
                 let metaView = $("#meta-view")
-                $(metaView).find(".discription").html(discription)
+                $(metaView).find(".description").html(discription)
             })
 
             $('#index_table').DataTable({
@@ -856,14 +908,6 @@
                 }
             });
 
-            $("#pos").change(function () {
-                if ($(this).prop("checked") == true) {
-                    $(this).val('1');
-                } else {
-                    $(this).val(0);
-                }
-            });
-
             $('.select3').select2();
 
             $('input[type="checkbox"].minimal, input[type="radio"].minimal').iCheck({
@@ -879,6 +923,16 @@
             // });
 
             $("#size").select2({
+                tags: true,
+                tokenSeparators: [',', ' '],
+                language: 'az'
+            });
+            $("#product_related").select2({
+                tags: true,
+                tokenSeparators: [',', ' '],
+                language: 'az'
+            });
+            $("#product_company").select2({
                 tags: true,
                 tokenSeparators: [',', ' '],
                 language: 'az'

@@ -43,6 +43,9 @@ class BannerController extends Controller
 
                 return $type[$row->type];
             })
+            ->editColumn('active', function ($row) {
+                return $row->banner_active ? "<span class='label label-success'>Aktiv</span>" : "<span class='label label-default'>Passiv</span>";
+            })
             ->addColumn('action', function ($row) {
                 if(auth('manage')->user()->is_manage == 2){
                     $disabled = 'none';
@@ -57,7 +60,7 @@ class BannerController extends Controller
                 </div>';
             })
             ->addColumn('checkbox', '<input type="checkbox" name="checkbox[]" id="checkbox" class="checkbox" value="{{$id}}" />')
-            ->rawColumns(['checkbox', 'banner_image', 'banner_type', 'action'])
+            ->rawColumns(['checkbox', 'banner_image', 'banner_type', 'active', 'action'])
             ->toJson();
     }
 
@@ -152,7 +155,7 @@ class BannerController extends Controller
                 'image' => 'required',
             ]);
             if ($validator->fails()) {
-                return response()->json(['status' => 'error', 'message' => 'Link boş ola bilməz']);
+                return response()->json(['status' => 'error', 'message' => 'Şəkil boş ola bilməz']);
             }
 
             $data['banner_order'] = Banner::where('deleted_at', null)->count() + 1;

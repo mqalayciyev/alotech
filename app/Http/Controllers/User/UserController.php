@@ -55,8 +55,9 @@ class UserController extends Controller
             'password' => request('password')
         ];
 
+        $remember = request()->has('remember') ? true : false;
 
-        if (auth()->attempt($credentials, request()->has('remember'))) {
+        if (auth()->attempt($credentials, $remember)) {
             request()->session()->regenerate();
             $active_cart_id = CartModel::active_cart_id();
             if (is_null($active_cart_id)) {
@@ -130,7 +131,7 @@ class UserController extends Controller
             'last_name' => 'required|min:3',
             'email' => 'required|email|unique:user|min:5',
             'mobile' => 'required',
-            // 'terms' => 'accepted',
+            'terms' => 'accepted',
             'password' => 'required|confirmed|min:8'
         ], $messages);
 
@@ -224,7 +225,7 @@ class UserController extends Controller
             'email' => request('email'),
             'mobile' => request('mobile'),
         ]);
-        
+
         return response()->json(['status' => 'success']);
     }
     public function form_detail(Request $request){

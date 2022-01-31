@@ -13,7 +13,7 @@ class EnvelopeController extends Controller
     public function index(){
         return view('manage.pages.envelope.index');
     }
-    
+
     public function index_data()
     {
         $rows = Contact::select(['contacts.*']);
@@ -23,11 +23,17 @@ class EnvelopeController extends Controller
                         <a href="javascript:void(0);" class="btn btn-sm btn-primary view" data-id="' . $row->id .'"> <i class="fa fa-eye"></i> Bax</a>
                         <a href="javascript:void(0);" class="btn btn-sm btn-danger delete"  data-id="' . $row->id . '"> <i class="fa fa-remove"></i> ' . __('admin.Delete') . '</a>
                         </div>';
-                
+
             })
             ->addColumn('checkbox', function($row){
                 return '<input type="checkbox" name="checkbox[]" id="checkbox" class="checkbox" value="' . $row->id . '" />';
-                
+
+            })
+            ->editColumn('created_at', function ($row) {
+                return $row->created_at;
+            })
+            ->editColumn('updated_at', function ($row) {
+                return $row->updated_at;
             })
             ->rawColumns(['checkbox', 'action'])
             ->toJson();

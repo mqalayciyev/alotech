@@ -29,20 +29,19 @@
                                     <label class="label label-danger">{{ $order->order_amount }} ‎₼</label>
                                 </td>
                                 <td>
+                                    
                                     @if ($order->status == 'Payment is expected')
-                                        <label class="alert alert-warning">@lang('content.Payment is expected')</label>
+                                        <label class="alert alert-warning">@lang('content.' . $order->status)</label>
                                     @elseif($order->status=='Your order has been received')
-                                        <label class="alert alert-info">@lang('admin.Pending')</label>
+                                        <label class="alert alert-info">@lang('content.' . $order->status)</label>
                                     @elseif($order->status=='Payment approved')
-                                        <label class="alert alert-info">@lang('content.Payment approved')</label>
+                                        <label class="alert alert-info">@lang('content.' . $order->status)</label>
                                     @elseif($order->status=='Cargoed')
-                                        <label class="alert alert-info">@lang('content.Cargoed')</label>
+                                        <label class="alert alert-info">@lang('content.' . $order->status)</label>
                                     @elseif($order->status=='Order completed')
-                                        <label class="alert alert-success">@lang('content.Order completed')</label>
+                                        <label class="alert alert-success">@lang('content.' . $order->status)</label>
                                     @elseif($order->status=='Your order is canceled')
-                                        <label class="alert alert-danger">@lang('content.Your order is canceled')</label>
-                                    @else
-                                        <label class="alert alert-secondary">{{ $order->status }}</label>
+                                        <label class="alert alert-danger">@lang('content.' . $order->status)</label>
                                     @endif
                                 </td>
                                 <td>{{ $order->bank }}</td>

@@ -157,7 +157,7 @@
                                         </h5>
                                     <div class="prodcut-price mb-2 d-md-none">
                                         @php
-                                            $price = $product->price->where('stock_piece', '>', 0)->toArray();
+                                            $price = $product->price->where('stock_piece', '>=', 0)->toArray();
 
                                             // echo "<pre>";
                                             //     print_r($price);
@@ -214,7 +214,7 @@
 
                                     <div class="prodcut-price mb-2">
                                         @php
-                                            $price = $product->price->where('stock_piece', '>', 0)->toArray();
+                                            $price = $product->price->where('stock_piece', '>=', 0)->toArray();
 
                                             // echo "<pre>";
                                             //     print_r($price);

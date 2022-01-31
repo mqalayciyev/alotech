@@ -172,6 +172,7 @@ class PaymentController extends Controller
         $order['cart_id'] = session('active_cart_id');
         $order['order_amount'] = $amount;
         $order['bonus_amount'] = $bonus_amount;
+        $order['bonus_value'] = $info->bonus_amount;
         $order['shipping'] = $shipping;
         $order['delivery_day'] = request('delivery_day');
         $order['delivery_time'] = request('delivery_time');

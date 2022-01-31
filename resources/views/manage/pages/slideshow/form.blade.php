@@ -258,7 +258,7 @@
             let slider_icon = $("#slider_icon")[0].files[0]
             let delete_icon = $("#delete_icon:checked").val() ? 1 : null
 
-            let slider_name = $config.getData()
+            let slider_name = $("#slider_name").val()
             let slider_slug = $("#slider_slug").val()
             let formData = new FormData();
             formData.append("_token", "{{ csrf_token() }}");

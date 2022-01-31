@@ -28,6 +28,12 @@ class SlideshowController extends Controller
                 $image .= '" class="img-responsive" style="width: 130px; min-width: 100%; height: auto;">';
                 return $image;
             })
+            ->editColumn('slider_icon', function ($row) {
+                $image = '<img src="';
+                $image .= $row->slider_icon != null ? asset("assets/img/sliders/" . $row->slider_icon) : "http://via.placeholder.com/930x390?text=SliderPhoto(930x390)";
+                $image .= '" class="img-responsive" style="width: 130px; min-width: 100%; height: auto;">';
+                return $image;
+            })
             ->addColumn('slider_active', function ($row) {
                 if($row->slider_active == 1){
                     $bg = "success";
@@ -60,7 +66,7 @@ class SlideshowController extends Controller
                 </div>';
             })
             ->addColumn('checkbox', '<input type="checkbox" name="checkbox[]" id="checkbox" class="checkbox" value="{{$id}}" />')
-            ->rawColumns(['checkbox', 'slider_image', 'action', 'slider_active'])
+            ->rawColumns(['checkbox', 'slider_image', 'slider_icon', 'action', 'slider_active'])
             ->toJson();
     }
 
@@ -113,7 +119,7 @@ class SlideshowController extends Controller
 
 
             $data['slider_image'] = $filename;
-            
+
         }
         if(request()->hasFile('slider_icon')){
             $rows = Slider::find($id);
@@ -121,7 +127,7 @@ class SlideshowController extends Controller
             if (File::exists($image_path)) {
                 unlink($image_path);
             }
-            
+
             $file = request()->file('slider_icon');
             $image = request()->image;
 
@@ -180,7 +186,7 @@ class SlideshowController extends Controller
         foreach ($rows as $row) {
             $image_path = app_path("assets/img/sliders/{$row->slider_image}");
             $image_path2 = app_path("assets/img/sliders/{$row->slider_icon}");
-            
+
             if (File::exists($image_path)) {
                 unlink($image_path);
             }

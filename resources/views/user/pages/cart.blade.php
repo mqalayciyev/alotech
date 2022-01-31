@@ -56,6 +56,13 @@
                             </div>
                             <table class="table mb-3 mb-md-0">
                                 <tbody>
+                                    @if (session()->get('discount'))
+                                        <tr class="order-total">
+                                            <th>Kompaniya Endirimi</th>
+                                            <td data-title="Total"><strong class="total-discount currency_azn">{{ session()->get('discount') }}</strong></td>
+                                        </tr>
+                                    @endif
+
                                     <tr class="order-total">
                                         <th>Ümumi məbləğ</th>
                                         <td data-title="Total"><strong class="total-amount currency_azn">{{ Cart::total() }}</strong></td>
@@ -90,6 +97,7 @@
                     success: function(data) {
                         $('.my_cart').html(data.output);
                         $('.total-amount').html(data.total);
+                        $('.total-discount').html(data.discount);
                         $('.show_cartCount').html(data.count);
                     }
                 });
@@ -117,6 +125,7 @@
                         console.log(data)
                         $('.my_cart').html(data.output);
                         $('.total-amount').html(data.total);
+                        $('.total-discount').html(data.discount);
                         $('.show_cartCount').html(data.count);
                     }
                 });
@@ -143,6 +152,7 @@
                         console.log(data)
                         $('.my_cart').html(data.output);
                         $('.total-amount').html(data.total);
+                        $('.total-discount').html(data.discount);
                         $('.show_cartCount').html(data.count);
                     }
                 });
@@ -161,6 +171,7 @@
                         // my_cart();
                         $('.my_cart').html(data.output);
                         $('.total-amount').html(data.total);
+                        $('.total-discount').html(data.discount);
                         $('.show_cartCount').html(data.count);
                     }
                 })

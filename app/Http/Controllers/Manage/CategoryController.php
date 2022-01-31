@@ -44,6 +44,12 @@ class CategoryController extends Controller
             ->addColumn('category_view', function ($row) {
                 return $row->category_view ? "Göstərilir" : null;
             })
+            ->editColumn('created_at', function ($row) {
+                return $row->created_at;
+            })
+            ->editColumn('updated_at', function ($row) {
+                return $row->updated_at;
+            })
             ->addColumn('action', function ($row) {
                 return '<div>
                 <a href="javascript:void(0);" class="btn btn-xs btn-primary edit" id="' . $row->id . '"> <i class="fa fa-edit"></i> ' . __('admin.Edit') . '</a>

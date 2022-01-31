@@ -1,5 +1,5 @@
 @extends('user.layouts.app')
-@section('title', 'Kategoriyalar')
+@section('title', 'Kateqoriyalar')
 @section('head')
     <link rel="stylesheet" href="{{ asset('plugins/lightGallery-master/dist/css/lightgallery.min.css') }}">
 @endsection

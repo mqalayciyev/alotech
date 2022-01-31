@@ -39,13 +39,19 @@ class OrderController extends Controller
             })
             ->addColumn('SP', function ($row) {
                 return 'SP-' . $row->id;
-
             })
             ->editColumn('export', function ($row) {
                 $class = $row->exported == 1 ? 'primary' : 'default';
                 $name = $row->exported == 1 ? 'İxrac edilib' : 'İxrac edilməyib';
                 $link = $row->status == "Your order is canceled" ? "javascript:void(0)" : route("manage.order.exported", $row->id);
                 return '<a href="' . $link . '" class="btn btn-xs btn-' . $class . '">' . $name . '</a>';
+
+            })
+            ->editColumn('created_at', function ($row) {
+                return $row->created_at;
+            })
+            ->editColumn('delivery_day', function ($row) {
+                return $row->delivery_day . ' - ' . $row->delivery_time;
 
             })
             ->editColumn('status', function ($row) {
@@ -96,7 +102,7 @@ class OrderController extends Controller
         if ($id > 0) {
             $entry = Order::where('id', $id)->firstOrFail();
             if(request('status') == 'Your order is canceled'){
-                $cartProduct = CartProduct::select('product_id', 'piece')->where('cart_id', $cart_id)->get();
+                $cartProduct = CartProduct::where('cart_id', $cart_id)->get();
                 foreach ($cartProduct as $value) {
                     $product = Product::where('id', $value->product_id)->first();
                     if($product){
@@ -104,6 +110,9 @@ class OrderController extends Controller
                         PriceList::where('id', $value->options->price_id)->update(['stock_piece' => $priceList->stock_piece + $value->piece]);
                     }
                 }
+
+                $user = User::find($entry->cart->user_id);
+                $user->update(['bonus' => $user->bonus+$entry->bonus_amount/$entry->bonus_value]);
                 $data['exported'] = 1;
             }
 
@@ -200,18 +209,12 @@ class OrderController extends Controller
 
     public function export($type)
     {
-        // $type = request('type');
-        if ($type == "products") {
-            $data = [
-                "type" => $type
-            ];
-            return (new Raports((array)$data))->download('products.xlsx');
-        }
-        else if ($type == "orders") {
-            $data = [
-                "type" => $type
-            ];
-            return (new Raports((array)$data))->download('orders.xlsx');
-        }
+        $data = [
+            "type" => 'orders',
+            "min" => request('min') ? request('min') : "2021-01-01",
+            "max" => request('max') ? request('max') : now(),
+        ];
+        // return $data;
+        return (new Raports((array)$data))->download('orders.xlsx');
     }
 }

@@ -19,6 +19,8 @@ class Raports implements FromCollection, WithHeadings
     public function __construct($dates = null)
     {
         $this->type = $dates['type'];
+        $this->min = $dates['min'];
+        $this->max = $dates['max'];
     }
 
     public function query()
@@ -32,7 +34,7 @@ class Raports implements FromCollection, WithHeadings
                 "cart_product.piece",
                 "cart_product.amount"
             ])->leftJoin('product', 'product.id', 'cart_product.product_id')->get();
-        } 
+        }
         else if ($this->type == "orders") {
             $orders = Order::select([
              "order.id",
@@ -52,13 +54,16 @@ class Raports implements FromCollection, WithHeadings
                 "order.brand",
                 "order.installment_number",
                 "order.created_at",
+                "order.exported",
             DB::raw('CONCAT(GROUP_CONCAT(DISTINCT JSON_OBJECT("Adı" , product.product_name, "Rəng", color.title  , "Ölçü", size.name, "Miqdar", cart_product.piece, "Qiymət",cart_product.amount))) AS order_items')])
             ->leftJoin('cart_product', 'cart_product.cart_id', 'order.cart_id')
             ->leftJoin('product', 'product.id', 'cart_product.product_id')
             ->leftJoin('color', 'color.id', 'cart_product.color_id')
             ->leftJoin('size', 'size.id', 'cart_product.size_id')
+            ->where('order.created_at', '<=', $this->max)
+            ->where('order.created_at', '>=', $this->min)
             ->groupBy('order.id')->get();
-            
+
             return $orders;
         }
     }
@@ -89,17 +94,19 @@ class Raports implements FromCollection, WithHeadings
                 "order.city",
                 "order.bank",
                 "order.tran_date_time",
-                "order.order_status",
                 "order.brand",
                 "order.installment_number",
                 "order.created_at",
+                "order.exported",
             DB::raw('CONCAT(GROUP_CONCAT(DISTINCT JSON_OBJECT("Adı" , product.product_name, "Rəng", color.title  , "Ölçü", size.name, "Miqdar", cart_product.piece, "Qiymət",cart_product.amount))) AS order_items')])
             ->leftJoin('cart_product', 'cart_product.cart_id', 'order.cart_id')
             ->leftJoin('product', 'product.id', 'cart_product.product_id')
             ->leftJoin('color', 'color.id', 'cart_product.color_id')
             ->leftJoin('size', 'size.id', 'cart_product.size_id')
+            ->where('order.created_at', '<=', $this->max)
+            ->where('order.created_at', '>=', $this->min)
             ->groupBy('order.id')->get();
-            
+
             return $orders;
         }
     }
@@ -130,11 +137,12 @@ class Raports implements FromCollection, WithHeadings
                 "Şəhər",
                 "Ödəniş forması",
                 "Ödənişin tarixi",
-                "Sifarişin statusu",
                 "Brend",
                 "Taksit",
                 "Sifariş tarixi",
+                "İxrac edilib",
                 "Məhsullar"
+
             ];
         }
     }

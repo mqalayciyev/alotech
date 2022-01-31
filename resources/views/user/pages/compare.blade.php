@@ -64,10 +64,7 @@
                                 <th class="th-fixed">Qiymət</th>
                                 @foreach ($products as $product)
                                     @php
-                                        $price = $product->price->where('depot_id', $default_depot)->toArray();
-
-                                        // echo "<pre>";
-                                        //     print_r($price);
+                                        $price = $product->price->where('stock_piece', '>=', 0)->toArray();
 
                                         $filter = array_filter($price, function ($item) {
                                             if ($item['color_id'] > 1 && $item['size_id'] != null) {
@@ -109,10 +106,7 @@
                                 <th class="th-fixed">Endirimli qiymət</th>
                                 @foreach ($products as $product)
                                     @php
-                                        $price = $product->price->where('depot_id', $default_depot)->toArray();
-
-                                        // echo "<pre>";
-                                        //     print_r($price);
+                                        $price = $product->price->where('stock_piece', '>=', 0)->toArray();
 
                                         $filter = array_filter($price, function ($item) {
                                             if ($item['color_id'] > 1 && $item['size_id'] != null) {
@@ -151,10 +145,7 @@
                                 <th class="th-fixed">Endirim</th>
                                 @foreach ($products as $product)
                                     @php
-                                        $price = $product->price->where('depot_id', $default_depot)->toArray();
-
-                                        // echo "<pre>";
-                                        //     print_r($price);
+                                        $price = $product->price->where('stock_piece', '>=', 0)->toArray();
 
                                         $filter = array_filter($price, function ($item) {
                                             if ($item['color_id'] > 1 && $item['size_id'] != null) {
@@ -206,10 +197,7 @@
 
                                 @foreach ($products as $product)
                                 @php
-                                        $price = $product->price->where('depot_id', $default_depot)->toArray();
-
-                                        // echo "<pre>";
-                                        //     print_r($price);
+                                        $price = $product->price->where('stock_piece', '>=', 0)->toArray();
 
                                         $filter = array_filter($price, function ($item) {
                                             if ($item['color_id'] > 1 && $item['size_id'] != null) {
@@ -237,7 +225,7 @@
                                             @if ($item)
                                                         <td class="td-col">
                                                             <div class="">
-                                                                <a href="javascript:void(0)" data-price-id="{{ $item['id'] }}" data-id="{{ $product->id }}" class="btn btn-soft-secondary mb-3 mb-md-0 font-weight-normal px-5 px-md-3 px-xl-5 add-to-cart">Səbətə at</a>
+                                                                <a href="javascript:void(0)" data-price-id="{{ $item['id'] }}" data-color-id="{{ $item['color_id'] }}" data-amount="{{ $item['sale_price'] }}" data-size-id="{{ $item['size_id'] }}" data-id="{{ $product->id }}" data-discount="{{ $product->discount }}" class="btn btn-soft-secondary mb-3 mb-md-0 font-weight-normal px-5 px-md-3 px-xl-5 add-cart">Səbətə at</a>
                                                             </div>
                                                         </td>
                                                     @break
@@ -302,6 +290,53 @@
                     }
                 })
             })
+
+            $(document).on('click', '.add-cart', function() {
+                let discount = $(this).data('discount')
+                let priceId = $(this).data('price-id')
+                let selected_color = $(this).data('color-id')
+                let selected_size = $(this).data('size-id')
+                let amount = $(this).data('amount')
+                let id = $(this).data('id');
+
+                if(discount){
+                    amount = amount - (amount*discount/100)
+                }
+
+                $.ajax({
+                    url: '{{ route('cart.add_to_cart') }}',
+                    method: 'GET',
+                    data: {
+                        id: id,
+                        piece: 1,
+                        size: selected_size,
+                        color: selected_color,
+                        priceId,
+                        amount,
+                        discount: discount ? discount : 0
+                    },
+                    success: function(data) {
+                        // console.log(data)
+                        toastr.options = {
+                            "closeButton": true,
+                            "progressBar": true
+                        }
+                        if (data.status == 'success') {
+                            $('.total-amount').html(data.total);
+                            $('.show_cartCount').html(data.count);
+
+                            toastr.success(data.message);
+                        } else {
+                            let msg = "";
+                            let message = data.message;
+
+                            for (const value of Object.values(message)) {
+                                toastr.error(value);
+                            }
+                        }
+                    }
+                });
+            });
         });
     </script>
 @endsection

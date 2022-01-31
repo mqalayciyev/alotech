@@ -1,171 +1,9 @@
 <script>
-    function priceList (product_id, type) {
-        $.ajax({
-            url: '{{ route('product.price_list') }}',
-            method: 'GET',
-            data: {
-                product_id: product_id
-            },
-            success: function(data) {
-                price_list[type] = data.priceList
-            }
-        });
-    };
 
-    let price_list = [];
-    @if (isset($product))
-        priceList("{{ $product->id }}", "product__single")
-    @endif
 
 
     $(function() {
 
-        let product_amount = [];
-        let product_amount_discount = [];
-
-        $(document).on('change', '.color-element', function() {
-
-            let target = $(this)
-            let id = $(this).val()
-            let discount = $(target).data('discount');
-            let type = $(target).data('type')
-            let sizes_exist = $("." + type + " .size-element[data-color='" + id + "']").length;
-            let product = $(target).data('product')
-
-            if (!product_amount_discount[type]) {
-                product_amount_discount[type] = $("." + type + " .product_amount_discount").html()
-            }
-            if (!product_amount[type]) {
-                product_amount[type] = $("." + type + " .product_amount").html()
-                product_amount['id'] = $("." + type + " .product_amount").data('price-id')
-            }
-
-
-
-            $("." + type + " .size-element option").each(function() {
-                let filter = $(this).data('id');
-                if (filter != id) {
-                    $(this).addClass('d-none')
-                    $(this).prop('disabled', true);
-                } else {
-                    $(this).removeClass('d-none')
-                    $(this).prop('disabled', false);
-                }
-                $(this).removeAttr('selected')
-            });
-
-            $("." + type + " .size-element option").not(':disabled').first().prop('selected', true)
-
-
-            if (type == "product__single") {
-                $('#sliderSyncingNav').slick('slickUnfilter');
-                $('#sliderSyncingThumb ').slick('slickUnfilter');
-                let filterClass = '.image-color-' + id
-                if ($('#sliderSyncingNav ' + filterClass).length > 0) {
-                    $('#sliderSyncingNav').slick('slickFilter', filterClass);
-                    $('#sliderSyncingThumb ').slick('slickFilter', filterClass);
-                }
-            }
-
-
-
-            let color = id
-            let size = $("." + type + " .size-element").val()
-
-            let price = []
-            if (size) {
-                price = price_list[type].filter(item => item.color_id == color && item.size_id == size)
-
-                if (price.length == 0) {
-                    price = price_list[type].filter(item => item.color_id == color && item.size_id ==
-                        null)
-                }
-            } else {
-                price = price_list[type].filter(item => item.color_id == color && item.size_id == null)
-            }
-
-            if (price.length == 0) {
-
-                $("." + type + " .product_amount").html(product_amount[type])
-                $("." + type + " .product_amount").attr('data-price-id', product_amount['id'])
-                if (discount) {
-                    let amount = parseFloat(product_amount[type]) - (parseFloat(product_amount[type]) *
-                        parseFloat(discount) / 100)
-                    $("." + type + " .product_amount_discount").html(amount.toFixed(2))
-                }
-
-            } else {
-                $("." + type + " .product_amount").html(price[0].sale_price)
-                $("." + type + " .product_amount").attr('data-price-id', price[0].id)
-                if (discount) {
-                    let amount = parseFloat(price[0].sale_price) - (parseFloat(price[0].sale_price) *
-                        parseFloat(discount) / 100)
-                    $("." + type + " .product_amount_discount").html(amount.toFixed(2))
-                }
-            }
-        })
-        $(document).on('change', '.size-element', function() {
-            let target = $(this)
-            let id = $(this).val()
-            let discount = $(target).data('discount');
-            let type = $(target).data('type')
-            let colors_exist = $("." + type + " .color-element").length;
-
-
-            if (!product_amount_discount[type]) {
-                product_amount_discount[type] = $("." + type + " .product_amount_discount").html()
-            }
-            if (!product_amount[type]) {
-                product_amount[type] = $("." + type + " .product_amount").html()
-                product_amount['id'] = $("." + type + " .product_amount").data('price-id')
-            }
-
-            if (colors_exist > 0) {
-                let size = id
-                let color = $("." + type + " .color-element").val()
-                let price = price_list[type].filter(item => item.size_id == size && item.color_id ==
-                    color)
-
-
-                if (price.length != 0) {
-                    $("." + type + " .product_amount").html(price[0].sale_price)
-                    $("." + type + " .product_amount").attr('data-price-id', price[0].id)
-                    if (discount) {
-                        let amount = parseFloat(price[0].sale_price) - (parseFloat(price[0]
-                            .sale_price) * parseFloat(discount) / 100)
-                        $("." + type + " .product_amount_discount").html(amount.toFixed(2))
-                    }
-
-                }
-
-            } else {
-                let size = id
-                let price = price_list[type].filter(item => item.size_id == size && item.color_id == 1)
-
-
-                if (price.length == 0) {
-                    $("." + type + " .product_amount").html(product_amount[type])
-                    $("." + type + " .product_amount").attr('data-price-id', product_amount['id'])
-
-                    if (discount) {
-                        let amount = parseFloat(product_amount[type]) - (parseFloat(product_amount[
-                            type]) * parseFloat(discount) / 100)
-                        $("." + type + " .product_amount_discount").html(amount.toFixed(2))
-                    }
-
-
-                } else {
-                    $("." + type + " .product_amount").html(price[0].sale_price)
-                    $("." + type + " .product_amount").attr('data-price-id', price[0].id)
-                    if (discount) {
-                        let amount = parseFloat(price[0].sale_price) - (parseFloat(price[0]
-                            .sale_price) * parseFloat(discount) / 100)
-                        $("." + type + " .product_amount_discount").html(amount.toFixed(2))
-                    }
-
-                }
-            }
-        })
 
 
 
@@ -198,8 +36,11 @@
         })
         $(document).on('click', '.add-to-cart', function() {
             let type = $(this).data('type')
+            let company = $(this).data('company')
             let discount = $(this).data('discount')
             let id = $(this).data('id');
+
+
 
             let amount, priceId, selected_size, selected_color;
 
@@ -217,6 +58,7 @@
             } else {
                 piece = 1
                 amount = $(this).closest("." + type).find('.product_amount').html()
+
                 if (discount) {
                     amount = $(this).closest("." + type).find('.product_amount_discount').html()
                 }
@@ -225,6 +67,11 @@
                 selected_color = $(this).closest("." + type).find('.product_amount').data('color')
                 selected_size = $(this).closest("." + type).find('.product_amount').data('size')
             }
+
+            if(amount){
+                amount = amount.replace(',', '')
+            }
+
 
             $.ajax({
                 url: '{{ route('cart.add_to_cart') }}',
@@ -236,10 +83,11 @@
                     color: selected_color,
                     priceId,
                     amount,
+                    company,
                     discount: discount ? discount : 0
                 },
                 success: function(data) {
-                    // console.log(data)
+                    console.log(data)
                     toastr.options = {
                         "closeButton": true,
                         "progressBar": true

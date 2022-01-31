@@ -68,9 +68,9 @@
                                     @if ($item)
                                         @if ($product->discount)
                                             <del class="product_amount currency_azn" data-price-id="{{ $item['id'] }}">{{ $item['sale_price'] }}</del>
-                                            <div class="font-size-36 text-red product_amount_discount currency_azn" >{{ number_format($item['sale_price'] * ((100 - $product->discount) / 100), 2) }}</div>
+                                            <div class="font-size-20 text-red product_amount_discount currency_azn" >{{ number_format($item['sale_price'] * ((100 - $product->discount) / 100), 2) }}</div>
                                         @else
-                                            <div class="font-size-36 text-red product_amount currency_azn" data-price-id="{{ $item['id'] }}">{{ $item['sale_price'] }}</div>
+                                            <div class="font-size-20 text-red product_amount currency_azn" data-price-id="{{ $item['id'] }}">{{ $item['sale_price'] }}</div>
                                         @endif
                                         @break
                                     @endif

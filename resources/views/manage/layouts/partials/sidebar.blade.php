@@ -142,6 +142,11 @@
                     </span>
                 </a>
             </li>
+            <li class="{{ url()->current() == route('manage.company') ? 'active' : '' }}">
+                <a href="{{ route('manage.company') }}">
+                    <i class="fa fa-podcast"></i> <span>Kompaniyalar</span>
+                </a>
+            </li>
             <li
                 class="treeview {{ url()->current() == route('manage.banner', 'top') || url()->current() == route('manage.banner', 'center') || url()->current() == route('manage.banner', 'bottom') ? 'active' : '' }}">
                 <a href="#"><i class="fa fa-picture-o"></i> <span>@lang('admin.Banners')</span>
@@ -180,11 +185,6 @@
                 <a href="{{ route('manage.services') }}">
                     <i class="fa fa-handshake-o" aria-hidden="true"></i> <span>Xidmətlər</span>
                 </a>
-            </li>
-            <li class="{{ url()->current() == route('manage.blog') ? 'active' : '' }}">
-                <a href="{{ route('manage.blog') }}">
-                    <i class="fa fa-rss" aria-hidden="true"></i> <span>Bloglar</span>
-                </a>
             </li> --}}
             <li class="{{ url()->current() == route('manage.info') ? 'active' : '' }}">
                 <a href="{{ route('manage.info') }}">
@@ -194,6 +194,17 @@
             <li class="{{ url()->current() == route('manage.about') ? 'active' : '' }}">
                 <a href="{{ route('manage.about') }}">
                     <i class="fa fa-globe"></i> <span>Haqqımızda</span>
+                </a>
+            </li>
+
+            <li class="{{ url()->current() == route('manage.terms') ? 'active' : '' }}">
+                <a href="{{ route('manage.terms') }}">
+                    <i class="fa fa-users"></i> <span>İstifadəçi Şərtləri</span>
+                </a>
+            </li>
+            <li class="{{ url()->current() == route('manage.privacy') ? 'active' : '' }}">
+                <a href="{{ route('manage.privacy') }}">
+                    <i class="fa fa-user-secret"></i> <span>Məxfilik siyasəti</span>
                 </a>
             </li>
             <li class="{{ url()->current() == route('manage.shipping_return') ? 'active' : '' }}">

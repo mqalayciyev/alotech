@@ -82,6 +82,16 @@
                                 <input type="password" class="form-control" name="password_confirmation"
                                     placeholder="Şifrənizi təsdiqəyin" autocomplete="new-password">
                             </div>
+                            <div class="js-form-message mb-3">
+                                <div class="custom-control custom-checkbox d-flex align-items-center">
+                                    <input type="checkbox" class="custom-control-input" name="terms" id="terms"
+                                        {{ old('terms') ? 'checked' : '' }} data-error-class="u-has-error"
+                                        data-success-class="u-has-success">
+                                    <label class="custom-control-label form-label" for="terms">
+                                        <a href="javascript:void(0)"  data-toggle="modal" data-target="#termsModal">İstifadəçi şərtləri</a>
+                                    </label>
+                                </div>
+                            </div>
 
                             <div class="mb-6">
                                 <div class="mb-3">
@@ -102,5 +112,19 @@
         </div>
     </main>
     <!-- ========== END MAIN CONTENT ========== -->
-
+    <div class="modal fade" id="termsModal" tabindex="-1" role="dialog" aria-labelledby="termsModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="termsModalLabel">İstifadəçi şərtləri</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+                {!! $terms->terms !!}
+            </div>
+          </div>
+        </div>
+      </div>
 @endsection

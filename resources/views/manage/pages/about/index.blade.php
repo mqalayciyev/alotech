@@ -26,14 +26,5 @@
 @endsection
 
 @section('footer')
-<script>
-    CKEDITOR.replace('about', {
-        autoGrow_onStartup: true,
-                                                            enterMode: CKEDITOR.ENTER_BR,
-                                                            FullPage : false,
-                                                            allowedContent : true,
-                                                            ProtectedTags : 'html|head|body'
-    });
-  </script>
-    
+@include('manage.layouts.partials.ckeditorService',['uploadUrl'=>route('ckeditorSliderUpload'),'editor'=>"about"])
 @endsection

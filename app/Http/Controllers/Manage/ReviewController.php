@@ -15,7 +15,7 @@ use Yajra\DataTables\Facades\DataTables;
 
 class ReviewController extends Controller
 {
-    
+
 
     public function index()
     {
@@ -37,7 +37,7 @@ class ReviewController extends Controller
                 else{
                     $image .= '<div class="badge badge-danger">Məhsul sistemdə yoxdur</div>';
                 }
-                
+
                 return $image;
             })
             ->addColumn('product_name', function ($row) {
@@ -51,7 +51,7 @@ class ReviewController extends Controller
                 else{
                     $product_name .= '<div class="badge badge-danger">Məhsul sistemdə yoxdur</div>';
                 }
-                
+
                 return $product_name;
             })
             ->addColumn('action', function ($row) {
@@ -59,11 +59,17 @@ class ReviewController extends Controller
                         <a href="javascript:void(0);" class="btn btn-sm btn-primary view" data-id="' . $row->id .'"> <i class="fa fa-eye"></i> Bax</a>
                         <a href="javascript:void(0);" class="btn btn-sm btn-danger delete"  id="' . $row->id . '"> <i class="fa fa-remove"></i> ' . __('admin.Delete') . '</a>
                         </div>';
-                
+
             })
             ->addColumn('checkbox', function($row){
                 return '<input type="checkbox" name="checkbox[]" id="checkbox" class="checkbox" value="' . $row->id . '" />';
-                
+
+            })
+            ->editColumn('created_at', function ($row) {
+                return $row->created_at;
+            })
+            ->editColumn('updated_at', function ($row) {
+                return $row->updated_at;
             })
             ->rawColumns(['checkbox', 'image', 'product_name', 'action'])
             ->toJson();

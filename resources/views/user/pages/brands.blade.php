@@ -31,12 +31,12 @@
                     @foreach ($brands as $array => $brand)
                         <div class="col-xl-2 col-lg-4 col-md-4 col-sm-6 col-6 " style="height: 200px;">
                             <div class="ps-brand" style="height: 100%; cursor: pointer;">
-                                <div class="ps-product__thumbnail text-center" style="height: 80%">
+                                <div class="ps-product__thumbnail text-center" style="height: 150px; width: 150px; margin: auto;">
                                     <a href="{{ route('brand.product', $brand->slug) }}">
                                         {!! $brand->image ? "<img style='width: 100%; height: auto' src='" . asset('assets/img/brand/' . $brand->image) . "'>" : "<img style='width: 100%;' src='" . asset('assets/img/logo.png') . "'>" !!}
                                     </a>
                                 </div>
-                                <div class="ps-product__container">
+                                <div class="ps-product__container py-2">
                                     <div class="ps-product__content text-center">
                                         <a href="{{ route('brand.product', $brand->slug) }}"
                                             class="ps-product__title">{{ $brand->name }}</a>

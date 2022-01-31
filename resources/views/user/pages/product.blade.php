@@ -1,6 +1,6 @@
 @extends('user.layouts.app')
 @section('title', 'Product - ' . $product->product_name)
-@section('description', $product->meta_discription)
+@section('description', $product->meta_description)
 @section('image', asset('img/products/' . $images[0]->main_name))
 @section('keywords', $product->meta_title)
 @section('head')
@@ -412,6 +412,257 @@
             </div>
         </div>
         <div class="container">
+            @if (count($company) > 0)
+                <div class="mb-8">
+                    <!-- Tab Content -->
+                    <div class="borders-radius-17 border p-4 mt-4 mt-md-0 px-lg-10 py-lg-9">
+                        <div class="tab-content" id="Jpills-tabContent">
+                            <div class="tab-pane fade active show" id="Jpills-one-example1" role="tabpanel" aria-labelledby="Jpills-one-example1-tab">
+                                <div class="row no-gutters">
+                                    <div class="col mb-6 mb-md-0">
+                                        <ul class="row list-unstyled products-group no-gutters border-bottom border-md-bottom-0">
+                                            <li class="col-4 col-md-4 col-xl-3 product-item remove-divider-sm-down border-0">
+                                                <div class="product-item__outer h-100">
+                                                    <div class="remove-prodcut-hover product-item__inner px-xl-4 p-3">
+                                                        <div class="product-item__body pb-xl-2">
+                                                            <div class="mb-2 d-none d-md-block">
+                                                                <a href="{{ route('category', $product->categories[0]->slug) }}"
+                                                                    class="font-size-12 text-gray-5 line-clamp-1"
+                                                                    title="{{ $product->categories[0]->category_name }}">{{ $product->categories[0]->category_name }}</a>
+                                                            </div>
+                                                            <h5 class="mb-1 product-item__title d-none d-md-block">
+                                                                <a href="{{ route('product', $product->slug) }}"
+                                                                    class="text-blue font-weight-bold line-clamp-1"
+                                                                    title="{{ $product->product_name }}">{{ $product->product_name }}</a>
+                                                            </h5>
+                                                            <div class="mb-2">
+                                                                <a href="{{ route('product', $product->slug) }}" class="d-block text-center">
+                                                                    <img class="img-fluid" src="{{ $product->image->image_name ? asset('assets/img/products/' . $product->image->image_name) : asset('assets/img/' . old('logo', $website_info->logo)) }}"
+                                                                    alt="{{ $product->product_name }}">
+                                                                </a>
+                                                            </div>
+                                                            <div class="flex-center-between mb-1">
+                                                                <div class="prodcut-price">
+                                                                    @if (count($filter))
+                                                                        @foreach ($filter as $item)
+                                                                            @if ($item)
+                                                                                @if ($product->discount)
+                                                                                    <del class="company_product_amount currency_azn" data-price-id="{{ $item['id'] }}">{{ $item['sale_price'] }}</del>
+                                                                                    <div class="font-size-20 text-red company_product_amount_discount currency_azn" >{{ number_format($item['sale_price'] * ((100 - $product->discount) / 100), 2) }}</div>
+                                                                                @else
+                                                                                    <div class="font-size-20 text-red company_product_amount currency_azn" data-price-id="{{ $item['id'] }}">{{ $item['sale_price'] }}</div>
+                                                                                @endif
+                                                                                @break
+                                                                            @endif
+                                                                        @endforeach
+                                                                    @endif
+
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </li>
+                                            @foreach ($company as $item)
+                                            @php
+                                                $price = $item->price;
+                                            @endphp
+
+                                                <li class="col-4 col-md-4 col-xl-3 product-item remove-divider-sm-down">
+                                                    <div class="product-item__outer h-100">
+                                                        <div class="remove-prodcut-hover add-accessories product-item__inner px-xl-4 p-3">
+                                                            <div class="product-item__body pb-xl-2">
+                                                                <div class="mb-2 d-none d-md-block">
+                                                                    <a href="{{ route('category', $item->product->categories[0]->slug) }}"
+                                                                    class="font-size-12 text-gray-5 line-clamp-1"
+                                                                    title="{{ $item->product->categories[0]->category_name }}">{{ $item->product->categories[0]->category_name }}</a>
+                                                                </div>
+                                                                <h5 class="mb-1 product-item__title d-none d-md-block">
+                                                                    <a href="{{ route('product', $item->product->slug) }}"
+                                                                        class="text-blue font-weight-bold line-clamp-1"
+                                                                        title="{{ $item->product->product_name }}">{{ $item->product->product_name }}</a>
+                                                                </h5>
+                                                                <div class="mb-2">
+                                                                    <a href="{{ route('product', $item->product->slug) }}" class="d-block text-center">
+                                                                        <img class="img-fluid" src="{{ $item->product->image->image_name ? asset('assets/img/products/' . $item->product->image->image_name) : asset('assets/img/' . old('logo', $website_info->logo)) }}"
+                                                                        alt="{{ $item->product->product_name }}">
+                                                                    </a>
+                                                                </div>
+                                                                <div class="flex-center-between mb-1">
+                                                                    <div class="prodcut-price">
+                                                                        @if ($item->product->discount)
+                                                                            <del class="product_amount currency_azn" data-price-id="{{ $item->price['id'] }}">{{ $item->price['sale_price'] }}</del>
+                                                                            <div class="font-size-20 text-red product_amount_discount currency_azn" >{{ number_format($item->price['sale_price'] * ((100 - $item->product->discount) / 100), 2) }}</div>
+                                                                        @else
+                                                                            <div class="font-size-20 text-red product_amount currency_azn" data-price-id="{{ $item->price['id'] }}">{{ $item->price['sale_price'] }}</div>
+                                                                        @endif
+
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </li>
+                                            @endforeach
+                                        </ul>
+                                    </div>
+                                    <div class="col-md-auto">
+                                        <div class="mr-xl-15">
+                                            <div class="mb-3">
+                                                @php
+                                                    $price_main = 0;
+                                                @endphp
+                                                @if (count($filter))
+                                                    @foreach ($filter as $item)
+                                                        @if ($item)
+                                                            @if ($product->discount)
+                                                                @php $price_main = $item['sale_price'] * ((100 - $product->discount) / 100) @endphp
+                                                            @else
+                                                                @php $price_main = $item['sale_price'] @endphp
+                                                            @endif
+                                                            @break
+                                                        @endif
+                                                    @endforeach
+                                                @endif
+
+
+                                                <del class="font-size-20 text-lh-1dot2 company_total_amount currency_azn">{{ number_format(($price_main + $price_company), 2) }}</del>
+                                                <div class="text-red font-size-26 text-lh-1dot2 company_total_amount_discount currency_azn">{{ number_format(($price_main + $price_company) - $company->first()->discount, 2) }}</div>
+                                                <div class="text-gray-6">{{ count($company) + 1 }} məhsul üçün</div>
+                                            </div>
+                                            <a href="javascript:void(0)" data-company="1" data-piece="1" data-type="product__single" data-id="{{ $product->id }}" data-discount="{{ $product->discount }}" class="btn btn-sm btn-block btn-primary-dark btn-wide transition-3d-hover add-to-cart" data-company="1">Hamısını səbətə at</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+
+
+                        </div>
+                    </div>
+                    <!-- End Tab Content -->
+                </div>
+            @endif
+
+            @if (count($related) > 0)
+                <!-- Related products -->
+                <div class="mb-6">
+                    <div class="d-flex justify-content-between align-items-center border-bottom border-color-1 flex-lg-nowrap flex-wrap mb-4">
+                        <h3 class="section-title mb-0 pb-2 font-size-22">Bu məhsulla birlikdə alınanlar</h3>
+                    </div>
+                    <ul class="row list-unstyled products-group no-gutters ">
+                        @foreach ($related as $item)
+                            <li class="col-6 col-md-3 col-xl-2gdot4-only col-wd-2 product-item products__all">
+                                <div class="product-item__outer h-100">
+                                    <div class="product-item__inner px-xl-4 p-3">
+                                        <div class="product-item__body pb-xl-2">
+                                            <div class="mb-2">
+                                                <a href="{{ route('category', $item->product->categories[0]->slug) }}"
+                                                    class="font-size-12 text-gray-5 line-clamp-1"
+                                                    title="{{ $item->product->categories[0]->category_name }}">{{ $item->product->categories[0]->category_name }}</a>
+                                                </div>
+                                            <h5 class="mb-1 product-item__title">
+                                                <a href="{{ route('product', $item->product->slug) }}"
+                                                    class="text-blue font-weight-bold line-clamp-1"
+                                                    title="{{ $item->product->product_name }}">{{ $item->product->product_name }}</a>
+                                                </h5>
+                                                <div class="mb-2 position-relative">
+                                                    <a href="{{ route('product', $item->product->slug) }}" class="d-block text-center">
+                                                        <img class="img-fluid"
+                                                            src="{{ $item->product->image->image_name ? asset('assets/img/products/' . $item->product->image->image_name) : asset('assets/img/' . old('logo', $website_info->logo)) }}"
+                                                            alt="{{ $item->product->product_name }}">
+                                                    </a>
+                                                    @if (count($item->product->price) > 1)
+                                                        <div style="position: absolute; right: 0; bottom: 0;">
+                                                            <img src="{{ asset('assets/img/colorwheel-circle-icon-256.png') }}" style="width: 25px; height: 25px;" alt="">
+                                                        </div>
+                                                    @endif
+                                                </div>
+                                            <div class="flex-center-between mb-1">
+                                                <div class="prodcut-price">
+                                                    @php
+                                                        $price = $item->product->price->where('stock_piece', '>', 0)->toArray();
+
+                                                        // echo "<pre>";
+                                                        //     print_r($price);
+
+                                                        $filter = array_filter($price, function ($item) {
+                                                            if ($item['color_id'] > 1 && $item['size_id'] != null) {
+                                                                return true;
+                                                            }
+                                                        });
+                                                        if(count($filter) == 0){
+                                                            $filter = array_filter($price, function ($item) {
+                                                                if ($item['color_id'] > 1 || $item['size_id'] == null) {
+                                                                    return true;
+                                                                }
+                                                            });
+                                                        }
+                                                        if(count($filter) == 0){
+                                                            $filter = array_filter($price, function ($item) {
+                                                                if ($item['color_id'] == 1 || $item['size_id'] != null) {
+                                                                    return true;
+                                                                }
+                                                            });
+                                                        }
+                                                        if(count($filter) == 0){
+                                                            $filter = array_filter($price, function ($item) {
+                                                                if ($item['color_id'] == 1 || $item['size_id'] == null) {
+                                                                    return true;
+                                                                }
+                                                            });
+                                                        }
+                                                    @endphp
+
+                                                    @if (count($filter))
+                                                    @foreach ($filter as $price)
+                                                        @if ($price)
+                                                            @if ($item->product->discount)
+                                                                <del class="product_amount currency_azn" data-price-id="{{ $price['id'] }}">{{ $price['sale_price'] }}</del>
+                                                                <div class="font-size-20 text-red product_amount_discount currency_azn" >{{ number_format($price['sale_price'] * ((100 - $price->product->discount) / 100), 2) }}</div>
+                                                            @else
+                                                                <div class="font-size-20 text-red product_amount currency_azn" data-price-id="{{ $price['id'] }}">{{ $price['sale_price'] }}</div>
+                                                            @endif
+                                                            @break
+                                                        @endif
+                                                    @endforeach
+                                                    @endif
+                                                </div>
+                                                <div class="d-block prodcut-add-cart">
+                                                    <a href="javascript:void(0)" class="btn-add-cart btn-primary transition-3d-hover add-to-cart"
+                                                        data-type="products__all" data-piece="1" data-discount="{{ $item->product->discount }}"
+                                                        data-id="{{ $item->product->id }}"><i class="fas fa-cart-arrow-down "></i></a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="product-item__footer">
+                                            @if ($item->product->price->sum('stock_piece') > 0)
+                                            <p class="mb-2 text-center"><i class="fas fa-check text-success"></i> Mövcuddur</p>
+                                        @else
+                                            @if ($item->product->order_arrival)
+                                                @php
+                                                    Carbon::setLocale('az');
+                                                    $arrival = Carbon::createFromDate($item->product->order_arrival);
+                                                    $now = Carbon::now();
+                                                @endphp
+                                                <p class="mb-2 text-center"><i class="fas fa-truck text-danger"></i> {{ $arrival->diffForHumans($now) }} çatacaq</p>
+                                            @else
+                                                <p class="mb-2 text-center"><i class="fas fa-times text-danger"></i> Mövcud deyil</p>
+                                            @endif
+                                        @endif
+                                            <div class="border-top pt-2 flex-center-between flex-wrap">
+                                                <a href="javascript:void(0)" class="text-gray-6 font-size-13 add-to-compare" data-id="{{ $item->product->id }}"><i class="fa fa-retweet font-size-15"></i></a>
+                                                <a href="javascript:void(0)" class="text-gray-6 font-size-13 add-wish-list" data-id="{{ $item->product->id }}"><i class="fa fa-heart font-size-15 mr-1"></i></a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                        @endforeach
+                    </ul>
+                </div>
+                <!-- End Related products -->
+            @endif
             <!-- Related products -->
             <div class="mb-6">
                 <div class="d-flex justify-content-between align-items-center border-bottom border-color-1 flex-lg-nowrap flex-wrap mb-4">
@@ -430,9 +681,231 @@
 @section('script')
     <script>
 
+    function priceList (product_id) {
+        $.ajax({
+            url: '{{ route('product.price_list') }}',
+            method: 'GET',
+            data: {
+                product_id: product_id
+            },
+            success: function(data) {
+                price_list = data.priceList
+            }
+        });
+    };
+
+    let price_list = [];
+    let companyAmount = parseFloat("{{ $price_company }}");
+    let companyDiscount = parseFloat("{{ count($company) > 0 ? $company->first()->discount : 0 }}");
+
+    priceList("{{ $product->id }}")
+
 
 
         $(function() {
+
+        let product_price_id;
+        let product_amount;
+        let product_amount_discount;
+
+        $(document).on('change', '.color-element', function() {
+
+            let target = $(this)
+            let id = $(this).val()
+            let discount = parseFloat($(target).data('discount'));
+
+            let sizes_exist = $(".product__single .size-element[data-color='" + id + "']").length;
+            let product = $(target).data('product')
+
+            if (!product_amount_discount) {
+                product_amount_discount = $(".product__single .product_amount_discount").html()
+            }
+            if (!product_amount) {
+                product_amount = $(".product__single .product_amount").html()
+                product_price_id = $(".product__single .product_amount").data('price-id')
+            }
+
+
+
+            $(".product__single .size-element option").each(function() {
+                let filter = $(this).data('id');
+                if (filter != id) {
+                    $(this).addClass('d-none')
+                    $(this).prop('disabled', true);
+                } else {
+                    $(this).removeClass('d-none')
+                    $(this).prop('disabled', false);
+                }
+                $(this).removeAttr('selected')
+            });
+
+            $(".product__single .size-element option").not(':disabled').first().prop('selected', true)
+
+
+            $('#sliderSyncingNav').slick('slickUnfilter');
+            $('#sliderSyncingThumb ').slick('slickUnfilter');
+            let filterClass = '.image-color-' + id
+            if ($('#sliderSyncingNav ' + filterClass).length > 0) {
+                $('#sliderSyncingNav').slick('slickFilter', filterClass);
+                $('#sliderSyncingThumb ').slick('slickFilter', filterClass);
+            }
+
+
+
+            let color = id
+            let size = $(".product__single .size-element").val()
+
+            let price = []
+            if (size) {
+                price = price_list.filter(item => item.color_id == color && item.size_id == size)
+
+                if (price.length == 0) {
+                    price = price_list.filter(item => item.color_id == color && item.size_id == null)
+                }
+            } else {
+                price = price_list.filter(item => item.color_id == color && item.size_id == null)
+            }
+
+            if (price.length == 0) {
+                let amount = parseFloat(product_amount)
+                $(".product__single .product_amount").html(product_amount)
+                $(".product__single .product_amount").attr('data-price-id', product_price_id)
+                $(".company_product_amount").html(product_amount)
+
+                let total = amount + companyAmount
+                let totalWithDiscount = total - companyDiscount
+
+                if (discount) {
+                    amount = amount * ((100 - discount) / 100)
+                    $(".product__single .product_amount_discount").html(amount.toFixed(2))
+                    $(".company_product_amount_discount").html(amount.toFixed(2))
+                    total = amount + companyAmount
+                    totalWithDiscount = total - companyDiscount
+
+                }
+
+                $(".company_total_amount").html(total.toFixed(2))
+                $(".company_total_amount_discount").html(totalWithDiscount.toFixed(2))
+
+            } else {
+                let amount = parseFloat(price[0].sale_price)
+                $(".product__single .product_amount").html(amount)
+                $(".product__single .product_amount").attr('data-price-id', price[0].id)
+                $(".company_product_amount").html(amount)
+
+                let total = amount + companyAmount
+                let totalWithDiscount = total - companyDiscount
+
+
+                if (discount) {
+                    amount = amount * ((100 - discount) / 100)
+                    $(".product__single .product_amount_discount").html(amount.toFixed(2))
+                    $(".company_product_amount_discount").html(amount.toFixed(2))
+
+                    total = amount + companyAmount
+                    totalWithDiscount = total - companyDiscount
+                }
+
+                $(".company_total_amount").html(total.toFixed(2))
+                $(".company_total_amount_discount").html(totalWithDiscount.toFixed(2))
+            }
+        })
+        $(document).on('change', '.size-element', function() {
+            let target = $(this)
+            let id = $(this).val()
+            let discount = $(target).data('discount');
+            let type = $(target).data('type')
+            let colors_exist = $(".product__single .color-element").length;
+
+
+            if (!product_amount_discount) {
+                product_amount_discount = $(".product__single .product_amount_discount").html()
+            }
+            if (!product_amount) {
+                product_amount = $(".product__single .product_amount").html()
+                product_price_id = $(".product__single .product_amount").data('price-id')
+            }
+
+            if (colors_exist > 0) {
+                let size = id
+                let color = $(".product__single .color-element").val()
+                let price = price_list.filter(item => item.size_id == size && item.color_id == color)
+
+
+                if (price.length != 0) {
+                    let amount = parseFloat(price[0].sale_price)
+                    $(".product__single .product_amount").html(amount)
+                    $(".product__single .product_amount").attr('data-price-id', price[0].id)
+                    $(".company_product_amount").html(amount)
+
+                    let total = amount + companyAmount
+                    let totalWithDiscount = total - companyDiscount
+
+                    if (discount) {
+                        amount = amount * ((100 - discount) / 100)
+                        $(".product__single .product_amount_discount").html(amount.toFixed(2))
+                        $(".company_product_amount_discount").html(amount.toFixed(2))
+
+                        total = amount + companyAmount
+                        totalWithDiscount = total - companyDiscount
+                    }
+
+                    $(".company_total_amount").html(total.toFixed(2))
+                    $(".company_total_amount_discount").html(totalWithDiscount.toFixed(2))
+
+                }
+
+            } else {
+                let size = id
+                let price = price_list.filter(item => item.size_id == size && item.color_id == 1)
+
+
+                if (price.length == 0) {
+                    let amount = parseFloat(product_amount)
+
+                    $(".product__single .product_amount").html(amount)
+                    $(".product__single .product_amount").attr('data-price-id', product_price_id)
+                    $(".company_product_amount").html(amount)
+
+                    let total = amount + companyAmount
+                    let totalWithDiscount = total - companyDiscount
+
+                    if (discount) {
+                        amount = amount * ((100 - discount) / 100)
+                        $(".product__single .product_amount_discount").html(amount.toFixed(2))
+                        total = amount + companyAmount
+                        totalWithDiscount = total - companyDiscount
+                    }
+
+                    $(".company_total_amount").html(total.toFixed(2))
+                    $(".company_total_amount_discount").html(totalWithDiscount.toFixed(2))
+
+
+                } else {
+                    let amount = parseFloat(price[0].sale_price)
+
+                    $(".product__single .product_amount").html(amount)
+                    $(".product__single .product_amount").attr('data-price-id', price[0].id)
+                    $(".company_product_amount").html(amount)
+
+                    let total = amount + companyAmount
+                    let totalWithDiscount = total - companyDiscount
+
+                    if (discount) {
+                        amount = amount * ((100 - discount) / 100)
+                        $(".product__single .product_amount_discount").html(amount.toFixed(2))
+                        $(".company_product_amount_discount").html(amount.toFixed(2))
+                        total = amount + companyAmount
+                        totalWithDiscount = total - companyDiscount
+                    }
+
+                    $(".company_total_amount").html(total.toFixed(2))
+                    $(".company_total_amount_discount").html(totalWithDiscount.toFixed(2))
+
+                }
+            }
+        })
+
 
 
             products('products_rp');

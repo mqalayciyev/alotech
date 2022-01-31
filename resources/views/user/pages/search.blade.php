@@ -272,10 +272,7 @@
                                                         <div class="mb-3">
                                                             <div class="prodcut-price mb-2">
                                                                 @php
-                                                                    $price = [];
-                                                                    foreach ($product->price as $object) {
-                                                                        $price[] = $object->toArray();
-                                                                    }
+                                                                    $price = $product->price->toArray();
 
                                                                     // echo "<pre>";
                                                                     //     print_r($price);

@@ -15,7 +15,7 @@
         <div class="clearfix"></div>
     </section>
     <!-- Main content -->
-    
+
     <section class="content">
         <div class="row">
             <div class="col-xs-12">
@@ -36,6 +36,9 @@
                                 <th>@lang('admin.Updated at')</th>
                                 <th width="125px">@lang('admin.Action')</th>
                                 <th>
+                                    <button type="button" id="select_all" data-check="0" title="Hamısını seç" class="btn btn-danger btn-xs">
+                                        <i class="fa fa-square"></i>
+                                    </button>
                                     <button type="button" title="@lang('admin.Select and Delete')" name="bulk_delete"
                                             id="bulk_delete"
                                             class="btn btn-danger btn-xs"><i class="fa fa-trash"></i></button>

@@ -64,10 +64,8 @@
                             <!-- Checkbox -->
                             <div class="js-form-message mb-3">
                                 <div class="custom-control custom-checkbox d-flex align-items-center">
-                                    <input type="checkbox" class="custom-control-input" name="remember" id="remember"
-                                        {{ old('remember') ? 'checked' : '' }} data-error-class="u-has-error"
-                                        data-success-class="u-has-success">
-                                    <label class="custom-control-label form-label" for="rememberCheckbox">
+                                    <input type="checkbox" class="custom-control-input" name="remember" id="remember" {{ old('remember') ? 'checked' : '' }} >
+                                    <label class="custom-control-label form-label" for="remember">
                                         Məni Xatırla
                                     </label>
                                 </div>

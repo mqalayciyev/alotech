@@ -30,7 +30,7 @@
                             <div class="flex-center-between mb-1">
                                 <div class="prodcut-price">
                                     @php
-                                        $price = $product->price->where('stock_piece', '>', 0)->toArray();
+                                        $price = $product->price->where('stock_piece', '>=', 0)->toArray();
 
                                         // echo "<pre>";
                                         //     print_r($price);
@@ -71,7 +71,7 @@
                                                 <small><del class="currency_azn product_amount"
                                                     data-price-id="{{ $item['id'] }}" data-color="{{ $item['color_id'] }}"
                                                     data-size="{{ $item['size_id'] }}">{{ $item['sale_price'] }}</del></small>
-                                                <div class="text-gray-100 text-red currency_azn product_amount"
+                                                <div class="text-gray-100 text-red currency_azn product_amount_discount"
                                                     data-price-id="{{ $item['id'] }}" data-color="{{ $item['color_id'] }}"
                                                     data-size="{{ $item['size_id'] }}">{{ number_format($item['sale_price'] * ((100 - $product->discount) / 100), 2) }}</div>
                                                 @else

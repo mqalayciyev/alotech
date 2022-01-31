@@ -79,7 +79,9 @@
                                                                             data-toggle="collapse" aria-expanded="false"
                                                                             aria-controls="{{ $category->slug }}"
                                                                             data-target="#{{ $category->slug }}">
-                                                                            {{ $category->category_name }}
+                                                                            <img class="icon-filter category-icon" style='width: 20px; margin-right: 5px;'
+                                                                            src='{{ $category->category_image ? asset('assets/img/category/' . $category->category_image) : asset('assets/img/category/product-category-icon.png') }}'
+                                                                            alt='{{ $category->category_image }}'> {{ $category->category_name }}
                                                                         </a>
                                                                         <div id="{{ $category->slug }}"
                                                                             class="collapse pl-2"
@@ -262,21 +264,23 @@
                                                 <a href="{{ route('category', $category->slug) }}">
                                                     <h3>{{ $category->category_name }}</h3>
                                                 </a>
-                                                <ul class="sub-menu-items">
-                                                    @foreach ($category->alt_category as $alt_category)
-                                                        @if ($alt_category->second_id == null)
-                                                            <li class="px-2">
-                                                                <strong><a class="nav-link p-0"
-                                                                    href="{{ route('category', $alt_category->slug) }}">{{ $alt_category->category_name }}</a></strong>
-                                                                <ul>
-                                                                    @foreach ($alt_category->second_category as $second_category)
-                                                                        <li><a href="{{ route('category', $second_category->slug) }}">{{ $second_category->category_name }}</a></li>
-                                                                    @endforeach
-                                                                </ul>
-                                                            </li>
-                                                        @endif
-                                                    @endforeach
-                                                </ul>
+                                                <div class="columns">
+                                                    <ul class="sub-menu-items">
+                                                        @foreach ($category->alt_category as $alt_category)
+                                                            @if ($alt_category->second_id == null)
+                                                                <li class="px-2">
+                                                                    <strong><a class="nav-link p-0"
+                                                                        href="{{ route('category', $alt_category->slug) }}">{{ $alt_category->category_name }}</a></strong>
+                                                                    <ul>
+                                                                        @foreach ($alt_category->second_category as $second_category)
+                                                                            <li><a href="{{ route('category', $second_category->slug) }}">{{ $second_category->category_name }}</a></li>
+                                                                        @endforeach
+                                                                    </ul>
+                                                                </li>
+                                                            @endif
+                                                        @endforeach
+                                                    </ul>
+                                                </div>
                                             </div>
                                         </li>
                                         @php $show=true; @endphp
@@ -303,6 +307,11 @@
                                                 <a class="nav-link u-header__nav-link" href="{{ route('brands') }}"
                                                     aria-haspopup="true" aria-expanded="false"
                                                     aria-labelledby="pagesSubMenu">Brendlər</a>
+                                            </li>
+                                            <li class="nav-item u-header__nav-item">
+                                                <a class="nav-link u-header__nav-link" href="{{ route('company') }}"
+                                                    aria-haspopup="true" aria-expanded="false"
+                                                    aria-labelledby="pagesSubMenu">Kompaniyalar</a>
                                             </li>
                                             <li class="nav-item u-header__nav-item">
                                                 <a class="nav-link u-header__nav-link" href="{{ route('compare') }}"

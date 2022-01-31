@@ -11,7 +11,17 @@ class Order extends Model
     protected $table = 'order';
     protected $fillable = [
         'cart_id', 'order_amount', 'status',
-        'first_name', 'last_name', 'email', 'address', 'city', 'country', 'zip_code', 'phone', 'mobile', 'bank', 'installment_number', 'bonus_amount', 'shipping', 'delivery_day', 'delivery_time'
+        'first_name', 'last_name', 'email', 'address',
+        'city', 'country', 'zip_code', 'phone',
+        'mobile', 'bank', 'installment_number',
+        'bonus_amount', 'bonus_value', 'shipping',
+        'delivery_day', 'call_me', 'delivery_time'
+    ];
+
+
+    protected $casts = [
+        'created_at' => 'datetime:d.m.Y H:m:s',
+        'updated_at' => 'datetime:d.m.Y H:m:s',
     ];
 
     public function cart()

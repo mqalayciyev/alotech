@@ -66,9 +66,7 @@ Route::namespace('User')->group(function () {
     Route::get('/shipping_return', 'HomeController@shipping_return')->name('shipping_return');
     Route::get('/privacy', 'HomeController@privacy')->name('privacy');
     Route::get('/invoice', 'HomeController@invoice')->name('invoice');
-    Route::get('/services', 'ServicesController@index')->name('services');
-    Route::get('/blog', 'BlogController@index')->name('blog');
-    Route::get('/blog/{slug}', 'BlogController@single')->name('blog.single');
+    Route::get('/companies', 'HomeController@company')->name('company');
 
     Route::prefix('compare')->group(function () {
         Route::get('/', 'ProductController@compare')->name('compare');
@@ -226,22 +224,15 @@ Route::namespace('Manage')->prefix('manage')->group(function () {
             Route::get('/edit/{type}/{id}', 'BannerController@form')->name('manage.banner.edit');
             Route::post('/save', 'BannerController@save')->name('manage.banner.save');
         });
-        Route::group(['prefix' => 'services'], function () {
-            Route::get('/', 'ServicesController@index')->name('manage.services');
-            Route::get('/index_data', 'ServicesController@index_data')->name('manage.services.index_data');
-            Route::post('/post_data', 'ServicesController@post_data')->name('manage.services.post_data');
-            Route::get('/fetch_data', 'ServicesController@fetch_data')->name('manage.services.fetch_data');
-            Route::get('/delete_data', 'ServicesController@delete_data')->name('manage.services.delete_data');
-            Route::get('/mass_remove', 'ServicesController@mass_remove')->name('manage.services.mass_remove');
-        });
-        Route::group(['prefix' => 'blog'], function () {
-            Route::get('/', 'BlogController@index')->name('manage.blog');
-            Route::get('/index_data', 'BlogController@index_data')->name('manage.blog.index_data');
-            Route::get('/delete_data', 'BlogController@delete_data')->name('manage.blog.delete_data');
-            Route::get('/mass_remove', 'BlogController@mass_remove')->name('manage.blog.mass_remove');
-            Route::get('/new', 'BlogController@form')->name('manage.blog.new');
-            Route::get('/edit/{id}', 'BlogController@form')->name('manage.blog.edit');
-            Route::post('/save/{id?}', 'BlogController@save')->name('manage.blog.save');
+        Route::group(['prefix' => 'company'], function () {
+            Route::get('/', 'CompanyController@index')->name('manage.company');
+            Route::post('/reorder', 'CompanyController@reorder')->name('manage.company.reorder');
+            Route::get('/index_data', 'CompanyController@index_data')->name('manage.company.index_data');
+            Route::get('/delete_data', 'CompanyController@delete_data')->name('manage.company.delete_data');
+            Route::get('/mass_remove', 'CompanyController@mass_remove')->name('manage.company.mass_remove');
+            Route::get('/new', 'CompanyController@form')->name('manage.company.new');
+            Route::get('/edit/{id}', 'CompanyController@form')->name('manage.company.edit');
+            Route::post('/save', 'CompanyController@save')->name('manage.company.save');
         });
         Route::group(['prefix' => 'review'], function () {
             Route::get('/', 'ReviewController@index')->name('manage.review');
@@ -286,14 +277,15 @@ Route::namespace('Manage')->prefix('manage')->group(function () {
             Route::post('/save', 'AboutController@save')->name('manage.about.save');
 
         });
+        Route::group(['prefix' => 'terms'], function () {
+            Route::get('/', 'TermController@index')->name('manage.terms');
+            Route::post('/save', 'TermController@save')->name('manage.terms.save');
 
-        Route::group(['prefix' => 'sell'], function () {
-            Route::get('/', 'SellController@index')->name('manage.sell');
-            Route::post('/products', 'SellController@products')->name('manage.sell.products');
-            Route::post('/search', 'SellController@search')->name('manage.sell.search');
-            Route::post('/sale_list', 'SellController@sale_list')->name('manage.sell.sale_list');
-            Route::post('/manual_cart_remove', 'SellController@manual_cart_remove')->name('manage.sell.manual_cart_remove');
-            Route::post('/trash_cart', 'SellController@trash_cart')->name('manage.sell.trash_cart');
+        });
+        Route::group(['prefix' => 'privacy'], function () {
+            Route::get('/', 'PrivacyController@index')->name('manage.privacy');
+            Route::post('/save', 'PrivacyController@save')->name('manage.privacy.save');
+
         });
 
 
@@ -331,25 +323,7 @@ Route::namespace('Manage')->prefix('manage')->group(function () {
             Route::get('/delete_data', 'SizeController@delete_data')->name('manage.size.delete_data');
             Route::get('/mass_remove', 'SizeController@mass_remove')->name('manage.size.mass_remove');
         });
-        Route::group(['prefix' => 'measurement'], function () {
-            Route::get('/', 'MeasurementController@index')->name('manage.measurement');
-            Route::get('/index_data', 'MeasurementController@index_data')->name('manage.measurement.index_data');
-            Route::post('/post_data', 'MeasurementController@post_data')->name('manage.measurement.post_data');
-            Route::get('/fetch_data', 'MeasurementController@fetch_data')->name('manage.measurement.fetch_data');
-            Route::get('/delete_data', 'MeasurementController@delete_data')->name('manage.measurement.delete_data');
-            Route::get('/mass_remove', 'MeasurementController@mass_remove')->name('manage.measurement.mass_remove');
-        });
 
-        Route::group(['prefix' => 'supplier'], function () {
-            Route::get('/', 'SupplierController@index')->name('manage.supplier');
-            Route::get('/index_data', 'SupplierController@index_data')->name('manage.supplier.index_data');
-            Route::post('/post_data', 'SupplierController@post_data')->name('manage.supplier.post_data');
-            Route::get('/new', 'SupplierController@form')->name('manage.supplier.new');
-            Route::get('/edit/{id}', 'SupplierController@form')->name('manage.supplier.edit');
-            Route::post('/save/{id?}', 'SupplierController@save')->name('manage.supplier.save');
-            Route::get('/delete_data', 'SupplierController@delete_data')->name('manage.supplier.delete_data');
-            Route::get('/mass_remove', 'SupplierController@mass_remove')->name('manage.supplier.mass_remove');
-        });
 
         Route::group(['prefix' => 'city'], function () {
             Route::get('/', 'CityController@index')->name('manage.city');

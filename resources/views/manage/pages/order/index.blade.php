@@ -23,11 +23,37 @@
                 <div class="box box-primary">
                     <!-- /.box-header -->
                     <div class="box-header">
-                            <!--<a href="{{ route('manage.raports.export', 'products') }}" class="btn btn-primary btn-export" data-type="products">Sifariş edilən məhsullar</a>-->
-                            <a href="{{ route('manage.raports.export', 'orders') }}" class="btn btn-primary btn-export" data-type="orders">Sifariş cədvəli Excel</a>
+                        <div class="row">
+                            <form action="{{ route('manage.raports.export', 'orders') }}" method="get">
+                                <div class="col-sm-3">
+                                    <div class="form-group">
+                                        <label for="discount_date">Min tarixi</label>
+                                        <div class="input-group">
+                                            <input type="date" class="form-control" id="min" name="min">
+                                             <span class="input-group-addon"><i class="fa fa-times" onclick="document.getElementById('min').value = null"></i></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-3">
+                                    <div class="form-group">
+                                        <label for="discount_date">Max tarixi</label>
+                                        <div class="input-group">
+                                            <input type="date" class="form-control" id="max" name="max">
+                                             <span class="input-group-addon"><i class="fa fa-times" onclick="document.getElementById('max').value = null"></i></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-3" style="padding: 15px;">
+                                    <button type="suubmit" class="btn btn-primary btn-export" data-type="orders">Sifariş cədvəli Excel</button>
+
+                                </div>
+
+                            </form>
+
+                        </div>
                     </div>
                     <div class="box-body table-responsive">
-                        
+
                         <table id="index_table" class="table table-bordered table-striped table-hover display" style="width:100%">
                             <thead>
                                 <tr>
@@ -37,9 +63,13 @@
                                     <th>@lang('admin.Total Price')</th>
                                     <th>@lang('admin.Status')</th>
                                     <th>@lang('admin.Order date')</th>
+                                    <th>Çatdırılma vaxtı</th>
                                     <th></th>
                                     <th width="125px">@lang('admin.Action')</th>
                                     <th>
+                                        <button type="button" id="select_all" data-check="0" title="Hamısını seç" class="btn btn-danger btn-xs">
+                                            <i class="fa fa-square"></i>
+                                        </button>
                                         <button type="button" title="@lang('admin.Select and Delete')" name="bulk_delete"
                                                 id="bulk_delete"
                                                 class="btn btn-danger btn-xs"><i class="fa fa-trash"></i></button>
@@ -53,7 +83,7 @@
                 <!-- /.box -->
             </div>
         </div>
-    
+
 @endsection
 @section('footer')
     <!-- DataTables -->
@@ -62,6 +92,9 @@
     <script>
         $(function () {
             // $.fn.dataTable.ext.errMode = 'throw';
+
+            const str = new Date().toLocaleString('en-US', { timeZone: 'Asia/Jakarta' });
+            console.log(str);
             let table = $('#index_table').DataTable({
                 aLengthMenu: [[25, 50, 75, 100, 150, 200], [25, 50, 75, 100, 150, 200]],
                 iDisplayLength: 25,
@@ -79,6 +112,7 @@
                     {data: 'order_amount'},
                     {data: 'status'},
                     {data: 'created_at'},
+                    {data: 'delivery_day'},
                     {data: 'export', name: 'order.exported'},
                     {data: 'action', orderable: false, searchable: false},
                     {data: 'checkbox', orderable: false, searchable: false},
@@ -107,8 +141,10 @@
                     }
                 }
             });
-            
-            
+
+
+
+
 
             $(document).on('click', '#bulk_delete', function () {
                 var id = [];
@@ -135,7 +171,7 @@
             });
             // $(document).on('click', '.btn-export', function () {
             //     let type = $(this).data('type')
-                
+
             //     $.ajax({
             //         url: "",
             //         method: 'GET',

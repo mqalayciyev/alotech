@@ -21,6 +21,12 @@ class User extends Authenticatable
         'remember_token',
     ];
 
+
+    protected $casts = [
+        'created_at' => 'datetime:d.m.Y H:m:s',
+        'updated_at' => 'datetime:d.m.Y H:m:s',
+    ];
+
     public function detail()
     {
         return $this->hasOne('App\Models\UserDetail')->withDefault();

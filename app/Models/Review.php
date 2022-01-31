@@ -10,5 +10,11 @@ class Review extends Model
     use SoftDeletes;
     protected $table = 'reviews';
     protected $guarded = [];
+
+
+    protected $casts = [
+        'created_at' => 'datetime:d.m.Y H:m:s',
+        'updated_at' => 'datetime:d.m.Y H:m:s',
+    ];
     // public $primaryKey = 'id';
 }

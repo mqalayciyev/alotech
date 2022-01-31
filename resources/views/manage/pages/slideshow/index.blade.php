@@ -2,17 +2,18 @@
 @section('title', __('admin.Slider Manager'))
 @section('head')
     <!-- DataTables -->
-    <link rel="stylesheet" href="{{ asset('manager/bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css') }}">
+    <link rel="stylesheet"
+        href="{{ asset('manager/bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css') }}">
 @endsection
 @section('content')
-@if (@$manage == 2)
-    <!-- Demo Admin -->
+    @if (@$manage == 2)
+        <!-- Demo Admin -->
         @php
-            $disabled = "disabled"
+            $disabled = 'disabled';
         @endphp
     @else
         @php
-            $disabled = ""
+            $disabled = '';
         @endphp
     @endif
     <!-- Content Header (Page header) -->
@@ -29,30 +30,34 @@
             <div class="col-xs-12">
                 <div class="box box-primary">
                     <!-- /.box-header -->
-                    <div class="box-body table-responsive" >
-                        <form id="form">
+                    <form id="form">
+                        <div class="box-body table-responsive">
+
                             <table id="index_table" class="table table-bordered table-striped table-hover display">
                                 <thead>
-                                <tr>
-                                    <th>#</th>
-                                    <th>@lang('admin.Image')</th>
-                                    <th>@lang('admin.Slider Slug')</th>
-                                    <th>@lang('admin.Created at')</th>
-                                    <th></th>
-                                    <th width="125px">@lang('admin.Action')</th>
-                                    <th>
-                                        <button type="button" id="select_all" data-check="0" title="Hamısını seç" class="btn btn-danger btn-xs">
-                                            <i class="fa fa-square"></i>
-                                        </button>
-                                        <button type="button" {{ $disabled }} title="@lang('admin.Select and Delete')" name="bulk_delete"
-                                                id="bulk_delete"
+                                    <tr>
+                                        <th>#</th>
+                                        <th>@lang('admin.Image')</th>
+                                        <th>Icon</th>
+                                        <th>@lang('admin.Slider Slug')</th>
+                                        <th>@lang('admin.Created at')</th>
+                                        <th></th>
+                                        <th width="125px">@lang('admin.Action')</th>
+                                        <th>
+                                            <button type="button" id="select_all" data-check="0" title="Hamısını seç"
+                                                class="btn btn-danger btn-xs">
+                                                <i class="fa fa-square"></i>
+                                            </button>
+                                            <button type="button" {{ $disabled }}
+                                                title="@lang('admin.Select and Delete')" name="bulk_delete" id="bulk_delete"
                                                 class="btn btn-danger btn-xs"><i class="fa fa-trash"></i></button>
-                                    </th>
-                                </tr>
+                                        </th>
+                                    </tr>
                                 </thead>
                             </table>
-                        </form>
-                    </div>
+
+                        </div>
+                    </form>
                     <!-- /.box-body -->
                 </div>
                 <!-- /.box -->
@@ -64,25 +69,58 @@
     <script src="{{ asset('manager/bower_components/datatables.net/js/jquery.dataTables.min.js') }}"></script>
     <script src="{{ asset('manager/bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js') }}"></script>
     <script>
-        $(function () {
+        $(function() {
             $.fn.dataTable.ext.errMode = 'throw';
             $('#index_table').DataTable({
-                aLengthMenu: [[25, 50, 75, 100, 150, 200], [25, 50, 75, 100, 150, 200]],
+                aLengthMenu: [
+                    [25, 50, 75, 100, 150, 200],
+                    [25, 50, 75, 100, 150, 200]
+                ],
                 iDisplayLength: 25,
-                order: [[0, "asc"]],
+                order: [
+                    [0, "asc"]
+                ],
                 processing: true,
                 serverSide: true,
                 ordering: true,
                 paging: true,
                 ajax: '{{ route('manage.slider.index_data', isset($brand_id) ? $brand_id : '') }}',
-                columns: [
-                    {data: 'slider_order', searchable: false},
-                    {data: 'slider_image', orderable: false, searchable: false},
-                    {data: 'slider_slug'},
-                    {data: 'created_at'},
-                    {data: 'slider_active', orderable: false, searchable: false},
-                    {data: 'action', orderable: false, searchable: false},
-                    {data: 'checkbox', orderable: false, searchable: false},
+                columns: [{
+                        data: 'slider_order',
+                        searchable: false
+                    },
+                    {
+                        data: 'slider_image',
+                        orderable: false,
+                        searchable: false
+                    },
+                    {
+                        data: 'slider_icon',
+                        name: 'slider_icon',
+                        orderable: false,
+                        searchable: false
+                    },
+                    {
+                        data: 'slider_slug'
+                    },
+                    {
+                        data: 'created_at'
+                    },
+                    {
+                        data: 'slider_active',
+                        orderable: false,
+                        searchable: false
+                    },
+                    {
+                        data: 'action',
+                        orderable: false,
+                        searchable: false
+                    },
+                    {
+                        data: 'checkbox',
+                        orderable: false,
+                        searchable: false
+                    },
                 ],
                 language: {
                     "sEmptyTable": "{{ __('admin.No data available in table') }}",
@@ -116,17 +154,19 @@
                 revert: true,
                 placeholder: 'state',
                 forcePlaceholderSize: true,
-                update: function () {
+                update: function() {
                     var serialize = $("form#form").serialize();
                     $.ajax({
                         url: "{{ route('manage.slider.reorder') }}",
                         type: "post",
-                        data: {serialize: serialize},
-                        success: function () {
+                        data: {
+                            serialize: serialize
+                        },
+                        success: function() {
                             $('#index_table').DataTable().ajax.reload();
                         },
-                        error: function (jqXHR, textStatus, errorThrown) {
-                            $.each(jqXHR, function (key, val) {
+                        error: function(jqXHR, textStatus, errorThrown) {
+                            $.each(jqXHR, function(key, val) {
                                 console.log(key);
                                 console.log(val);
                             });
@@ -136,14 +176,16 @@
                 }
             });
 
-            $(document).on('click', '.delete', function () {
+            $(document).on('click', '.delete', function() {
                 var id = $(this).attr('id');
                 if (confirm('{{ __('admin.Are you sure you want to delete this data?') }}')) {
                     $.ajax({
                         url: '{{ route('manage.slider.delete_data') }}',
                         method: 'GET',
-                        data: {id: id},
-                        success: function (data) {
+                        data: {
+                            id: id
+                        },
+                        success: function(data) {
                             alert(data);
                             $('#index_table').DataTable().ajax.reload();
                         }
@@ -153,18 +195,20 @@
                 }
             });
 
-            $(document).on('click', '#bulk_delete', function () {
+            $(document).on('click', '#bulk_delete', function() {
                 var id = [];
                 if (confirm('{{ __('admin.Are you sure you want to delete this data?') }}')) {
-                    $('.checkbox:checked').each(function () {
+                    $('.checkbox:checked').each(function() {
                         id.push($(this).val());
                     });
                     if (id.length > 0) {
                         $.ajax({
                             url: '{{ route('manage.slider.mass_remove') }}',
                             method: 'GET',
-                            data: {id: id},
-                            success: function (data) {
+                            data: {
+                                id: id
+                            },
+                            success: function(data) {
                                 alert(data);
                                 $('#index_table').DataTable().ajax.reload();
                             }
@@ -177,23 +221,6 @@
                 }
             });
 
-            $(document).on('click', '#select_all', function () {
-                let check = $(this).data('check')
-                if(check == 1){
-                    $('.checkbox').each(function () {
-                        $(this).prop('checked', false)
-                    });
-                    $(this).html('<i class="fa fa-square"></i>')
-                    $(this).data('check', 0)
-                }
-                else{
-                    $('.checkbox').each(function () {
-                        $(this).prop('checked', true)
-                    });
-                    $(this).data('check', 1)
-                    $(this).html('<i class="fa fa-check-square"></i>')
-                }
-            });
         });
     </script>
 @endsection

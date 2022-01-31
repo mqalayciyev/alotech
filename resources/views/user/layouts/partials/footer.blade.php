@@ -60,7 +60,7 @@
                         <div class="col-lg-7">
                             <div class="row">
                                 <div class="col-12 col-md mb-4 mb-md-0">
-                                    <h6 class="mb-3 font-weight-bold">Şәxsi kabinet</h6>
+                                    {{-- <h6 class="mb-3 font-weight-bold">Şәxsi kabinet</h6> --}}
                                     <!-- List Group -->
                                     <ul class="list-group list-group-flush list-group-borderless mb-0 list-group-transparent">
                                         <li><a class="list-group-item list-group-item-action" href="{{ route('my_account') }}">Hesabım</a></li>
@@ -73,21 +73,24 @@
 
                                 <div class="col-12 col-md mb-4 mb-md-0">
                                     <!-- List Group -->
-                                    <ul class="list-group list-group-flush list-group-borderless mb-0 list-group-transparent mt-md-6">
+                                    <ul class="list-group list-group-flush list-group-borderless mb-0 list-group-transparent">
+                                        <li><a class="list-group-item list-group-item-action" href="{{ route('company') }}">Kompaniyalar</a></li>
                                         <li><a class="list-group-item list-group-item-action" href="{{ route('best_selling') }}">Ən çox satılanlar</a></li>
                                         <li><a class="list-group-item list-group-item-action" href="{{ route('deal_of_day') }}">Endirimli məhsullar</a></li>
                                         <li><a class="list-group-item list-group-item-action" href="{{ route('brands') }}">Brendlər</a></li>
-                                        <li><a class="list-group-item list-group-item-action" href="{{ route('about') }}">Haqqımızda</a></li>
-                                        <li><a class="list-group-item list-group-item-action" href="{{ route('contact') }}">Əlaqə</a></li>
+                                        <li><a class="list-group-item list-group-item-action" href="{{ route('last_view') }}">Son baxılanlar</a></li>
+
+
                                     </ul>
                                     <!-- End List Group -->
                                 </div>
 
                                 <div class="col-12 col-md mb-4 mb-md-0">
-                                    <h6 class="mb-3 font-weight-bold">Müştəri xidmətləri</h6>
+                                    {{-- <h6 class="mb-3 font-weight-bold">Müştəri xidmətləri</h6> --}}
                                     <!-- List Group -->
                                     <ul class="list-group list-group-flush list-group-borderless mb-0 list-group-transparent">
-                                        <li><a class="list-group-item list-group-item-action" href="{{ route('last_view') }}">Son baxılanlar</a></li>
+                                        <li><a class="list-group-item list-group-item-action" href="{{ route('about') }}">Haqqımızda</a></li>
+                                        <li><a class="list-group-item list-group-item-action" href="{{ route('contact') }}">Əlaqə</a></li>
                                         <li><a class="list-group-item list-group-item-action" href="{{ route('privacy') }}">Məxfilik siyasəti</a></li>
                                         <li><a class="list-group-item list-group-item-action" href="{{ route('shipping_return') }}">Çatdırılma vә ödəniş</a></li>
                                     </ul>

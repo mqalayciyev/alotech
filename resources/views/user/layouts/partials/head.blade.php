@@ -1,6 +1,7 @@
 <!-- Title -->
-<title>Alotech</title>
-
+<title>@yield('title', $website_info->title)</title>
+<meta name="description" content="@yield('description', $website_info->description)">
+<meta name="keywords" content="@yield('keywords', $website_info->keywords)">
 <!-- Required Meta Tags Always Come First -->
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">

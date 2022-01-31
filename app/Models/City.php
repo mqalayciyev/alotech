@@ -14,5 +14,7 @@ class City extends Model
 
     protected $casts = [
         'delivery_time' => 'json',
+        'created_at' => 'datetime:d.m.Y H:m:s',
+        'updated_at' => 'datetime:d.m.Y H:m:s',
     ];
 }

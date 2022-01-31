@@ -1,5 +1,5 @@
 @extends('user.layouts.app')
-
+@section('title', 'Son Baxılanlar')
 @section('content')
 
 
@@ -23,7 +23,7 @@
                 </div>
             </div>
             <!-- End breadcrumb -->
-    
+
             <div class="container">
                 <div class="row mb-8">
                     <div class="col-12 col-wd-9gdot5">
@@ -31,7 +31,7 @@
                         <div class="bg-gray-1 flex-center-between borders-radius-9 py-2">
                             <div class="px-3 d-block">
                                 <ul class="nav nav-tab-shop" id="pills-tab" role="tablist">
-    
+
                                     <li class="nav-item">
                                         <a class="nav-link active" id="pills-two-example1-tab" data-toggle="pill"
                                             href="#pills-two-example1" role="tab" aria-controls="pills-two-example1"
@@ -57,7 +57,7 @@
                         <!-- End Shop-control-bar -->
                         <!-- Shop Body -->
                         <div class="products">
-    
+
                         </div>
                     </div>
                 </div>

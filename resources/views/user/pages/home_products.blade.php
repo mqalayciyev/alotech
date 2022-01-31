@@ -30,7 +30,7 @@
                         <div class="flex-center-between mb-1">
                             <div class="prodcut-price">
                                 @php
-                                    $price = $product->price->where('stock_piece', '>', 0)->toArray();
+                                    $price = $product->price->where('stock_piece', '>=', 0)->toArray();
 
 
                                     $filter = array_filter($price, function ($item) {

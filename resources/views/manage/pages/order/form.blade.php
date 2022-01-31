@@ -153,23 +153,23 @@
                                         <!--</option>-->
                                         <option value="Your order has been received"
                                             {{ old('status', $entry->status) == 'Your order has been received' ? 'selected' : '' }}>
-                                            @lang('admin.Pending')
+                                            @lang('content.Your order has been received')
                                         </option>
                                         <option value="Payment approved"
                                             {{ old('status', $entry->status) == 'Payment approved' ? 'selected' : '' }}>
-                                            @lang('admin.Payment approved')
+                                            @lang('content.Payment approved')
                                         </option>
                                         <option value="Cargoed"
                                             {{ old('status', $entry->status) == 'Cargoed' ? 'selected' : '' }}>
-                                            @lang('admin.Cargoed')
+                                            @lang('content.Cargoed')
                                         </option>
                                         <option value="Order completed"
                                             {{ old('status', $entry->status) == 'Order completed' ? 'selected' : '' }}>
-                                            @lang('admin.Order completed')
+                                            @lang('content.Order completed')
                                         </option>
                                         <option value="Your order is canceled"
                                             {{ old('status', $entry->status) == 'Your order is canceled' ? 'selected' : '' }}>
-                                            @lang('admin.Your order is canceled')
+                                            @lang('content.Your order is canceled')
                                         </option>
                                     </select>
                                     @if ($entry->id > 0)
@@ -241,21 +241,7 @@
                                     <td>{{ $cart_product->piece }}</td>
                                     <td>{{ $cart_product->amount * $cart_product->piece }} ₼</td>
                                     <td>
-                                        @if ($entry->status == 'Payment is expected')
-                                            @lang('content.Payment is expected')
-                                        @elseif($entry->status=='Your order has been received')
-                                            @lang('admin.Pending')
-                                        @elseif($entry->status=='Payment approved')
-                                            @lang('content.Payment approved')
-                                        @elseif($entry->status=='Cargoed')
-                                            @lang('content.Cargoed')
-                                        @elseif($entry->status=='Order completed')
-                                            @lang('content.Order completed')
-                                        @elseif($entry->status=='Your order is canceled')
-                                            @lang('content.Your order is canceled')
-                                        @else
-                                            {{ $entry->status }}
-                                        @endif
+                                        @lang('content.' . $entry->status)
                                     </td>
                                 </tr>
                             @endforeach

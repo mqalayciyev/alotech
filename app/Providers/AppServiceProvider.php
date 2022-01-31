@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Models\Tag;
 use App\Models\Info;
 use App\Models\About;
+use App\Models\Terms;
 use App\Models\Admin;
 use App\Models\Brand;
 use App\Models\Order;
@@ -15,6 +16,7 @@ use App\Models\Review;
 use App\Models\Slider;
 use App\Models\Contact;
 use App\Models\Product;
+use App\Models\Privacy;
 use App\Models\Category;
 use App\Models\City;
 use App\Models\WishList;
@@ -25,8 +27,10 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Artisan;
-// use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Event;
+use App\Events\ControlCompany;
 use Carbon\Carbon;
+use Illuminate\Pagination\Paginator;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -47,7 +51,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        // Artisan::call('route:cache');
+
+        Paginator::useBootstrap();
+
 
         Schema::defaultStringLength(191);
 
@@ -79,8 +85,12 @@ class AppServiceProvider extends ServiceProvider
         });
 
         View::composer('*', function ($view) {
+            Event::dispatch(new ControlCompany());
 
+            $discountAmount = session()->get('discount') ? session()->get('discount') : 0;
             $city = City::all();
+            $terms = Terms::find(1);
+            $privacy = Privacy::find(1);
             $website_info = Info::find(1);
             $about = About::find(1);
             $user_id = auth()->id();
@@ -104,7 +114,10 @@ class AppServiceProvider extends ServiceProvider
                 ->first();
 
             return $view->with([
+                'discountAmount' => $discountAmount,
                 'city' => $city,
+                'privacy' => $privacy,
+                'terms' => $terms,
                 'website_info' => $website_info,
                 'about' => $about,
                 'shipping_return' => $shipping_return,

@@ -10,6 +10,7 @@ use App\Models\Product;
 use App\Models\Color;
 use App\Models\Size;
 use App\Models\ColorProduct;
+use App\Models\Company;
 use App\Models\Measurement;
 use App\Models\SizeProduct;
 use App\Models\Rating;
@@ -56,6 +57,11 @@ class HomeController extends Controller
     public function privacy()
     {
         return view('user.pages.privacy');
+    }
+    public function company()
+    {
+        $companies = Company::where('active', 1)->paginate(16);
+        return view('user.pages.company', compact('companies'));
     }
 
     public function categoryProducts()

@@ -7,6 +7,8 @@ use App\Models\Product;
 use App\Models\ColorProduct;
 use App\Models\Category;
 use App\Models\PriceList;
+use App\Models\ProductCompany;
+use App\Models\ProductRelated;
 use App\Models\StockList;
 use App\Models\Review;
 use App\Models\Rating;
@@ -32,8 +34,21 @@ class ProductController extends Controller
         $images = $product->image()->distinct()->get();
         $sizes = SizeProduct::where('product_id', $product->id)->get();
         $colors = ColorProduct::where('product_id', $product->id)->get();
+        $related = ProductRelated::with('product')->where('product_id', $product->id)->get();
+        $company = ProductCompany::with(['product', 'product.image', 'price', 'price.size', 'price.color'])->where('product_id', $product->id)->get();
+        $price_company = 0;
 
-        return view('user.pages.product', compact('product', 'category', 'images', 'sizes', 'colors', 'rating'));
+        if(count($company) > 0){
+            foreach ($company as $item) {
+                if ($item->product->discount) {
+                    $price_company += $item->price['sale_price'] * ((100 - $item->product->discount) / 100);
+                } else {
+                    $price_company += $item->price['sale_price'];
+                }
+            }
+        }
+
+        return view('user.pages.product', compact('product', 'category', 'images', 'sizes', 'related', 'company', 'colors', 'price_company', 'rating'));
     }
 
     public function search()

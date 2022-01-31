@@ -12,6 +12,8 @@ use App\Models\Size;
 use App\Models\SizeProduct;
 use App\Models\Color;
 use App\Models\ColorProduct;
+use App\Models\ProductCompany;
+use App\Models\ProductRelated;
 use App\Models\Tag;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
@@ -45,6 +47,12 @@ class ProductController extends Controller
             })
             ->editColumn('sale_price', function ($row) {
                 return $row->price->first() ? $row->price->first()->sale_price : null;
+            })
+            ->editColumn('created_at', function ($row) {
+                return $row->created_at;
+            })
+            ->editColumn('updated_at', function ($row) {
+                return $row->updated_at;
             })
             ->addColumn('action', function ($row) {
                 return '<div>
@@ -83,6 +91,9 @@ class ProductController extends Controller
             ->editColumn('sale_price', function ($row) {
                 return $row->default_price->sale_price;
             })
+            ->editColumn('created_at', function ($row) {
+                return $row->created_at;
+            })
             ->addColumn('action', function ($row) {
                 return '<div>
                 <a href="' . route('manage.product.edit', $row->id) . '" class="btn btn-sm btn-primary edit"> <i class="fa fa-edit"></i> ' . __('admin.Edit') . '</a>
@@ -96,20 +107,28 @@ class ProductController extends Controller
 
     public function form($id = 0)
     {
+        // $products = Product::where('id', '!=', $id)->get();
+        $products = Product::where('id', '!=', $id)->get();
+        $company_product_price = PriceList::with(['product', 'color', 'size'])->where('stock_piece', '>', 0)->where('product_id', '!=', $id)->get();
+
         $entry = new Product;
         $product_categories = [];
         $product_brands = [];
         $product_colors = [];
         $product_sizes = [];
+        $product_related = [];
+        $product_company = [];
+
         if ($id > 0) {
             $entry = Product::find($id);
             $product_categories = $entry->categories()->pluck('category_id')->all();
             $product_brands = $entry->brands()->pluck('brand_id')->all();
             $product_colors = $entry->colors()->pluck('color_id')->all();
             $product_sizes = $entry->sizes()->pluck('size_id')->all();
+            $product_related = $entry->related()->pluck('related_id')->all();
+            $product_company = $entry->company()->pluck('company_id')->all();
         }
 
-        // return  $product_categories;
 
         $entry_category = new Category();
 
@@ -121,7 +140,7 @@ class ProductController extends Controller
         $images = ProductImage::all();
         // echo "<pre>";
         // print_r($entry->colors);
-        return view('manage.pages.product.form', compact('entry', 'product_colors', 'product_sizes', 'categories', 'product_categories', 'images', 'brands', 'tags', 'colors', 'sizes',  'entry_category', 'product_brands'));
+        return view('manage.pages.product.form', compact('entry', 'products', 'company_product_price', 'product_related', 'product_company', 'product_colors', 'product_sizes', 'categories', 'product_categories', 'images', 'brands', 'tags', 'colors', 'sizes',  'entry_category', 'product_brands'));
     }
     public function categories()
     {
@@ -143,14 +162,16 @@ class ProductController extends Controller
         }
         echo $output;
     }
-    public function save($id = 0)
+    public function save(Request $request, $id = 0)
     {
-        $data = request()->only('product_name', 'order_arrival', 'meta_title', 'sku', 'meta_discription', 'slug', 'product_description',  'discount', 'discount_date', 'one_or_more', 'other_count', 'other_bonus', 'bonus_comment');
+
+        $data = request()->only('product_name', 'order_arrival', 'meta_title', 'sku', 'meta_description', 'slug', 'product_description',  'discount', 'discount_date', 'one_or_more', 'other_count', 'other_bonus', 'bonus_comment');
 
         $data['slug'] = str_slug(request('product_name'));
         request()->merge(['slug' => $data['slug']]);
+
         // return request();
-        $this->validate(request(), [
+        $this->validate($request, [
             'product_name' => 'required',
             'measurement' => 'required',
             'categories' => 'required',
@@ -234,14 +255,17 @@ class ProductController extends Controller
 
 
 
+
+
+
+
         if ($id > 0) {
             $entry = Product::where('id', $id)->firstOrFail();
             $entry->update($data);
             $entry->detail()->update($data_detail);
-            // $entry->price()->update($data_price);
             $entry->categories()->sync($categories);
-            // $entry->suppliers()->sync($suppliers);
             $entry->brands()->sync($brands);
+
             if ($sizes_old) {
                 $entry->sizes()->sync($sizes);
             }
@@ -258,10 +282,9 @@ class ProductController extends Controller
             $data['product_code'] = codeGenerate();
             $entry = Product::create($data);
             $entry->detail()->create($data_detail);
-            // $entry->price()->create($data_price);
             $entry->categories()->attach($categories);
-            // $entry->suppliers()->attach($suppliers);
             $entry->brands()->attach($brands);
+
             if ($sizes_old) {
                 $entry->sizes()->attach($sizes);
             }
@@ -319,6 +342,49 @@ class ProductController extends Controller
 
                 }
             }
+        }
+
+        $related = request('related_id');
+
+        if ($related) {
+            ProductRelated::where('product_id', $entry->id)->delete();
+            foreach ($related as $id) {
+                $exists_product = Product::find($id);
+                if ($exists_product) {
+                    ProductRelated::updateOrCreate([
+                        'product_id' => $entry->id,
+                        'related_id' => $exists_product->id
+                    ]);
+                }
+            }
+        }
+        else{
+            ProductRelated::where('product_id', $entry->id)->delete();
+        }
+        $company = request('company_price_id');
+        // return $company;
+        if ($company) {
+            if(!request('company_discount')){
+                // return 'error';
+                return redirect()
+                    ->route('manage.product.edit', $entry->id)
+                    ->with('message_type', 'info')
+                    ->with('message', 'Kompaniyanın endirim faizi qeyd edilməyib');
+            }
+            ProductCompany::where('product_id', $entry->id)->delete();
+            foreach ($company as $id) {
+                $exists_price = PriceList::find($id);
+                if ($exists_price) {
+                    ProductCompany::updateOrCreate([
+                        'product_id' => $entry->id,
+                        'company_id' => $exists_price->product_id,
+                        'price_id' => $exists_price->id,
+                    ], ['discount' => request('company_discount')]);
+                }
+            }
+        }
+        else{
+            ProductCompany::where('product_id', $entry->id)->delete();
         }
 
         return redirect()

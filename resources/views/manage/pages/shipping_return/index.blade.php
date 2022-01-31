@@ -28,14 +28,5 @@
 @endsection
 
 @section('footer')
-  <script>
-        CKEDITOR.replace('shipping_return', {
-            autoGrow_onStartup: true,
-            enterMode: CKEDITOR.ENTER_BR,
-            FullPage : false,
-            // allowedContent: true,
-            allowedContent : "p a div tr td img span font b u strong i [*]{*}(*)",
-        });
-    </script>
-    
+@include('manage.layouts.partials.ckeditorService',['uploadUrl'=>route('ckeditorSliderUpload'),'editor'=>"shipping_return"])
 @endsection

@@ -13,6 +13,11 @@ class Cart extends Model
     protected $table = 'cart';
     protected $guarded = [];
 
+    protected $casts = [
+        'created_at' => 'datetime:d.m.Y H:m:s',
+        'updated_at' => 'datetime:d.m.Y H:m:s',
+    ];
+
     public function order()
     {
         return $this->hasOne('App\Models\Order');

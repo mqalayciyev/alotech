@@ -11,15 +11,26 @@ use App\Models\ColorProduct;
 use App\Models\SizeProduct;
 use App\Models\PriceList;
 use App\Models\Color;
+use App\Models\Coupon;
+use App\Models\ProductCompany;
 use App\Models\Size;
 use Gloudemans\Shoppingcart\Facades\Cart;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Event;
+use App\Events\ControlCompany;
 
 class CartController extends Controller
 {
+
+    // public function __construct()
+    // {
+    //     Event::dispatch(new ControlCompany());
+    // }
+
     public function index()
     {
         // Cart::destroy();
+
         return view('user.pages.cart');
     }
 
@@ -222,11 +233,14 @@ class CartController extends Controller
         } else {
             $output .= '<tr><td colspan="7" class="text-center">Səbətdə məhsul yoxdur</td></tr>';
         }
-        return response()->json(['output' => $output, 'total' => Cart::total(), 'count' => Cart::count() ]);
+
+        Event::dispatch(new ControlCompany());
+        return response()->json(['output' => $output, 'total' => Cart::total(), 'count' => Cart::count(), 'discount' => session()->get('discount')]);
     }
 
     public function add_to_cart()
     {
+
 
         $validator = Validator::make(request()->all(), [
             'piece' => 'required',
@@ -239,7 +253,6 @@ class CartController extends Controller
             return response()->json(['status' => 'error', 'message' => ["Bu məhsul anbarda qalmayıb"]]);
         }
 
-        // return request();
 
         $piece = request()->get('piece');
 
@@ -260,7 +273,7 @@ class CartController extends Controller
         $priceList = PriceList::find($priceId);
 
         if($priceList->stock_piece < 1){
-            return response()->json(['status' => 'error', 'message' => ['Məhsul stokda yoxdur']]);
+            return response()->json(['status' => 'error', 'message' => ['Bu məhsul anbarda qalmayıb']]);
         }
         else{
             if($piece > $priceList->stock_piece){
@@ -269,6 +282,7 @@ class CartController extends Controller
         }
         // return session()->get('cart');
         $cart = session()->get('cart');
+
 
         if($cart){
             $cart_content = $cart['default'];
@@ -309,21 +323,56 @@ class CartController extends Controller
         if($wholesale_count > 0 && $qty >= $wholesale_count){
             $price = $wholesale_price;
         }
-        $image = ProductImage::where('product_id', $product->id)->where('color_id', $color)->first();
+        $image = ProductImage::where('product_id', $product->id)->where('color_id', $color)->orWhere('color_id', null)->first()->image_name;
+        // Cart::destroy();
 
-        if($image){
-            $img = $image->main_name;
+
+        if(request('company')){
+            $company = ProductCompany::where('product_id', $product->id)->with(['product', 'product.images', 'price'])->get();
+            foreach ($company as $item) {
+
+                $imgC = ProductImage::where('product_id', $item->product->id)->where('color_id', $item->price->color_id)->orWhere('color_id', null)->first()->image_name;
+
+                $priceC = $item->price->sale_price;
+
+                if($item->product->discount){
+                    $priceC = $priceC * ((100 - $item->product->discount) / 100);
+                }
+                $cartItemC = Cart::add($item->product->id, $item->product->product_name, 1, $priceC, ['slug' => $item->product->slug, 'price_id' => $item->price->id, 'discount' => $item->product->discount, 'image' => $imgC, 'color'=> $item->price->color_id, 'size' => $item->price->size_id]);
+
+                if (auth()->check()) {
+                    $active_cart_id = session('active_cart_id');
+
+                    if (!isset($active_cart_id)) {
+                        $active_cart = CartModel::create([
+                            'user_id' => auth()->id()
+                        ]);
+                        $active_cart_id = $active_cart->id;
+                        session()->put('active_cart_id', $active_cart_id);
+                    }
+
+                    CartProduct::updateOrCreate(
+                        ['cart_id' => $active_cart_id, 'product_id' => $item->product->id, 'size_id' => $item->price->size_id, 'color_id' => $item->price->color_id,],
+                        ['piece' => $cartItemC->qty, 'amount' => $cartItemC->price, 'price_id' => $item->price->id, 'cart_status' => 'Pending']
+                    );
+                }
+            }
+            $discountAmount = $company->first()->discount;
+            // if(session()->get('discount')){
+            //     $discountAmount += session()->get('discount');
+            // }
+
+            // session()->put('discount', $discountAmount);
+
         }
-        else{
-            $img = $product->image->main_name;
-        }
+        // return $coupon;
+
         if($rowId){
            $cartItem = Cart::update($rowId, ['qty' => $qty, 'price' => $price]);
         }
         else{
-            $cartItem = Cart::add($product->id, $product->product_name, $piece, $price, ['slug' => $product->slug, 'price_id' => $priceId, 'discount' => $discount, 'image' => $img, 'color'=> $color, 'size' => $size]);
+            $cartItem = Cart::add($product->id, $product->product_name, $piece, $price, ['slug' => $product->slug, 'price_id' => $priceId, 'discount' => $discount, 'image' => $image, 'color'=> $color, 'size' => $size]);
         }
-
 
 
         if (auth()->check()) {
@@ -336,12 +385,12 @@ class CartController extends Controller
                 $active_cart_id = $active_cart->id;
                 session()->put('active_cart_id', $active_cart_id);
             }
-            // return $active_cart_id;
+
             CartProduct::updateOrCreate(
                 ['cart_id' => $active_cart_id, 'product_id' => $product->id, 'size_id' => $size, 'color_id' => $color],
                 ['piece' => $cartItem->qty, 'amount' => $cartItem->price, 'price_id' => $priceId, 'cart_status' => 'Pending']
             );
-            // return 'ok';
+
         }
 
         if (count(Cart::content()) > 0) {
@@ -386,7 +435,7 @@ class CartController extends Controller
                             </h4>
                         </div>';
         }
-
+        Event::dispatch(new ControlCompany());
         return response()->json(['status'  => 'success', 'message' => 'Məhsul səbətə əlavə edildi', 'output' => $output, 'total' => Cart::total(), 'count' => Cart::count() ]);
 
     }
@@ -475,8 +524,8 @@ class CartController extends Controller
         } else {
             $output .= '<tr><td colspan="7" class="text-center">Səbətdə məhsul yoxdur</td></tr>';
         }
-
-        return response()->json(['output' => $output, 'total' => Cart::total(), 'count' => Cart::count() ]);
+        Event::dispatch(new ControlCompany());
+        return response()->json(['output' => $output, 'total' => Cart::total(), 'count' => Cart::count(), 'discount' => session()->get('discount') ]);
     }
 
     public function destroy()

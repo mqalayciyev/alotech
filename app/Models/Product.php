@@ -11,6 +11,12 @@ class Product extends Model
     protected $table = 'product';
     protected $guarded = [];
 
+
+    protected $casts = [
+        'created_at' => 'datetime:d.m.Y H:m:s',
+        'updated_at' => 'datetime:d.m.Y H:m:s',
+    ];
+
     public function categories()
     {
         return $this->belongsToMany('App\Models\Category', 'category_product');
@@ -60,6 +66,26 @@ class Product extends Model
     public function images()
     {
         return $this->hasMany('App\Models\ProductImage')->orderBy('cover', 'desc');
+    }
+    public function related()
+    {
+        return $this->belongsToMany('App\Models\Product', 'product_related');
+    }
+    public function company()
+    {
+        return $this->belongsToMany('App\Models\Product', 'product_companies');
+    }
+    public function relateds()
+    {
+        return $this->hasMany('App\Models\ProductRelated', 'product_id', 'id');
+    }
+    public function companies()
+    {
+        return $this->belongsToMany('App\Models\Product', 'product_companies');
+    }
+    public function company_discount()
+    {
+        return $this->hasOne('App\Models\ProductCompany');
     }
 
 

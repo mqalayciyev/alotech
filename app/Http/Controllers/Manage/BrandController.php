@@ -45,6 +45,12 @@ class BrandController extends Controller
             ->addColumn('image', function ($brand) {
                 return $brand->image ? "<img width='80' src='". asset('assets/img/brand/' . $brand->image) ."'>" : "<img width='80' src='". asset('assets/img/woocommerce-placeholder-300x300.png') ."'>";
             })
+            ->editColumn('created_at', function ($row) {
+                return $row->created_at;
+            })
+            ->editColumn('updated_at', function ($row) {
+                return $row->updated_at;
+            })
             ->addColumn('checkbox', '<input type="checkbox" name="checkbox[]" id="checkbox" class="checkbox" value="{{$id}}" />')
             ->rawColumns(['checkbox', 'action', 'image'])
             ->toJson();
@@ -87,7 +93,7 @@ class BrandController extends Controller
 
         }
         if(request()->has('brand_image_delete')){
-            
+
             $rows = Brand::find($id);
             $image_path = app_path("assets/img/brand/{$rows->image}");
             if(file_exists($image_path))
