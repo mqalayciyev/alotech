@@ -1,7 +1,7 @@
 @extends('user.layouts.app')
 @section('title', 'Product - ' . $product->product_name)
 @section('description', $product->meta_description)
-@section('image', asset('img/products/' . $images[0]->main_name))
+@section('image', asset('img/products/' . $product->images[0]->main_name))
 @section('keywords', $product->meta_title)
 @section('head')
     {{-- <link rel="stylesheet" href="{{ asset('plugins/lightGallery-master/dist/css/lightgallery.min.css') }}"> --}}
@@ -63,7 +63,7 @@
                             <li class="breadcrumb-item flex-shrink-0 flex-xl-shrink-1"><i class="fas fa-chevron-right"></i>
                             </li>
                             <li class="breadcrumb-item flex-shrink-0 flex-xl-shrink-1"> <a
-                                    href="{{ route('category', $category->slug) }}">{{ $category->category_name }}</a>
+                                    href="{{ route('category', $product->categories[0]->slug) }}">{{ $product->categories[0]->category_name }}</a>
                             </li>
                             <li class="breadcrumb-item flex-shrink-0 flex-xl-shrink-1"><i class="fas fa-chevron-right"></i>
                             </li>
@@ -79,8 +79,20 @@
 
 
 
+
         <div class="container">
             <!-- Single Product Body -->
+            <div class="single-product-top-info">
+                <span class="rating-avarage">
+                    {{ $product->rating->avg('rating') }}
+                </span>
+                <span class="reviews-count">
+                    Rəylər ({{ count( $product->reviews) }})
+                </span>
+                <span class="reviews-count">
+                    {{ $product->best_selling }} müştəri bu məhsulu aldı
+                </span>
+            </div>
             <div class="mb-14">
                 <div class="row product__single">
                     <div class="col-md-6 col-lg-4 col-xl-5 mb-4 mb-md-0">
@@ -89,14 +101,14 @@
                             data-arrow-left-classes="fas fa-arrow-left u-slick__arrow-classic-inner u-slick__arrow-classic-inner--left ml-lg-2 ml-xl-4"
                             data-arrow-right-classes="fas fa-arrow-right u-slick__arrow-classic-inner u-slick__arrow-classic-inner--right mr-lg-2 mr-xl-4"
                             data-nav-for="#sliderSyncingThumb">
-                            @if (count($images))
-                                @foreach ($images as $image)
+                            @if (count($product->images))
+                                @foreach ($product->images as $image)
                                     <div class="js-slide image-color-{{ $image->color_id }}" data-filter="{{ $image->color_id }}">
                                         <img class="img-fluid" src="{{ asset('assets/img/products/' . $image->main_name) }}" alt="{{ $image->main_name }}">
                                     </div>
                                 @endforeach
                             @else
-                                <div class="js-slide image-color-{{ $image->color_id }}" data-filter="{{ $image->color_id }}">
+                                <div class="js-slide">
                                     <img class="img-fluid" src="{{ asset('assets/img/' . old('logo', $website_info->logo)) }}" alt="{{ $product->product_name }}">
                                 </div>
                             @endif
@@ -106,7 +118,7 @@
                             class="js-slick-carousel u-slick u-slick--slider-syncing u-slick--slider-syncing-size u-slick--gutters-1 u-slick--transform-off"
                             data-infinite="false" data-slides-show="5" data-is-thumbs="true"
                             data-nav-for="#sliderSyncingNav">
-                            @foreach ($images as $image)
+                            @foreach ($product->images as $image)
                                 <div class="js-slide image-color-{{ $image->color_id }}" style="cursor: pointer;">
                                     <img class="img-fluid" src="{{ asset('assets/img/products/' . $image->thumb_name) }}" alt="{{ $image->thumb_name }}">
                                 </div>
@@ -122,14 +134,14 @@
 
                                     <div class="product-rating text-warning mr-2">
                                         @for ($count = 1; $count <= 5; $count++)
-                                            @if ($count <= $rating->rating_avg)
+                                            @if ($count <= $product->rating->avg('rating'))
                                                 @php $color = 's' @endphp
                                             @else
                                                 @php $color = 'r text-muted' @endphp
                                             @endif
                                             <span title="{{ $count }}" id="{{ $product->id . '-' . $count }}"
                                                 data-index="{{ $count }}" data-product_id="{{ $product->id }}"
-                                                data-rating="{{ $rating->rating_avg }}"
+                                                data-rating="{{ $product->rating->avg('rating') }}"
                                                 class="rating fa{{ $color }} fa-star"></span>
                                         @endfor
                                     </div>
@@ -912,7 +924,7 @@
 
             function products(dynamic_product) {
 
-                let category = "{{ $category['slug'] }}"
+                let category = "{{ $product->categories[0]->slug }}"
                 let product_id = "{{ $product->id }}"
                 $.ajax({
                     url: '{{ route('homepage.products') }}',

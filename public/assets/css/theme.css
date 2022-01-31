@@ -37827,3 +37827,42 @@ blockquote:not(.blockquote) p {
     cursor: pointer;
 }
 
+
+.single-product-top-info .rating-avarage {
+    background-color: #fed700;
+    padding: 2px 10px 2px 3px;
+    position: relative;
+}
+.single-product-top-info .rating-avarage::before {
+    content: ' ';
+    position: absolute;
+    background-color: #fff;
+    display: inline-block;
+    width: 20px;
+    height: 12px;
+    right: 0;
+    transform: translateY(-3px) translateX(6px) rotateZ(60deg);
+}
+.single-product-top-info .rating-avarage::after {
+    content: ' ';
+    position: absolute;
+    background-color: #fff;
+    display: inline-block;
+    width: 20px;
+    height: 12px;
+    right: 0;
+    transform: translateY(12px) translateX(6px) rotateZ(-60deg);
+}
+.single-product-top-info span {
+    margin-right: 6px;
+}
+.single-product-top-info span:nth-of-type(n+2)::before {
+    background-color: #000;
+    content: ' ';
+    display: inline-block;
+    vertical-align: middle;
+    border-radius: 50%;
+    width: 5px;
+    height: 5px;
+}
+

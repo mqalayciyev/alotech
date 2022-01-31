@@ -48,15 +48,13 @@ class Product extends Model
     {
         return $this->hasMany('App\Models\PriceList');
     }
-
-    public function default_price()
+    public function reviews()
     {
-        return $this->hasOne('App\Models\PriceList')->ofMany('default_price', 'max');
+        return $this->hasMany('App\Models\Review', 'product_id', 'id');
     }
-
     public function rating()
     {
-        return $this->hasOne('App\Models\Rating');
+        return $this->hasMany('App\Models\Rating', 'product_id', 'id');
     }
 
     public function image()

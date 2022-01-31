@@ -25,13 +25,16 @@ class ProductController extends Controller
             ->leftJoin('product_detail', 'product_detail.product_id', 'product.id')
             ->whereSlug($slug_product_name)
             ->orderBy('updated_at', 'desc')
+            ->with(['rating', 'reviews', 'images', 'categories'])
             ->firstOrFail();
-        $rating = Rating::select(DB::raw('avg(rating.rating) AS rating_avg'))
-            ->where('product_id', $product->id)
-            ->first();
-        $category = $product->categories()->distinct()->firstOrFail();
+        // $rating = Rating::select(DB::raw('avg(rating.rating) AS rating_avg'))
+        //     ->where('product_id', $product->id)
+        //     ->first();
+        // $category = $product->categories()->distinct()->firstOrFail();
+
+        // dd($product);
         // $category_top = Category::where('id', $category->top_id)->firstOrFail();
-        $images = $product->image()->distinct()->get();
+        // $images = $product->image()->distinct()->get();
         $sizes = SizeProduct::where('product_id', $product->id)->get();
         $colors = ColorProduct::where('product_id', $product->id)->get();
         $related = ProductRelated::with('product')->where('product_id', $product->id)->get();
@@ -48,7 +51,7 @@ class ProductController extends Controller
             }
         }
 
-        return view('user.pages.product', compact('product', 'category', 'images', 'sizes', 'related', 'company', 'colors', 'price_company', 'rating'));
+        return view('user.pages.product', compact('product', 'sizes', 'related', 'company', 'colors', 'price_company'));
     }
 
     public function search()

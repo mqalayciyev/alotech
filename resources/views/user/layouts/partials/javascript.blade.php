@@ -220,9 +220,9 @@
                 },
                 success: function(data) {
                     if (data == 'done') {
-                        products('products_dotd');
-                        products('products_l');
-                        products('products_pfy');
+                        // products('products_dotd');
+                        // products('products_l');
+                        // products('products_pfy');
                         alert('{{ __('content.Your rate: ') }}' + index);
                     } else {
                         alert('{{ __('content.There is some problem in System') }}');
