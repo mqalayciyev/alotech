@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Anamakine: 127.0.0.1:3306
--- Üretim Zamanı: 31 Oca 2022, 11:53:38
+-- Üretim Zamanı: 31 Oca 2022, 12:16:06
 -- Sunucu sürümü: 8.0.27
 -- PHP Sürümü: 7.4.26
 
@@ -30,12 +30,12 @@ SET time_zone = "+00:00";
 DROP TABLE IF EXISTS `abouts`;
 CREATE TABLE IF NOT EXISTS `abouts` (
   `id` int UNSIGNED NOT NULL AUTO_INCREMENT,
-  `about` text NOT NULL,
+  `about` text COLLATE utf8mb4_general_ci NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   `deleted_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Tablo döküm verisi `abouts`
@@ -53,27 +53,27 @@ INSERT INTO `abouts` (`id`, `about`, `created_at`, `updated_at`, `deleted_at`) V
 DROP TABLE IF EXISTS `admin`;
 CREATE TABLE IF NOT EXISTS `admin` (
   `id` int UNSIGNED NOT NULL AUTO_INCREMENT,
-  `first_name` varchar(30) NOT NULL,
-  `last_name` varchar(30) NOT NULL,
-  `email` varchar(150) NOT NULL,
-  `mobile` varchar(60) NOT NULL,
-  `password` varchar(60) NOT NULL,
-  `address` varchar(200) DEFAULT NULL,
-  `city` varchar(50) DEFAULT NULL,
-  `state` varchar(50) DEFAULT NULL,
-  `country` varchar(50) DEFAULT NULL,
-  `zip_code` varchar(15) DEFAULT NULL,
-  `phone` varchar(60) DEFAULT NULL,
-  `activation_key` varchar(60) DEFAULT NULL,
+  `first_name` varchar(30) COLLATE utf8mb4_general_ci NOT NULL,
+  `last_name` varchar(30) COLLATE utf8mb4_general_ci NOT NULL,
+  `email` varchar(150) COLLATE utf8mb4_general_ci NOT NULL,
+  `mobile` varchar(60) COLLATE utf8mb4_general_ci NOT NULL,
+  `password` varchar(60) COLLATE utf8mb4_general_ci NOT NULL,
+  `address` varchar(200) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `city` varchar(50) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `state` varchar(50) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `country` varchar(50) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `zip_code` varchar(15) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `phone` varchar(60) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `activation_key` varchar(60) COLLATE utf8mb4_general_ci DEFAULT NULL,
   `is_active` tinyint(1) NOT NULL DEFAULT '0',
   `is_manage` tinyint(1) NOT NULL DEFAULT '0',
-  `remember_token` varchar(100) DEFAULT NULL,
+  `remember_token` varchar(100) COLLATE utf8mb4_general_ci DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   `deleted_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `admin_email_unique` (`email`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Tablo döküm verisi `admin`
@@ -92,14 +92,14 @@ INSERT INTO `admin` (`id`, `first_name`, `last_name`, `email`, `mobile`, `passwo
 DROP TABLE IF EXISTS `api_keys`;
 CREATE TABLE IF NOT EXISTS `api_keys` (
   `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT,
-  `name` varchar(191) NOT NULL,
-  `api_token` varchar(191) NOT NULL,
+  `name` varchar(191) COLLATE utf8mb4_general_ci NOT NULL,
+  `api_token` varchar(191) COLLATE utf8mb4_general_ci NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   `deleted_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `api_keys_api_token_unique` (`api_token`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -110,10 +110,10 @@ CREATE TABLE IF NOT EXISTS `api_keys` (
 DROP TABLE IF EXISTS `banners`;
 CREATE TABLE IF NOT EXISTS `banners` (
   `id` int UNSIGNED NOT NULL AUTO_INCREMENT,
-  `type` varchar(10) NOT NULL,
-  `banner_name` varchar(191) DEFAULT NULL,
-  `banner_image` varchar(191) NOT NULL,
-  `banner_slug` varchar(191) NOT NULL,
+  `type` varchar(10) COLLATE utf8mb4_general_ci NOT NULL,
+  `banner_name` varchar(191) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `banner_image` varchar(191) COLLATE utf8mb4_general_ci NOT NULL,
+  `banner_slug` varchar(191) COLLATE utf8mb4_general_ci NOT NULL,
   `banner_order` int NOT NULL,
   `banner_active` tinyint(1) NOT NULL DEFAULT '1',
   `created_at` timestamp NULL DEFAULT NULL,
@@ -121,7 +121,7 @@ CREATE TABLE IF NOT EXISTS `banners` (
   `deleted_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `admin_id` (`type`)
-) ENGINE=MyISAM AUTO_INCREMENT=18 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=18 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Tablo döküm verisi `banners`
@@ -145,15 +145,15 @@ INSERT INTO `banners` (`id`, `type`, `banner_name`, `banner_image`, `banner_slug
 DROP TABLE IF EXISTS `brand`;
 CREATE TABLE IF NOT EXISTS `brand` (
   `id` int UNSIGNED NOT NULL AUTO_INCREMENT,
-  `name` varchar(100) NOT NULL,
-  `slug` varchar(191) NOT NULL,
-  `image` varchar(191) DEFAULT NULL,
-  `description` text,
+  `name` varchar(100) COLLATE utf8mb4_general_ci NOT NULL,
+  `slug` varchar(191) COLLATE utf8mb4_general_ci NOT NULL,
+  `image` varchar(191) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `description` text COLLATE utf8mb4_general_ci,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   `deleted_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Tablo döküm verisi `brand`
@@ -187,7 +187,7 @@ CREATE TABLE IF NOT EXISTS `brand_product` (
   PRIMARY KEY (`id`),
   KEY `brand_product_brand_id_foreign` (`brand_id`),
   KEY `brand_product_product_id_foreign` (`product_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Tablo döküm verisi `brand_product`
@@ -220,7 +220,7 @@ CREATE TABLE IF NOT EXISTS `cart` (
   `deleted_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `cart_user_id_foreign` (`user_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Tablo döküm verisi `cart`
@@ -259,7 +259,7 @@ CREATE TABLE IF NOT EXISTS `cart_product` (
   `amount` decimal(8,2) NOT NULL,
   `sale_price` decimal(8,2) NOT NULL,
   `price_id` int NOT NULL,
-  `cart_status` varchar(30) NOT NULL,
+  `cart_status` varchar(30) COLLATE utf8mb4_general_ci NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   `deleted_at` timestamp NULL DEFAULT NULL,
@@ -268,7 +268,7 @@ CREATE TABLE IF NOT EXISTS `cart_product` (
   KEY `cart_product_product_id_foreign` (`product_id`),
   KEY `cart_product_size_id_foreign` (`size_id`) USING BTREE,
   KEY `cart_product_color_id_foreign` (`color_id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=74 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=74 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Tablo döküm verisi `cart_product`
@@ -308,16 +308,16 @@ CREATE TABLE IF NOT EXISTS `category` (
   `id` int UNSIGNED NOT NULL AUTO_INCREMENT,
   `top_id` int DEFAULT NULL,
   `second_id` int DEFAULT NULL,
-  `category_name` varchar(30) NOT NULL,
-  `category_image` varchar(191) DEFAULT NULL,
-  `slug` varchar(60) NOT NULL,
+  `category_name` varchar(30) COLLATE utf8mb4_general_ci NOT NULL,
+  `category_image` varchar(191) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `slug` varchar(60) COLLATE utf8mb4_general_ci NOT NULL,
   `category_view` int DEFAULT '0',
   `no_order_amount` int NOT NULL DEFAULT '0',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   `deleted_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=38 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=38 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Tablo döküm verisi `category`
@@ -376,7 +376,7 @@ CREATE TABLE IF NOT EXISTS `category_product` (
   PRIMARY KEY (`id`),
   KEY `category_product_category_id_foreign` (`category_id`),
   KEY `category_product_product_id_foreign` (`product_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Tablo döküm verisi `category_product`
@@ -401,15 +401,15 @@ INSERT INTO `category_product` (`id`, `category_id`, `product_id`) VALUES
 DROP TABLE IF EXISTS `city`;
 CREATE TABLE IF NOT EXISTS `city` (
   `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT,
-  `name` varchar(191) DEFAULT NULL,
-  `delivery_days` varchar(191) DEFAULT NULL,
+  `name` varchar(191) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `delivery_days` varchar(191) COLLATE utf8mb4_general_ci DEFAULT NULL,
   `delivery_amount` decimal(8,2) DEFAULT NULL,
-  `delivery_time` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin,
+  `delivery_time` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   `deleted_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Tablo döküm verisi `city`
@@ -428,13 +428,13 @@ INSERT INTO `city` (`id`, `name`, `delivery_days`, `delivery_amount`, `delivery_
 DROP TABLE IF EXISTS `color`;
 CREATE TABLE IF NOT EXISTS `color` (
   `id` int UNSIGNED NOT NULL AUTO_INCREMENT,
-  `title` varchar(50) NOT NULL,
-  `name` varchar(100) NOT NULL,
+  `title` varchar(50) COLLATE utf8mb4_general_ci NOT NULL,
+  `name` varchar(100) COLLATE utf8mb4_general_ci NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   `deleted_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Tablo döküm verisi `color`
@@ -466,7 +466,7 @@ CREATE TABLE IF NOT EXISTS `color_product` (
   PRIMARY KEY (`id`),
   KEY `color_product_color_id_foreign` (`color_id`),
   KEY `color_product_product_id_foreign` (`product_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Tablo döküm verisi `color_product`
@@ -496,15 +496,15 @@ INSERT INTO `color_product` (`id`, `color_id`, `product_id`) VALUES
 DROP TABLE IF EXISTS `companies`;
 CREATE TABLE IF NOT EXISTS `companies` (
   `id` int UNSIGNED NOT NULL AUTO_INCREMENT,
-  `image` varchar(191) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  `slug` varchar(191) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `image` varchar(191) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `slug` varchar(191) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
   `order` int NOT NULL,
   `active` tinyint(1) NOT NULL DEFAULT '1',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   `deleted_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=18 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=18 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Tablo döküm verisi `companies`
@@ -538,15 +538,15 @@ INSERT INTO `companies` (`id`, `image`, `slug`, `order`, `active`, `created_at`,
 DROP TABLE IF EXISTS `contacts`;
 CREATE TABLE IF NOT EXISTS `contacts` (
   `id` int UNSIGNED NOT NULL AUTO_INCREMENT,
-  `name` varchar(191) NOT NULL,
-  `email` varchar(191) NOT NULL,
-  `message` text NOT NULL,
-  `feedback` text,
+  `name` varchar(191) COLLATE utf8mb4_general_ci NOT NULL,
+  `email` varchar(191) COLLATE utf8mb4_general_ci NOT NULL,
+  `message` text COLLATE utf8mb4_general_ci NOT NULL,
+  `feedback` text COLLATE utf8mb4_general_ci,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   `deleted_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -575,15 +575,15 @@ CREATE TABLE IF NOT EXISTS `coupons` (
 DROP TABLE IF EXISTS `failed_jobs`;
 CREATE TABLE IF NOT EXISTS `failed_jobs` (
   `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT,
-  `uuid` varchar(191) NOT NULL,
-  `connection` text NOT NULL,
-  `queue` text NOT NULL,
-  `payload` longtext NOT NULL,
-  `exception` longtext NOT NULL,
+  `uuid` varchar(191) COLLATE utf8mb4_general_ci NOT NULL,
+  `connection` text COLLATE utf8mb4_general_ci NOT NULL,
+  `queue` text COLLATE utf8mb4_general_ci NOT NULL,
+  `payload` longtext COLLATE utf8mb4_general_ci NOT NULL,
+  `exception` longtext COLLATE utf8mb4_general_ci NOT NULL,
   `failed_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY `failed_jobs_uuid_unique` (`uuid`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -594,28 +594,28 @@ CREATE TABLE IF NOT EXISTS `failed_jobs` (
 DROP TABLE IF EXISTS `infos`;
 CREATE TABLE IF NOT EXISTS `infos` (
   `id` int UNSIGNED NOT NULL AUTO_INCREMENT,
-  `logo` varchar(150) DEFAULT NULL,
-  `favicon` varchar(100) DEFAULT NULL,
-  `title` text NOT NULL,
-  `description` text NOT NULL,
-  `keywords` text,
-  `phone` varchar(191) DEFAULT NULL,
-  `mobile` varchar(191) DEFAULT NULL,
-  `email` varchar(191) DEFAULT NULL,
-  `address` text,
-  `facebook` text,
-  `instagram` text,
-  `twitter` text,
-  `youtube` text,
-  `pinterest` text,
-  `payment_door` text,
-  `delivery` varchar(191) DEFAULT NULL,
+  `logo` varchar(150) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `favicon` varchar(100) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `title` text COLLATE utf8mb4_general_ci NOT NULL,
+  `description` text COLLATE utf8mb4_general_ci NOT NULL,
+  `keywords` text COLLATE utf8mb4_general_ci,
+  `phone` varchar(191) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `mobile` varchar(191) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `email` varchar(191) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `address` text COLLATE utf8mb4_general_ci,
+  `facebook` text COLLATE utf8mb4_general_ci,
+  `instagram` text COLLATE utf8mb4_general_ci,
+  `twitter` text COLLATE utf8mb4_general_ci,
+  `youtube` text COLLATE utf8mb4_general_ci,
+  `pinterest` text COLLATE utf8mb4_general_ci,
+  `payment_door` text COLLATE utf8mb4_general_ci,
+  `delivery` varchar(191) COLLATE utf8mb4_general_ci DEFAULT NULL,
   `standart_delivery_amount` decimal(8,2) NOT NULL,
   `fast_delivery_amount` decimal(8,2) NOT NULL,
   `min_order_amount` decimal(8,2) DEFAULT NULL,
   `bonus_amount` decimal(8,2) DEFAULT '0.00',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Tablo döküm verisi `infos`
@@ -633,11 +633,11 @@ INSERT INTO `infos` (`id`, `logo`, `favicon`, `title`, `description`, `keywords`
 DROP TABLE IF EXISTS `logs`;
 CREATE TABLE IF NOT EXISTS `logs` (
   `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT,
-  `content` text NOT NULL,
+  `content` text COLLATE utf8mb4_general_ci NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -648,10 +648,10 @@ CREATE TABLE IF NOT EXISTS `logs` (
 DROP TABLE IF EXISTS `migrations`;
 CREATE TABLE IF NOT EXISTS `migrations` (
   `id` int UNSIGNED NOT NULL AUTO_INCREMENT,
-  `migration` varchar(191) NOT NULL,
+  `migration` varchar(191) COLLATE utf8mb4_general_ci NOT NULL,
   `batch` int NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=86 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=86 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Tablo döküm verisi `migrations`
@@ -715,18 +715,18 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 
 DROP TABLE IF EXISTS `oauth_access_tokens`;
 CREATE TABLE IF NOT EXISTS `oauth_access_tokens` (
-  `id` varchar(100) NOT NULL,
+  `id` varchar(100) COLLATE utf8mb4_general_ci NOT NULL,
   `user_id` bigint UNSIGNED DEFAULT NULL,
   `client_id` bigint UNSIGNED NOT NULL,
-  `name` varchar(191) DEFAULT NULL,
-  `scopes` text,
+  `name` varchar(191) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `scopes` text COLLATE utf8mb4_general_ci,
   `revoked` tinyint(1) NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   `expires_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `oauth_access_tokens_user_id_index` (`user_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -736,15 +736,15 @@ CREATE TABLE IF NOT EXISTS `oauth_access_tokens` (
 
 DROP TABLE IF EXISTS `oauth_auth_codes`;
 CREATE TABLE IF NOT EXISTS `oauth_auth_codes` (
-  `id` varchar(100) NOT NULL,
+  `id` varchar(100) COLLATE utf8mb4_general_ci NOT NULL,
   `user_id` bigint UNSIGNED NOT NULL,
   `client_id` bigint UNSIGNED NOT NULL,
-  `scopes` text,
+  `scopes` text COLLATE utf8mb4_general_ci,
   `revoked` tinyint(1) NOT NULL,
   `expires_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `oauth_auth_codes_user_id_index` (`user_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -756,10 +756,10 @@ DROP TABLE IF EXISTS `oauth_clients`;
 CREATE TABLE IF NOT EXISTS `oauth_clients` (
   `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT,
   `user_id` bigint UNSIGNED DEFAULT NULL,
-  `name` varchar(191) NOT NULL,
-  `secret` varchar(100) DEFAULT NULL,
-  `provider` varchar(191) DEFAULT NULL,
-  `redirect` text NOT NULL,
+  `name` varchar(191) COLLATE utf8mb4_general_ci NOT NULL,
+  `secret` varchar(100) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `provider` varchar(191) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `redirect` text COLLATE utf8mb4_general_ci NOT NULL,
   `personal_access_client` tinyint(1) NOT NULL,
   `password_client` tinyint(1) NOT NULL,
   `revoked` tinyint(1) NOT NULL,
@@ -767,7 +767,7 @@ CREATE TABLE IF NOT EXISTS `oauth_clients` (
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `oauth_clients_user_id_index` (`user_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Tablo döküm verisi `oauth_clients`
@@ -792,7 +792,7 @@ CREATE TABLE IF NOT EXISTS `oauth_personal_access_clients` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Tablo döküm verisi `oauth_personal_access_clients`
@@ -810,13 +810,13 @@ INSERT INTO `oauth_personal_access_clients` (`id`, `client_id`, `created_at`, `u
 
 DROP TABLE IF EXISTS `oauth_refresh_tokens`;
 CREATE TABLE IF NOT EXISTS `oauth_refresh_tokens` (
-  `id` varchar(100) NOT NULL,
-  `access_token_id` varchar(100) NOT NULL,
+  `id` varchar(100) COLLATE utf8mb4_general_ci NOT NULL,
+  `access_token_id` varchar(100) COLLATE utf8mb4_general_ci NOT NULL,
   `revoked` tinyint(1) NOT NULL,
   `expires_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `oauth_refresh_tokens_access_token_id_index` (`access_token_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -831,25 +831,25 @@ CREATE TABLE IF NOT EXISTS `order` (
   `order_amount` decimal(15,2) NOT NULL,
   `bonus_amount` decimal(8,2) DEFAULT NULL,
   `bonus_value` decimal(8,0) DEFAULT NULL,
-  `status` varchar(30) DEFAULT NULL,
-  `first_name` varchar(50) DEFAULT NULL,
-  `last_name` varchar(50) DEFAULT NULL,
-  `email` varchar(100) DEFAULT NULL,
-  `address` varchar(200) DEFAULT NULL,
-  `phone` varchar(15) DEFAULT NULL,
-  `mobile` varchar(15) DEFAULT NULL,
+  `status` varchar(30) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `first_name` varchar(50) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `last_name` varchar(50) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `email` varchar(100) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `address` varchar(200) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `phone` varchar(15) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `mobile` varchar(15) COLLATE utf8mb4_general_ci DEFAULT NULL,
   `city` int UNSIGNED DEFAULT NULL,
-  `country` varchar(80) NOT NULL,
-  `zip_code` varchar(30) DEFAULT NULL,
-  `bank` varchar(20) DEFAULT NULL,
-  `card` varchar(50) DEFAULT NULL,
-  `tran_date_time` varchar(191) DEFAULT NULL,
-  `order_status` varchar(50) DEFAULT NULL,
-  `brand` varchar(50) DEFAULT NULL,
+  `country` varchar(80) COLLATE utf8mb4_general_ci NOT NULL,
+  `zip_code` varchar(30) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `bank` varchar(20) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `card` varchar(50) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `tran_date_time` varchar(191) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `order_status` varchar(50) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `brand` varchar(50) COLLATE utf8mb4_general_ci DEFAULT NULL,
   `installment_number` int DEFAULT NULL,
   `shipping` decimal(7,2) NOT NULL DEFAULT '0.00',
-  `delivery_day` varchar(100) DEFAULT NULL,
-  `delivery_time` varchar(100) DEFAULT NULL,
+  `delivery_day` varchar(100) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `delivery_time` varchar(100) COLLATE utf8mb4_general_ci DEFAULT NULL,
   `call_me` int DEFAULT '0',
   `exported` int NOT NULL DEFAULT '0',
   `created_at` timestamp NULL DEFAULT NULL,
@@ -857,7 +857,7 @@ CREATE TABLE IF NOT EXISTS `order` (
   `deleted_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `order_cart_id_unique` (`cart_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Tablo döküm verisi `order`
@@ -875,13 +875,13 @@ INSERT INTO `order` (`id`, `cart_id`, `order_amount`, `bonus_amount`, `bonus_val
 DROP TABLE IF EXISTS `password_resets`;
 CREATE TABLE IF NOT EXISTS `password_resets` (
   `id` int UNSIGNED NOT NULL AUTO_INCREMENT,
-  `email` varchar(191) NOT NULL,
-  `token` varchar(191) NOT NULL,
+  `email` varchar(191) COLLATE utf8mb4_general_ci NOT NULL,
+  `token` varchar(191) COLLATE utf8mb4_general_ci NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   `deleted_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=31 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=31 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Tablo döküm verisi `password_resets`
@@ -913,7 +913,7 @@ CREATE TABLE IF NOT EXISTS `price_list` (
   KEY `color` (`color_id`),
   KEY `price_list_product_id` (`product_id`) USING BTREE,
   KEY `price_list_size_id` (`size_id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Tablo döküm verisi `price_list`
@@ -963,12 +963,12 @@ DROP TABLE IF EXISTS `product`;
 CREATE TABLE IF NOT EXISTS `product` (
   `id` int UNSIGNED NOT NULL AUTO_INCREMENT,
   `product_code` int NOT NULL,
-  `sku` varchar(100) DEFAULT NULL,
-  `slug` varchar(160) NOT NULL,
-  `product_name` varchar(191) NOT NULL,
-  `product_description` text,
-  `meta_title` varchar(150) DEFAULT NULL,
-  `meta_description` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `sku` varchar(100) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `slug` varchar(160) COLLATE utf8mb4_general_ci NOT NULL,
+  `product_name` varchar(191) COLLATE utf8mb4_general_ci NOT NULL,
+  `product_description` text COLLATE utf8mb4_general_ci,
+  `meta_title` varchar(150) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `meta_description` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
   `stok_piece` int NOT NULL,
   `supply_price` decimal(6,2) DEFAULT NULL,
   `markup` decimal(6,2) DEFAULT NULL,
@@ -986,7 +986,7 @@ CREATE TABLE IF NOT EXISTS `product` (
   `deleted_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `product_code_unique` (`product_code`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Tablo döküm verisi `product`
@@ -1041,7 +1041,7 @@ DROP TABLE IF EXISTS `product_detail`;
 CREATE TABLE IF NOT EXISTS `product_detail` (
   `id` int UNSIGNED NOT NULL AUTO_INCREMENT,
   `product_id` int UNSIGNED NOT NULL,
-  `measurement` varchar(50) NOT NULL,
+  `measurement` varchar(50) COLLATE utf8mb4_general_ci NOT NULL,
   `show_new_collection` tinyint(1) NOT NULL DEFAULT '0',
   `show_hot_deal` tinyint(1) NOT NULL DEFAULT '0',
   `show_best_seller` tinyint(1) NOT NULL DEFAULT '0',
@@ -1050,7 +1050,7 @@ CREATE TABLE IF NOT EXISTS `product_detail` (
   `show_picked_for_you` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   UNIQUE KEY `product_detail_product_id_unique` (`product_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Tablo döküm verisi `product_detail`
@@ -1076,9 +1076,9 @@ DROP TABLE IF EXISTS `product_image`;
 CREATE TABLE IF NOT EXISTS `product_image` (
   `id` int UNSIGNED NOT NULL AUTO_INCREMENT,
   `product_id` int UNSIGNED NOT NULL,
-  `image_name` varchar(50) NOT NULL,
-  `thumb_name` varchar(50) NOT NULL,
-  `main_name` varchar(50) NOT NULL,
+  `image_name` varchar(50) COLLATE utf8mb4_general_ci NOT NULL,
+  `thumb_name` varchar(50) COLLATE utf8mb4_general_ci NOT NULL,
+  `main_name` varchar(50) COLLATE utf8mb4_general_ci NOT NULL,
   `cover` int DEFAULT NULL,
   `color_id` int UNSIGNED DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
@@ -1086,7 +1086,7 @@ CREATE TABLE IF NOT EXISTS `product_image` (
   PRIMARY KEY (`id`),
   KEY `product_image_product_id_foreign` (`product_id`),
   KEY `product_image_color_id` (`color_id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=45 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=45 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Tablo döküm verisi `product_image`
@@ -1154,7 +1154,7 @@ CREATE TABLE IF NOT EXISTS `rating` (
   `product_id` int NOT NULL,
   `rating` int NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -1165,9 +1165,9 @@ CREATE TABLE IF NOT EXISTS `rating` (
 DROP TABLE IF EXISTS `reviews`;
 CREATE TABLE IF NOT EXISTS `reviews` (
   `id` int UNSIGNED NOT NULL AUTO_INCREMENT,
-  `name` varchar(191) NOT NULL,
-  `email` varchar(191) NOT NULL,
-  `review` text NOT NULL,
+  `name` varchar(191) COLLATE utf8mb4_general_ci NOT NULL,
+  `email` varchar(191) COLLATE utf8mb4_general_ci NOT NULL,
+  `review` text COLLATE utf8mb4_general_ci NOT NULL,
   `product_id` int UNSIGNED NOT NULL,
   `rating` int NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
@@ -1175,7 +1175,7 @@ CREATE TABLE IF NOT EXISTS `reviews` (
   `deleted_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `product_id` (`product_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Tablo döküm verisi `reviews`
@@ -1193,12 +1193,12 @@ INSERT INTO `reviews` (`id`, `name`, `email`, `review`, `product_id`, `rating`, 
 DROP TABLE IF EXISTS `shipping_returns`;
 CREATE TABLE IF NOT EXISTS `shipping_returns` (
   `id` int UNSIGNED NOT NULL AUTO_INCREMENT,
-  `shipping_return` text NOT NULL,
+  `shipping_return` text COLLATE utf8mb4_general_ci NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   `deleted_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Tablo döküm verisi `shipping_returns`
@@ -1216,12 +1216,12 @@ INSERT INTO `shipping_returns` (`id`, `shipping_return`, `created_at`, `updated_
 DROP TABLE IF EXISTS `size`;
 CREATE TABLE IF NOT EXISTS `size` (
   `id` int UNSIGNED NOT NULL AUTO_INCREMENT,
-  `name` varchar(100) NOT NULL,
+  `name` varchar(100) COLLATE utf8mb4_general_ci NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   `deleted_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Tablo döküm verisi `size`
@@ -1249,7 +1249,7 @@ CREATE TABLE IF NOT EXISTS `size_product` (
   PRIMARY KEY (`id`),
   KEY `size_product_size_id_foreign` (`size_id`),
   KEY `size_product_product_id_foreign` (`product_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Tablo döküm verisi `size_product`
@@ -1271,17 +1271,17 @@ INSERT INTO `size_product` (`id`, `size_id`, `product_id`) VALUES
 DROP TABLE IF EXISTS `sliders`;
 CREATE TABLE IF NOT EXISTS `sliders` (
   `id` int UNSIGNED NOT NULL AUTO_INCREMENT,
-  `slider_name` text,
-  `slider_image` varchar(191) NOT NULL,
-  `slider_icon` varchar(191) DEFAULT NULL,
-  `slider_slug` varchar(191) NOT NULL,
+  `slider_name` text COLLATE utf8mb4_general_ci,
+  `slider_image` varchar(191) COLLATE utf8mb4_general_ci NOT NULL,
+  `slider_icon` varchar(191) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `slider_slug` varchar(191) COLLATE utf8mb4_general_ci NOT NULL,
   `slider_order` int NOT NULL,
   `slider_active` tinyint(1) NOT NULL DEFAULT '1',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   `deleted_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=57 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=57 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Tablo döküm verisi `sliders`
@@ -1303,12 +1303,12 @@ INSERT INTO `sliders` (`id`, `slider_name`, `slider_image`, `slider_icon`, `slid
 DROP TABLE IF EXISTS `tag`;
 CREATE TABLE IF NOT EXISTS `tag` (
   `id` int UNSIGNED NOT NULL AUTO_INCREMENT,
-  `name` varchar(100) NOT NULL,
+  `name` varchar(100) COLLATE utf8mb4_general_ci NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   `deleted_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -1324,7 +1324,7 @@ CREATE TABLE IF NOT EXISTS `tag_product` (
   PRIMARY KEY (`id`),
   KEY `tag_product_tag_id_foreign` (`tag_id`),
   KEY `tag_product_product_id_foreign` (`product_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -1357,21 +1357,21 @@ INSERT INTO `terms` (`id`, `terms`, `created_at`, `updated_at`) VALUES
 DROP TABLE IF EXISTS `user`;
 CREATE TABLE IF NOT EXISTS `user` (
   `id` int UNSIGNED NOT NULL AUTO_INCREMENT,
-  `first_name` varchar(30) NOT NULL,
-  `last_name` varchar(30) NOT NULL,
-  `email` varchar(150) NOT NULL,
-  `mobile` varchar(60) NOT NULL,
-  `password` varchar(60) NOT NULL,
-  `activation_key` varchar(60) DEFAULT NULL,
+  `first_name` varchar(30) COLLATE utf8mb4_general_ci NOT NULL,
+  `last_name` varchar(30) COLLATE utf8mb4_general_ci NOT NULL,
+  `email` varchar(150) COLLATE utf8mb4_general_ci NOT NULL,
+  `mobile` varchar(60) COLLATE utf8mb4_general_ci NOT NULL,
+  `password` varchar(60) COLLATE utf8mb4_general_ci NOT NULL,
+  `activation_key` varchar(60) COLLATE utf8mb4_general_ci DEFAULT NULL,
   `is_active` tinyint(1) NOT NULL DEFAULT '0',
   `bonus` bigint NOT NULL DEFAULT '0',
-  `remember_token` varchar(100) DEFAULT NULL,
+  `remember_token` varchar(100) COLLATE utf8mb4_general_ci DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   `deleted_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `user_email_uindex` (`email`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Tablo döküm verisi `user`
@@ -1391,15 +1391,15 @@ DROP TABLE IF EXISTS `user_detail`;
 CREATE TABLE IF NOT EXISTS `user_detail` (
   `id` int UNSIGNED NOT NULL AUTO_INCREMENT,
   `user_id` int UNSIGNED NOT NULL,
-  `address` varchar(200) DEFAULT NULL,
+  `address` varchar(200) COLLATE utf8mb4_general_ci DEFAULT NULL,
   `city` int UNSIGNED DEFAULT NULL,
-  `state` varchar(50) DEFAULT NULL,
-  `country` varchar(50) DEFAULT NULL,
-  `zip_code` varchar(15) DEFAULT NULL,
-  `phone` varchar(15) DEFAULT NULL,
+  `state` varchar(50) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `country` varchar(50) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `zip_code` varchar(15) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `phone` varchar(15) COLLATE utf8mb4_general_ci DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `user_detail_user_id_foreign` (`user_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Tablo döküm verisi `user_detail`
@@ -1425,7 +1425,7 @@ CREATE TABLE IF NOT EXISTS `wish_list` (
   PRIMARY KEY (`id`),
   KEY `product_id` (`product_id`),
   KEY `user_id` (`user_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dökümü yapılmış tablolar için kısıtlamalar
