@@ -96,7 +96,7 @@
                             @if ($product->price->sum('stock_piece') > 0)
                             <p class="mb-2 text-center"><i class="fas fa-check text-success"></i> Mövcuddur</p>
                         @else
-                            @if ($product->order_arrival)
+                            @if ($product->order_arrival &&  $product->order_arrival > now())
                                 @php
                                     Carbon::setLocale('az');
                                     $arrival = Carbon::createFromDate($product->order_arrival);
