@@ -126,6 +126,7 @@ class UserController extends Controller
             'password.min'  => 'Şifrə minimum 8 simvol omalıdır.',
             'password.confirmed'  => 'Şifrələr uyğun deyil.',
         ];
+        
         $this->validate(request(), [
             'first_name' => 'required|min:3',
             'last_name' => 'required|min:3',

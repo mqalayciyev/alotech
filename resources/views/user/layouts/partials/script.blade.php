@@ -33,10 +33,9 @@
 <script src="{{ asset('assets/js/components/hs.go-to.js') }}"></script>
 <script src="{{ asset('assets/js/components/hs.selectpicker.js') }}"></script>
 
-{{-- {{ dd(session()->all()) }} --}}
+
 <script>
     @if (Session::has('message'))
-
         toastr.options =
         {
         "closeButton" : true,
@@ -256,54 +255,5 @@
         })
 </script>
 
-
-{{-- <script>
-    $(function() {
-        $(document).on('input', '.search_form_item', function() {
-            let wanted = $(this).val();
-            $(".quick_search_form_result .loader").addClass('active')
-            $(".quick_search_form_result").css('display', 'flex')
-            $(".quick_search_form_result .search_results").html('')
-            if(wanted.length > 3){
-                $.ajax({
-                    url: '{{ route('quick_search_product') }}',
-                    method: 'GET',
-                    data: {
-                        wanted: wanted
-                    },
-                    success: function(data) {
-                        $(".quick_search_form_result .loader").removeClass('active')
-                        $(".quick_search_form_result .search_results").html(data)
-                    }
-                });
-            }
-            else{
-                $(".quick_search_form_result").css('display', 'none')
-                $(".quick_search_form_result .loader").removeClass('active')
-                $(".quick_search_form_result .search_results").html('')
-            }
-        })
-
-        $(document).on('click', function(e) {
-            if($(e.target).parents(".quick_search_form_result").length == 0){
-                if(!$('.search_form_item').is(":focus")){
-                    $(".quick_search_form_result").css('display', 'none')
-                }
-            }
-
-            if($(e.target).parents(".ps-layout__left").length == 0 && !$(e.target).hasClass('filter-show')  && !$(e.target).hasClass('fa-filter')){
-                $(".ps-layout__left").removeClass('active')
-                $("body").removeClass('filter-active')
-            }
-        })
-        $(document).on('click', '.filter-show', function(e) {
-            $(".ps-layout__left").toggleClass('active')
-            $("body").toggleClass('filter-active')
-
-        })
-
-
-    });
-</script> --}}
 
 @yield('script')

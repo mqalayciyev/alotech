@@ -39,11 +39,6 @@
                                 </tr>
                             </thead>
                             <tbody class="my_cart">
-                                <tr>
-                                    <td colspan="6" class="text-center">
-                                        Səbətdə məhsul yoxdur
-                                    </td>
-                                </tr>
                             </tbody>
                         </table>
                     </form>
@@ -69,7 +64,13 @@
                                     </tr>
                                 </tbody>
                             </table>
-                            <a href="{{ route('payment') }}" class="btn btn-primary-dark-w ml-md-2 px-5 px-md-4 px-lg-5 w-100 w-md-auto d-md-none">Sifariş Ver</a>
+                            @if (Cart::count() > 0)
+                                <a href="{{ route('payment') }}" class="btn btn-primary-dark-w ml-md-2 px-5 px-md-4 px-lg-5 w-100 w-md-auto d-md-none">Sifariş Ver</a>
+                                @if (!auth()->check())
+                                <a href="{{ route('quickPayment') }}" class="btn btn-primary-dark-w ml-md-2 px-5 px-md-4 px-lg-5 w-100 w-md-auto d-md-none mt-3">Qeydiyyatsız Sifariş Ver</a>
+                                @endif
+                                
+                            @endif
                         </div>
                     </div>
                 </div>

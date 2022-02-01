@@ -81,7 +81,14 @@ class ControlCompanyListener
             }
         }
 
-        session()->put('discount', $discount);
-        session()->save();
+        
+        if(session()->get('discount') != $discount){
+            session()->put('discount', $discount);
+            session()->save();
+        }
+        else{
+            session()->put('discount', $discount);
+        }
+       
     }
 }

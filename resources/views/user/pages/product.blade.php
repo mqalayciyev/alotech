@@ -84,13 +84,16 @@
             <!-- Single Product Body -->
             <div class="single-product-top-info">
                 <span class="rating-avarage">
-                    {{ $product->rating->avg('rating') }}
+                    {{ $product->rating->avg('rating') > 0 ? $product->rating->avg('rating') : 0 }}
                 </span>
                 <span class="reviews-count">
                     Rəylər ({{ count( $product->reviews) }})
                 </span>
                 <span class="reviews-count">
                     {{ $product->best_selling }} müştəri bu məhsulu aldı
+                </span>
+                <span class="stock-status">
+                   {!! $product->price->sum('stock_piece') > 0 ? "<strong class='text-green'><i class='fas fa-check-double'></i> Mövcuddur</strong>" : "<strong class='text-danger'><i class='fas fa-times'></i> Mövcud deyil</strong>" !!}
                 </span>
             </div>
             <div class="mb-14">

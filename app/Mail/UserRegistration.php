@@ -11,6 +11,7 @@ use Illuminate\Queue\SerializesModels;
 class UserRegistration extends Mailable
 {
     use Queueable, SerializesModels;
+
     public $user;
 
     /**
@@ -30,7 +31,7 @@ class UserRegistration extends Mailable
      */
     public function build()
     {
-        return $this->subject(config('app.name') . ' - Registration')
+        return $this->subject(config('app.name') . ' - İstifadəçi qeydiyyatı')
             ->view('common.mails.user_registration');
     }
 }

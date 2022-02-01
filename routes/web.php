@@ -88,21 +88,26 @@ Route::namespace('User')->group(function () {
     Route::middleware(['auth'])->group(function () {
         Route::get('/account', 'UserController@index')->name('my_account');
         Route::get('/payments', 'PaymentController@index')->name('payment');
-        Route::get('/payment/city', 'PaymentController@city')->name('payment.city');
+        
         Route::post('/pay', 'PaymentController@pay')->name('pay');
         Route::post('/user/sign-out', 'UserController@logout')->name('logout');
         Route::get('/orders', 'OrderController@index')->name('orders');
         Route::get('/orders/{id}', 'OrderController@detail')->name('order');
+        Route::post('/return-order', 'OrderController@return')->name('return.order');
         Route::get('/complete/{id}', 'PaymentController@complete')->name('complete');
         Route::get('/my_wish_list', 'WishlistController@index')->name('my_wish_list');
         Route::get('/view_my_wish_list', 'WishlistController@view_my_wish_list')->name('view_my_wish_list');
         Route::get('/remove_wish_list', 'WishlistController@remove_wish_list')->name('remove_wish_list');
-
         Route::get('/form_info', 'UserController@form_info')->name('user.form_info');
         Route::get('/form_detail', 'UserController@form_detail')->name('user.form_detail');
         Route::get('/form_password', 'UserController@form_password')->name('user.form_password');
     });
-    Route::post('/payment/return/{orderid}', 'PaymentController@paymentPageReturn')->withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class])->name('payment.return');
+    Route::get('/payment/city', 'PaymentController@city')->name('payment.city');
+
+    Route::get('/quick-payment', 'PaymentController@quickPayment')->name('quickPayment');
+    Route::post('/quick-pay', 'PaymentController@quickPay')->name('quickPay');
+
+    Route::post('/payment/return/{orderid}/{quickpay?}', 'PaymentController@paymentPageReturn')->withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class])->name('payment.return');
 
     Route::middleware(['guest'])->group(function () {
         Route::prefix('user')->group(function () {

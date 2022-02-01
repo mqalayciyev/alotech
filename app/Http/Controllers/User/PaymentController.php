@@ -4,23 +4,20 @@ namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
 use App\Mail\InvoiceSend;
-use App\Mail\OrderStatus;
+use App\Mail\UserRegistration;
 use App\Models\Order;
 use App\Models\Info;
 use App\Models\User;
 use App\Models\City;
-
-use DB;
+use Illuminate\Support\Str;
 use App\Models\Cart as CartModel;
 use App\Models\CartProduct;
 use App\Models\PriceList;
 use App\Models\Product;
-use App\Models\UserDetail;
 use Carbon\Carbon;
 use Gloudemans\Shoppingcart\Facades\Cart;
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\Cookie;
-
+use Illuminate\Support\Facades\Hash;
 
 class PaymentController extends Controller
 {
@@ -34,7 +31,6 @@ class PaymentController extends Controller
         }
 
 
-        $method = 1;
 
         if (Cart::total() < $info->min_order_amount) {
             return back()->with(['warning', 'Minimum sifariş məbləği ' . $info->min_order_amount . 'AZN-dir']);
@@ -47,8 +43,20 @@ class PaymentController extends Controller
         $user_detail = auth()->user()->detail;
 
 
-        return view('user.pages.payment', compact('user_detail', 'method'));
+        return view('user.pages.payment', compact('user_detail'));
     }
+
+    public function quickPayment()
+    {
+        $info = Info::find(1);
+
+        if (Cart::total() < $info->min_order_amount) {
+            return back()->with(['warning' => 'Minimum sifariş məbləği ' . $info->min_order_amount . 'AZN-dir']);
+        }
+
+        return view('user.pages.quick_payment');
+    }
+
     public function city()
     {
         $city = City::find(request('city'));
@@ -113,12 +121,10 @@ class PaymentController extends Controller
 
                 if ($priceList->stock_piece == 0) {
                     return redirect()->route('cart')
-                        ->with('message_type', 'warning')
-                        ->with('message', $product->product_name . ' anbarda qalmayıb. Zəhmət olmasa məhsulu səbətdən silin');
+                        ->with(['warning' => $product->product_name . ' anbarda qalmayıb. Zəhmət olmasa məhsulu səbətdən silin']);
                 } elseif ($priceList->stock_piece < $value->piece) {
                     return redirect()->route('cart')
-                        ->with('message_type', 'warning')
-                        ->with('message', $product->product_name . ' maksimum ' . $priceList->stock_piece . ' ' . $product->detail->measurement . ' sifariş edə bilərsiniz. Zəhmət olmasa məhsulun səbət sayını azaldın');
+                        ->with(['warning' => $product->product_name . ' maksimum ' . $priceList->stock_piece . ' ' . $product->detail->measurement . ' sifariş edə bilərsiniz. Zəhmət olmasa məhsulun səbət sayını azaldın']);
                 }
             }
         }
@@ -141,7 +147,7 @@ class PaymentController extends Controller
             'first_name' => 'required|min:3',
             'last_name' => 'required|min:3',
             'email' => 'required',
-            'mobile' => 'required',
+            'mobile' => 'required|regex:/^\+994{1}[0-9]{9}+$/|not_in:0',
             'address' => 'required',
             'city' => 'required',
             'payment_method' => 'required',
@@ -251,8 +257,238 @@ class PaymentController extends Controller
             Mail::to($order['email'])->send(new InvoiceSend($data));
 
             return redirect()->route('orders')
-                ->with('message_type', 'success')
-                ->with('message', 'Sizin sifarişiniz qəbul edildi. Əlavə məlumatlar emailinizə göndərildi.');
+                ->with(['message' => 'Sizin sifarişiniz qəbul edildi. Əlavə məlumatlar emailinizə göndərildi.']);
+        } elseif ($paymentMethod == 2) {
+            Order::where('id', $ordercreated->id)->update([
+                'bank' => 'Bank Kartı',
+                'order_status' => 'PENDING',
+                'status' => 'Payment is expected',
+            ]);
+
+            $taksit = "TAKSİT=0";
+
+            if (request('installment_number') != '0') {
+                $taksit = 'TAKSIT=' . request('installment_number');
+            }
+
+
+            $input_xml = '<?xml version="1.0" encoding="UTF-8"?>
+                <TKKPG>
+                    <Request>
+                        <Operation>CreateOrder</Operation>
+                        <Language>AZ</Language>
+                        <Order>
+                            <OrderType>Purchase</OrderType>
+                            <Merchant>E1790002</Merchant>
+                            <Amount>' . ($ordercreated['order_amount'] * 100) . '</Amount>
+                            <Currency>944</Currency>
+                            <Description>' . $taksit . '</Description>
+                            <ApproveURL>' . route('payment.return', [$ordercreated->id]) . '</ApproveURL>
+                            <CancelURL>' . route('payment.return', [$ordercreated->id]) . '</CancelURL>
+                            <DeclineURL>' . route('payment.return', [$ordercreated->id]) . '</DeclineURL>
+                            </Order>
+                </Request>
+                </TKKPG>';
+
+
+            function xmlRequest($request)
+            {
+
+                $url = "https://e-commerce.kapitalbank.az:5443/exec";
+                $keyFile  = realpath("payment/goycay_avm.key");
+
+                $certFile = realpath("payment/goycay_avm.crt");
+                // return $keyFile;
+                $ch = curl_init();
+                $options = array(
+                    CURLOPT_RETURNTRANSFER => true,
+                    CURLOPT_FOLLOWLOCATION => true,
+                    CURLOPT_SSL_VERIFYHOST => false,
+                    CURLOPT_SSL_VERIFYPEER => false,
+                    CURLOPT_USERAGENT => 'Mozilla/4.0 (compatible; MSIE 5.01; Windows NT 5.0)',
+                    CURLOPT_URL => $url,
+                    CURLOPT_SSLCERT => $certFile,
+                    CURLOPT_SSLKEY => $keyFile,
+                    CURLOPT_POSTFIELDS => $request,
+                    CURLOPT_POST => true
+                );
+                curl_setopt_array($ch, $options);
+                $output = curl_exec($ch);
+                $array_data = json_decode(json_encode(simplexml_load_string($output)), true);
+
+                return $array_data;
+            }
+
+
+
+
+            $response = xmlRequest($input_xml);
+
+
+            $url = $response['Response']['Order']['URL'] . '?ORDERID=' . $response['Response']['Order']['OrderID'] . '&SESSIONID=' . $response['Response']['Order']['SessionID'];
+
+            return redirect()->away($url);
+        }
+    }
+    public function quickPay()
+    {
+
+        $active_cart_id = session('active_cart_id');
+
+
+        $cart = Cart::content();
+        
+        foreach ($cart as $cartItem) {
+
+            $product = Product::where('id', $cartItem->id)->first();
+            if ($product) {
+
+                $priceList = PriceList::find($cartItem->options->price_id);
+
+                if ($priceList->stock_piece == 0) {
+                    return redirect()->route('cart')
+                        ->with(['warning' => $product->product_name . ' anbarda qalmayıb. Zəhmət olmasa məhsulu səbətdən silin']);
+                } elseif ($priceList->stock_piece < $cartItem->qty) {
+                    return redirect()->route('cart')
+                        ->with(['warning' => $product->product_name . ' maksimum ' . $priceList->stock_piece . ' ' . $product->detail->measurement . ' sifariş edə bilərsiniz. Zəhmət olmasa məhsulun səbət sayını azaldın']);
+                }
+            }
+        }
+
+
+        $messages = [
+            'first_name.required' => 'Ad qeyd edilməyib.',
+            'first_name.min' => 'Ad minimum 3 simvol olmalıdır.',
+            'last_name.required' => 'Soyad qeyd edilməyib.',
+            'last_name.min' => 'Soyad minimum 3 simvol olmalıdır.',
+            'email.required'  => 'Email boş ola bilməz.',
+            'mobile.required' => 'Nömrə qeyd edilməyib',
+            'address.required'  => 'Ünvan boş ola bilməz.',
+            'country.required'  => 'Ölkə boş ola bilməz.',
+            'city.required'  => 'Şəhər boş ola bilməz.',
+            'payment_method.required'  => 'Ödəniş növü seçilməyib.',
+        ];
+        $this->validate(request(), [
+            'first_name' => 'required|min:3',
+            'last_name' => 'required|min:3',
+            'email' => 'required',
+            'mobile' => 'required|regex:/^\+994{1}[0-9]{9}+$/|not_in:0',
+            'address' => 'required',
+            'city' => 'required',
+            'payment_method' => 'required',
+        ], $messages);
+
+
+        $user = User::where('email', request('email'))->first();
+
+        if(!$user){
+            $random = Str::random(8);
+            $user = User::create([
+                'first_name' => request('first_name'),
+                'last_name' => request('last_name'),
+                'email' => request('email'),
+                'mobile' => request('mobile'),
+                'password' => Hash::make($random),
+                'is_active' => 1
+            ]);
+
+            $user['password'] = $random;
+            Mail::to(request('email'))->send(new UserRegistration($user));
+        }
+        else{
+            return redirect()->route('user.login')->with(['warning' => 'Bu emailə uyğun istifadəçi sistemdə mövcuddur zəhmət olmasa giriş edin.']);
+        }
+
+
+        
+
+        $active_cart_id = CartModel::active_cart_id();
+        if (is_null($active_cart_id)) {
+            $active_cart = CartModel::create(['user_id' => $user->id]);
+            $active_cart_id = $active_cart->id;
+        }
+        session()->put('active_cart_id', $active_cart_id);
+
+        if (Cart::count() > 0) {
+            foreach (Cart::content() as $cartItem) {
+                $size = $cartItem->options->size;
+                $color = $cartItem->options->color;
+                CartProduct::updateOrCreate(
+                    ['cart_id' => $active_cart_id, 'product_id' => $cartItem->id, 'size_id' => $size, 'color_id' => $color],
+                    ['piece' => $cartItem->qty, 'amount' => $cartItem->price,  'price_id' => $cartItem->options->price_id, 'cart_status' => 'Pending']
+                );
+            }
+        }
+        
+
+
+        $shipping = request('delivery_amount');
+
+        $amount = (Cart::subtotal() + $shipping);
+
+
+
+        $paymentMethod =  request('payment_method');
+        $order = request()->except(['payment_method', '_token']);
+        $order['cart_id'] = $active_cart_id;
+        $order['order_amount'] = $amount;
+        $order['shipping'] = $shipping;
+        $order['delivery_day'] = request('delivery_day');
+        $order['delivery_time'] = request('delivery_time');
+        $order['status'] = 'Your order has been received';
+
+
+        $ordercreated = Order::create($order);
+
+
+        Cart::destroy();
+        session()->forget('active_cart_id');
+
+
+        if ($paymentMethod == 1) {
+
+            Order::where('id', $ordercreated->id)->update([
+                'bank' => 'Qapıda Ödəmə',
+                'order_status' => 'PAYMENT_DOOR',
+            ]);
+
+            $cartProduct = CartProduct::where('cart_id', $active_cart_id)->get();
+            foreach ($cartProduct as $value) {
+                $product = Product::where('id', $value->product_id)->first();
+                if ($product) {
+                    $priceList = PriceList::find($value->price_id);
+                    PriceList::where('id', $value->price_id)->update(['stock_piece' => $priceList->stock_piece - $value->piece]);
+                }
+            }
+
+
+
+
+            $cart = CartModel::where('id', $active_cart_id)->first();
+            $data = [
+                'order_amount' => $ordercreated['order_amount'],
+                'bonus_amount' => $ordercreated['bonus_amount'],
+                'shipping' => $ordercreated['shipping'],
+                'payment_type' => 'Qapıda ödəmə',
+                'order_status' => 'Sifariş qəbul edildi',
+                'card_number' => '',
+                'brand' => '',
+                'order_date' => date('Y-m-d H:i:s'),
+                'payment_date' => date('Y-m-d H:i:s'),
+                'client_firstname' => $order['first_name'],
+                'client_lastname' => $order['last_name'],
+                'client_email' => $order['email'],
+                'client_tel' => $order['mobile'],
+                'client_address' => $order['address'],
+                'discount' => '',
+                'cart_products' => $cart->cart_products,
+            ];
+
+
+            Mail::to($order['email'])->send(new InvoiceSend($data));
+
+            return redirect()->route('orders')
+                ->with(['message' => 'Sizin sifarişiniz qəbul edildi. Əlavə məlumatlar emailinizə göndərildi.']);
         } elseif ($paymentMethod == 2) {
             Order::where('id', $ordercreated->id)->update([
                 'bank' => 'Bank Kartı',
@@ -390,7 +626,7 @@ class PaymentController extends Controller
         return redirect()->away($url);
     }
 
-    public function paymentPageReturn($orderid)
+    public function paymentPageReturn($orderid, $quickpay = null)
     {
 
 
@@ -449,18 +685,22 @@ class PaymentController extends Controller
 
             Mail::to($order['email'])->send(new InvoiceSend($data));
             return redirect()->route('orders')
-                ->with('message_type', 'success')
-                ->with('message', __('content.Your payment has been successful.') . ' Məlumatlar emailə göndərildi.');
+                ->with(['message' => __('content.Your payment has been successful.') . ' Məlumatlar emailə göndərildi.']);
         } else if ($msg['OrderStatus'] === 'CANCELED') {
-
-
+            
+            if($quickpay){
+                $cart = CartModel::where('id', $order->cart_id)->first();
+                $user = User::find($cart->user_id);
+                $user->forceDelete();
+                $cart->forceDelete();
+            }
 
             $data = [
                 'order_amount' => $order['order_amount'],
                 'bonus_amount' => $order['bonus_amount'],
                 'shipping' => $order['shipping'],
                 'payment_type' => 'Bank kartı',
-                'order_status' => 'ÖDƏNİŞ GÖZLƏNİLİR',
+                'order_status' => $quickpay ? '' :'ÖDƏNİŞ GÖZLƏNİLİR',
                 'card_number' => '',
                 'brand' => '',
                 'order_date' => $msg['TranDateTime'],
@@ -478,17 +718,22 @@ class PaymentController extends Controller
 
             Mail::to($order['email'])->send(new InvoiceSend($data));
             return redirect()->route('orders')
-                ->with('message_type', 'danger')
-                ->with('message', 'Sifariş imtina edildi.');
+                ->with(['error' => 'Sifariş imtina edildi.']);
         } else if ($msg['OrderStatus'] === 'DECLINED') {
 
+            if($quickpay){
+                $cart = CartModel::where('id', $order->cart_id)->first();
+                $user = User::find($cart->user_id);
+                $user->forceDelete();
+                $cart->forceDelete();
+            }
 
             $data = [
                 'order_amount' => $order['order_amount'],
                 'bonus_amount' => $order['bonus_amount'],
                 'shipping' => $order['shipping'],
                 'payment_type' => 'Bank kartı',
-                'order_status' => 'ÖDƏNİŞ GÖZLƏNİLİR',
+                'order_status' => $quickpay ? '' : 'ÖDƏNİŞ GÖZLƏNİLİR',
                 'card_number' => '',
                 'brand' => '',
                 'order_date' => $msg['TranDateTime'],
@@ -506,8 +751,7 @@ class PaymentController extends Controller
 
             Mail::to($order['email'])->send(new InvoiceSend($data));
             return redirect()->route('orders')
-                ->with('message_type', 'danger')
-                ->with('message', 'Yenidən yoxlayın. Status: ' . __('content.' . $msg['ResponseDescription']));
+                ->with(['error' => 'Yenidən yoxlayın. Status: ' . __('content.' . $msg['ResponseDescription'])]);
         } else {
 
             $data = [
@@ -515,7 +759,7 @@ class PaymentController extends Controller
                 'bonus_amount' => $order['bonus_amount'],
                 'shipping' => $order['shipping'],
                 'payment_type' => 'Bank kartı',
-                'order_status' => 'ÖDƏNİŞ GÖZLƏNİLİR',
+                'order_status' => $quickpay ? '' : 'ÖDƏNİŞ GÖZLƏNİLİR',
                 'card_number' => '',
                 'brand' => '',
                 'order_date' => $msg['TranDateTime'],
@@ -529,12 +773,18 @@ class PaymentController extends Controller
                 'cart_products' => $cart->cart_products,
             ];
 
+            if($quickpay){
+                $cart = CartModel::where('id', $order->cart_id)->first();
+                $user = User::find($cart->user_id);
+                $user->forceDelete();
+                $cart->forceDelete();
+            }
+
 
 
             Mail::to($order['email'])->send(new InvoiceSend($data));
             return redirect()->route('orders')
-                ->with('message_type', 'danger')
-                ->with('message', 'Sifariş uğursuz oldu.');
+                ->with(['error' => 'Sifariş uğursuz oldu.']);
         }
     }
 }

@@ -39,6 +39,7 @@ class CartController extends Controller
 
         if (count(Cart::content()) > 0) {
             $output = '';
+            $quickPay = auth()->check() ? null : '<div class="d-md-flex"><a href="'. route('quickPayment') . '" class="btn btn-primary-dark-w ml-md-2 px-5 px-md-4 px-lg-5 w-100 w-md-auto d-none d-md-inline-block">Qeydiyyatsız Sifariş Ver</a></div>';
             foreach (Cart::content() as $productCartItem) {
 
                 $color = '';
@@ -102,6 +103,7 @@ class CartController extends Controller
                         <div class="d-md-flex">
                             <a href="'. route('payment') . '" class="btn btn-primary-dark-w ml-md-2 px-5 px-md-4 px-lg-5 w-100 w-md-auto d-none d-md-inline-block">Sifariş Ver</a>
                         </div>
+                        ' . $quickPay . '
                     </div>
                 </div>
             </td>

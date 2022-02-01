@@ -26,7 +26,7 @@
         <!-- End breadcrumb -->
 
         <div class="container">
-            <form class="js-validate" novalidate="novalidate" action="{{ route('pay') }}" method="POST">
+            <form class="js-validate" novalidate="novalidate" action="{{ route('quickPay') }}" method="POST">
                 @csrf
                 <div class="row">
                     <div class="col-lg-5 order-lg-2 mb-7 mb-lg-0">
@@ -36,7 +36,7 @@
                                 <div class="p-4 mb-4 checkout-table">
                                     @php
                                         $total = Cart::total();
-                                        $delivery = $user_detail->city ? $user_detail->userCity->delivery_amount : 0;
+                                        $delivery = 0;
                                         $end = $total + $delivery;
                                     @endphp
                                     <!-- Title -->
@@ -46,7 +46,6 @@
                                     <!-- End Title -->
                                     <input type="hidden" class="total_amount" name="total_amount" value="{{ Cart::total() }}" />
                                     <input type="hidden" class="delivery_amount" name="delivery_amount" value="{{ $delivery }}" />
-                                    <input type="hidden" class="bonus_amount" name="bonus_amount" value="{{ $website_info->bonus_amount * auth()->user()->bonus }}" />
 
 
                                     <!-- Product Content -->
@@ -135,28 +134,6 @@
                                     </div>
                                     <div class="form-group row align-items-center justify-content-between px-3 mb-5">
                                         <div class="col-12">
-
-                                            <h5>
-                                                1 bonus {{ $website_info->bonus_amount }} AZN təşkil edir
-                                            </h5>
-                                            <h5>
-                                                Sizin bonuslarınız {{ auth()->user()->bonus }} bonus (
-                                                {{ number_format($website_info->bonus_amount * auth()->user()->bonus, 2) }}
-                                                AZN )
-                                            </h5>
-                                        </div>
-                                        <div class="col-12">
-                                            <div class="form-check">
-                                                <input class="form-check-input" type="checkbox" value="1" name="with_bonus"
-                                                    id="with_bonus">
-                                                <label class="form-check-label form-label" for="with_bonus">
-                                                    Bonuslardan istifadə etmək istəyirsiniz?
-                                                </label>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="form-group row align-items-center justify-content-between px-3 mb-5">
-                                        <div class="col-12">
                                             <div class="form-check">
                                                 <input class="form-check-input" type="checkbox" value="1" name="call_me" id="call_me">
                                                 <label class="form-check-label form-label" for="call_me">Menejerlə əlaqə saxlamaq isttəyirsiniz?</label>
@@ -188,8 +165,8 @@
                                             Ad
                                             <span class="text-danger">*</span>
                                         </label>
-                                        <input type="text" class="form-control" name="first_name" placeholder="Ad" readonly
-                                            value="{{ old('first_name', auth()->user()->first_name) }}">
+                                        <input type="text" class="form-control" name="first_name" placeholder="Ad"
+                                            value="{{ old('first_name') }}">
                                     </div>
                                     <!-- End Input -->
                                 </div>
@@ -201,8 +178,8 @@
                                             Soyad
                                             <span class="text-danger">*</span>
                                         </label>
-                                        <input type="text" class="form-control" name="last_name" placeholder="Soyad" readonly
-                                            value="{{ old('last_name', auth()->user()->last_name) }}">
+                                        <input type="text" class="form-control" name="last_name" placeholder="Soyad"
+                                            value="{{ old('last_name') }}">
                                     </div>
                                     <!-- End Input -->
                                 </div>
@@ -214,8 +191,8 @@
                                             Email
                                             <span class="text-danger">*</span>
                                         </label>
-                                        <input type="email" class="form-control" name="email" placeholder="Email" readonly
-                                            value="{{ old('email', auth()->user()->email) }}">
+                                        <input type="email" class="form-control" name="email" placeholder="Email"
+                                            value="{{ old('email') }}">
                                     </div>
                                     <!-- End Input -->
                                 </div>
@@ -229,7 +206,7 @@
                                             Ünvan
                                         </label>
                                         <input type="text" class="form-control" name="address" placeholder="Ünvan"
-                                            value="{{ old('address', $user_detail->address) }}">
+                                            value="{{ old('address') }}">
                                     </div>
                                     <!-- End Input -->
                                 </div>
@@ -244,9 +221,7 @@
                                         <select name="city" class="form-control" id="city">
                                             <option value="">Şəhər</option>
                                             @foreach ($city as $item)
-                                                <option value="{{ $item->id }}"
-                                                    {{ $user_detail->city == $item->id ? 'selected' : null }}>
-                                                    {{ $item->name }}</option>
+                                                <option value="{{ $item->id }}">{{ $item->name }}</option>
                                             @endforeach
                                         </select>
                                         {{-- <input type="text"  name="city" placeholder="Şəhər" value="{{ old('city', $user_detail->city) }}"> --}}
@@ -262,7 +237,7 @@
                                             <span class="text-danger">*</span>
                                         </label>
                                         <input type="text" class="form-control" name="zip_code" placeholder="AZ1000"
-                                            value="{{ old('zip_code', $user_detail->zip_code) }}">
+                                            value="{{ old('zip_code') }}">
                                     </div>
                                     <!-- End Input -->
                                 </div>
@@ -275,9 +250,9 @@
                                         <label class="form-label">
                                             Mobil <small>Whatsapp nömrənizi qeyd etməyiniz məsəhət görülür</small>
                                         </label>
-                                        <input type="text" class="form-control" name="mobile" readonly
+                                        <input type="text" class="form-control" name="mobile"
                                             placeholder="+994 ** *** ** **"
-                                            value="{{ old('mobile', auth()->user()->mobile) }}">
+                                            value="{{ old('mobile') }}">
                                     </div>
                                     <!-- End Input -->
                                 </div>
@@ -289,7 +264,7 @@
                                         </label>
                                         <input type="text" class="form-control" name="phone"
                                             placeholder="+994 ** *** ** **"
-                                            value="{{ old('phone', $user_detail->phone) }}">
+                                            value="{{ old('phone') }}">
                                     </div>
                                     <!-- End Input -->
                                 </div>
@@ -301,50 +276,10 @@
                                             Çatdırılma Zamanı
                                         </label>
                                         <div class="row delivery-days-time">
-                                            @if ($user_detail->city)
                                                 <div class="col-12 delivery-days-section">
-                                                    @php
-                                                        if (strpos($user_detail->userCity->delivery_days, '-')) {
-                                                            $days = explode('-', $user_detail->userCity->delivery_days);
-                                                        } else {
-                                                            $days[] = $user_detail->userCity->delivery_days;
-                                                        }
-                                                        $start = $days[0];
-                                                        $end = $days[count($days) - 1];
-
-                                                        for ($i = $start; $i <= $end; $i++) {
-                                                            $days_array[] = $i;
-                                                        }
-
-                                                    @endphp
-
-                                                    @foreach ($days_array as $key => $day)
-                                                        <div class="checkbox delivery_info">
-                                                            <input type="radio" id="{{ 'day-' . $key }}"
-                                                                name="delivery_day"
-                                                                value="{{ Carbon::now()->addDays($day)->format('d-m-Y') }}">
-                                                            <label
-                                                                for="{{ 'day-' . $key }}">{{ date('d', strtotime(Carbon::now()->addDays($day))) . ' ' . __('content.month.' . date('F', strtotime(Carbon::now()->addDays($day)))) }}</label>
-                                                        </div>
-                                                    @endforeach
                                                 </div>
                                                 <div class="col-12 delivery-time-section">
-                                                    @foreach ($user_detail->userCity->delivery_time as $key => $item)
-                                                        <div class="checkbox delivery_info">
-                                                            <input type="radio" name="delivery_time"
-                                                                id="{{ 'time-' . $key }}"
-                                                                value="{{ $item['start'] . '-' . $item['end'] }}">
-                                                            <label
-                                                                for="{{ 'time-' . $key }}">{{ $item['start'] . ' - ' . $item['end'] }}</label>
-                                                        </div>
-                                                    @endforeach
                                                 </div>
-                                            @endif
-
-
-
-
-
 
                                         </div>
                                     </div>
@@ -368,13 +303,13 @@
     <script>
 
         function amount () {
-            let bonus_amount = parseFloat($(".bonus_amount").val())
+            // let bonus_amount = parseFloat($(".bonus_amount").val())
             let total = parseFloat($(".total_amount").val());
             let delivery = parseFloat($(".delivery_amount").val());
             console.log(delivery)
             let amount = 0
             if ($("#with_bonus").prop('checked')) {
-                amount = (total + delivery - bonus_amount).toFixed(2)
+                amount = (total + delivery).toFixed(2)
                 $(".end-amount").html(amount < 0 ? 0 : amount);
             } else {
                 amount = (total + delivery).toFixed(2)
@@ -382,9 +317,9 @@
             }
         }
 
-        $("#with_bonus").on('click', function() {
-            amount()
-        });
+        // $("#with_bonus").on('click', function() {
+        //     amount()
+        // });
 
         $("#city").on('change', function() {
             let city = $(this).val();

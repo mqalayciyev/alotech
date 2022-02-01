@@ -19539,6 +19539,9 @@ a.text-secondary:hover, a.text-secondary:focus {
 .text-success {
   color: #00c9a7 !important;
 }
+.text-green {
+  color: #28a745!important
+}
 
 a.text-success:hover, a.text-success:focus {
   color: #007d67 !important;
