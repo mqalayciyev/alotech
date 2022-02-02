@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Anamakine: 127.0.0.1:3306
--- Üretim Zamanı: 31 Oca 2022, 12:16:06
+-- Üretim Zamanı: 02 Şub 2022, 08:07:05
 -- Sunucu sürümü: 8.0.27
 -- PHP Sürümü: 7.4.26
 
@@ -213,34 +213,34 @@ DROP TABLE IF EXISTS `cart`;
 CREATE TABLE IF NOT EXISTS `cart` (
   `id` int UNSIGNED NOT NULL AUTO_INCREMENT,
   `user_id` int UNSIGNED DEFAULT '0',
-  `no_register` int NOT NULL DEFAULT '0',
-  `time_id` int DEFAULT '0',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   `deleted_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `cart_user_id_foreign` (`user_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Tablo döküm verisi `cart`
 --
 
-INSERT INTO `cart` (`id`, `user_id`, `no_register`, `time_id`, `created_at`, `updated_at`, `deleted_at`) VALUES
-(1, 1, 0, 0, '2022-01-21 09:20:15', '2022-01-21 09:20:15', NULL),
-(2, 1, 0, 0, '2022-01-21 13:53:32', '2022-01-21 13:53:32', NULL),
-(3, 2, 0, 0, '2022-01-23 05:42:44', '2022-01-23 05:42:44', NULL),
-(4, 2, 0, 0, '2022-01-23 16:35:41', '2022-01-23 16:35:41', NULL),
-(5, 2, 0, 0, '2022-01-23 23:26:56', '2022-01-23 23:26:56', NULL),
-(6, 1, 0, 0, '2022-01-24 18:04:16', '2022-01-24 18:04:16', NULL),
-(7, 1, 0, 0, '2022-01-24 18:06:21', '2022-01-24 18:06:21', NULL),
-(8, 1, 0, 0, '2022-01-24 18:23:27', '2022-01-24 18:23:27', NULL),
-(9, 1, 0, 0, '2022-01-24 19:24:04', '2022-01-24 19:24:04', NULL),
-(10, 2, 0, 0, '2022-01-25 16:36:27', '2022-01-25 16:36:27', NULL),
-(11, 1, 0, 0, '2022-01-26 14:04:25', '2022-01-26 14:04:25', NULL),
-(12, 1, 0, 0, '2022-01-28 11:20:04', '2022-01-28 11:20:04', NULL),
-(13, 1, 0, 0, '2022-01-29 09:11:09', '2022-01-29 09:11:09', NULL),
-(14, 1, 0, 0, '2022-01-31 07:23:12', '2022-01-31 07:23:12', NULL);
+INSERT INTO `cart` (`id`, `user_id`, `created_at`, `updated_at`, `deleted_at`) VALUES
+(1, 1, '2022-01-21 09:20:15', '2022-01-21 09:20:15', NULL),
+(2, 1, '2022-01-21 13:53:32', '2022-01-21 13:53:32', NULL),
+(3, 2, '2022-01-23 05:42:44', '2022-01-23 05:42:44', NULL),
+(4, 2, '2022-01-23 16:35:41', '2022-01-23 16:35:41', NULL),
+(5, 2, '2022-01-23 23:26:56', '2022-01-23 23:26:56', NULL),
+(6, 1, '2022-01-24 18:04:16', '2022-01-24 18:04:16', NULL),
+(7, 1, '2022-01-24 18:06:21', '2022-01-24 18:06:21', NULL),
+(8, 1, '2022-01-24 18:23:27', '2022-01-24 18:23:27', NULL),
+(9, 1, '2022-01-24 19:24:04', '2022-01-24 19:24:04', NULL),
+(10, 2, '2022-01-25 16:36:27', '2022-01-25 16:36:27', NULL),
+(11, 1, '2022-01-26 14:04:25', '2022-01-26 14:04:25', NULL),
+(12, 1, '2022-01-28 11:20:04', '2022-01-28 11:20:04', NULL),
+(13, 1, '2022-01-29 09:11:09', '2022-01-29 09:11:09', NULL),
+(14, 1, '2022-01-31 07:23:12', '2022-01-31 07:23:12', NULL),
+(15, 7, '2022-02-01 10:24:25', '2022-02-01 10:24:25', NULL),
+(16, 7, '2022-02-01 10:25:15', '2022-02-01 10:25:15', NULL);
 
 -- --------------------------------------------------------
 
@@ -268,7 +268,7 @@ CREATE TABLE IF NOT EXISTS `cart_product` (
   KEY `cart_product_product_id_foreign` (`product_id`),
   KEY `cart_product_size_id_foreign` (`size_id`) USING BTREE,
   KEY `cart_product_color_id_foreign` (`color_id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=74 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=76 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Tablo döküm verisi `cart_product`
@@ -295,7 +295,8 @@ INSERT INTO `cart_product` (`id`, `cart_id`, `product_id`, `size_id`, `color_id`
 (25, 9, 7, NULL, 2, 1, '1519.99', '0.00', 5, 'Pending', '2022-01-26 13:34:20', '2022-01-26 13:34:20', NULL),
 (61, 13, 3, 4, 7, 1, '1200.00', '0.00', 3, 'Pending', '2022-01-29 13:21:54', '2022-01-29 13:59:15', NULL),
 (62, 13, 8, NULL, 2, 1, '1376.99', '0.00', 4, 'Pending', '2022-01-29 13:21:54', '2022-01-29 13:21:54', NULL),
-(63, 13, 1, NULL, 2, 1, '700.00', '0.00', 1, 'Pending', '2022-01-29 13:21:54', '2022-01-29 13:21:54', NULL);
+(63, 13, 1, NULL, 2, 1, '700.00', '0.00', 1, 'Pending', '2022-01-29 13:21:54', '2022-01-29 13:21:54', NULL),
+(74, 15, 4, 5, 2, 1, '389.00', '0.00', 7, 'Pending', '2022-02-01 10:24:25', '2022-02-01 10:24:25', NULL);
 
 -- --------------------------------------------------------
 
@@ -466,7 +467,7 @@ CREATE TABLE IF NOT EXISTS `color_product` (
   PRIMARY KEY (`id`),
   KEY `color_product_color_id_foreign` (`color_id`),
   KEY `color_product_product_id_foreign` (`product_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Tablo döküm verisi `color_product`
@@ -485,7 +486,9 @@ INSERT INTO `color_product` (`id`, `color_id`, `product_id`) VALUES
 (14, 2, 7),
 (15, 2, 8),
 (18, 1, 4),
-(19, 1, 3);
+(20, 5, 8),
+(21, 4, 3),
+(22, 7, 3);
 
 -- --------------------------------------------------------
 
@@ -651,7 +654,7 @@ CREATE TABLE IF NOT EXISTS `migrations` (
   `migration` varchar(191) COLLATE utf8mb4_general_ci NOT NULL,
   `batch` int NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=86 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=87 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Tablo döküm verisi `migrations`
@@ -705,7 +708,8 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (79, '2022_01_26_132716_create_privacies_table', 21),
 (82, '2022_01_27_125458_create_product_related_table', 22),
 (83, '2022_01_27_130044_create_product_companies_table', 23),
-(85, '2022_01_29_143947_create_coupons_table', 24);
+(85, '2022_01_29_143947_create_coupons_table', 24),
+(86, '2022_02_01_160258_create_order_returns_table', 25);
 
 -- --------------------------------------------------------
 
@@ -857,14 +861,42 @@ CREATE TABLE IF NOT EXISTS `order` (
   `deleted_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `order_cart_id_unique` (`cart_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Tablo döküm verisi `order`
 --
 
 INSERT INTO `order` (`id`, `cart_id`, `order_amount`, `bonus_amount`, `bonus_value`, `status`, `first_name`, `last_name`, `email`, `address`, `phone`, `mobile`, `city`, `country`, `zip_code`, `bank`, `card`, `tran_date_time`, `order_status`, `brand`, `installment_number`, `shipping`, `delivery_day`, `delivery_time`, `call_me`, `exported`, `created_at`, `updated_at`, `deleted_at`) VALUES
-(9, 9, '2906.98', '0.00', NULL, 'Your order has been received', 'Məhəmməd', 'Qalayçiyev', 'qalayciyev@gmail.com', 'Baki Umid Ekberov 86', '+994514598208', '+994514598208', 2, '', 'AZ1138', 'Qapıda Ödəmə', NULL, NULL, 'PAYMENT_DOOR', NULL, 0, '10.00', '29-01-2022', '14:00-14:40', 1, 0, '2022-01-26 13:37:22', '2022-01-26 13:37:22', NULL);
+(9, 9, '2906.98', '0.00', NULL, 'Your order has been received', 'Məhəmməd', 'Qalayçiyev', 'qalayciyev@gmail.com', 'Baki Umid Ekberov 86', '+994514598208', '+994514598208', 2, '', 'AZ1138', 'Qapıda Ödəmə', NULL, NULL, 'PAYMENT_DOOR', NULL, 0, '10.00', '29-01-2022', '14:00-14:40', 1, 0, '2022-01-26 13:37:22', '2022-01-26 13:37:22', NULL),
+(10, 15, '389.00', NULL, NULL, 'Your order has been received', 'Mehemmed', 'Qalayciyev', 'mqalayciyev@mail.ru', 'Baku Umid Ekberov 86', '+994514598208', '+994514598208', 1, '', 'AZ1138', 'Qapıda Ödəmə', NULL, NULL, 'PAYMENT_DOOR', NULL, 0, '0.00', '04-02-2022', '15:00-15:20', 1, 0, '2022-02-01 10:24:25', '2022-02-01 10:24:25', NULL);
+
+-- --------------------------------------------------------
+
+--
+-- Tablo için tablo yapısı `order_returns`
+--
+
+DROP TABLE IF EXISTS `order_returns`;
+CREATE TABLE IF NOT EXISTS `order_returns` (
+  `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT,
+  `order_id` int UNSIGNED NOT NULL,
+  `user_id` int UNSIGNED NOT NULL,
+  `description` text COLLATE utf8mb4_general_ci NOT NULL,
+  `status` tinyint DEFAULT '0',
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `order_returns_order_id_foreign` (`order_id`),
+  KEY `order_returns_user_id_foreign` (`user_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Tablo döküm verisi `order_returns`
+--
+
+INSERT INTO `order_returns` (`id`, `order_id`, `user_id`, `description`, `status`, `created_at`, `updated_at`) VALUES
+(1, 9, 1, 'Zehmet olmasa sifarisimi legv ederdiniz. TEST', 0, '2022-02-01 13:25:07', '2022-02-01 13:25:07');
 
 -- --------------------------------------------------------
 
@@ -881,7 +913,7 @@ CREATE TABLE IF NOT EXISTS `password_resets` (
   `updated_at` timestamp NULL DEFAULT NULL,
   `deleted_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=31 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=33 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Tablo döküm verisi `password_resets`
@@ -891,7 +923,9 @@ INSERT INTO `password_resets` (`id`, `email`, `token`, `created_at`, `updated_at
 (24, 'familqasimov@gmail.com', '$2y$10$EmYMiSuu753umkb1a6ZiwuzIIN1BLsjGzh36/rvY3CAI4CeEUNapO', '2021-12-16 16:36:22', NULL, NULL),
 (30, 'familqasimov@gmail.com', 'Y3tMRoqx5hM2xo3w7AGBc8aoYvMUKRhiOi2hkOUOmAoQkDwXQ4xxRjTEDyG3', '2022-01-01 16:29:49', '2022-01-01 16:31:15', '2022-01-01 16:31:15'),
 (29, 'familqasimov@gmail.com', 'V6Mq5yo1jqwogsLlrSRBp679YCOC6w8RUnSBuvvvNncXicxZdxpmd9itRIb6', '2021-12-25 00:03:31', '2021-12-25 00:04:19', '2021-12-25 00:04:19'),
-(28, 'qalayciyev@gmail.com', 'zgcCzqZhZNBpMIAcgXgDaxHPLyBRT2SPPOsZGqxK1S1WPItvjnTcEnyI0efe', '2021-12-17 16:35:31', '2021-12-17 16:35:57', '2021-12-17 16:35:57');
+(28, 'qalayciyev@gmail.com', 'zgcCzqZhZNBpMIAcgXgDaxHPLyBRT2SPPOsZGqxK1S1WPItvjnTcEnyI0efe', '2021-12-17 16:35:31', '2021-12-17 16:35:57', '2021-12-17 16:35:57'),
+(31, 'mqalayciyev@mail.ru', 'IPmqlGUXlhC4sK1BJM1chytCpG8WrgKuDGLpRzEnlvTQ6E2g2QhJrVF9Madn', '2022-02-01 09:51:23', NULL, NULL),
+(32, 'mqalayciyev@mail.ru', 'CzLUuhgleyFJmvR1fA5z6lzfO4m41AEoISzvBWkMQbvsWncyYTGhnAblGRcM', '2022-02-01 12:49:34', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -913,7 +947,7 @@ CREATE TABLE IF NOT EXISTS `price_list` (
   KEY `color` (`color_id`),
   KEY `price_list_product_id` (`product_id`) USING BTREE,
   KEY `price_list_size_id` (`size_id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Tablo döküm verisi `price_list`
@@ -922,14 +956,16 @@ CREATE TABLE IF NOT EXISTS `price_list` (
 INSERT INTO `price_list` (`id`, `product_id`, `sale_price`, `stock_piece`, `wholesale_count`, `wholesale_price`, `color_id`, `size_id`) VALUES
 (1, 1, '700.00', '10.00', '5.00', '650.00', 2, NULL),
 (2, 1, '750.00', '10.00', NULL, NULL, 3, NULL),
-(3, 3, '1200.00', '7.00', NULL, NULL, 7, 4),
 (4, 8, '1100.00', '14.00', NULL, NULL, 2, NULL),
 (5, 7, '1600.00', '14.00', NULL, NULL, 2, NULL),
-(7, 4, '389.00', '3.00', '5.00', '350.00', 2, 5),
+(7, 4, '389.00', '2.00', '5.00', '350.00', 2, 5),
 (8, 4, '440.00', '5.00', '5.00', '400.00', 2, 6),
 (9, 4, '360.00', '5.00', '5.00', '330.00', 10, 5),
 (10, 2, '1000.00', '18.00', NULL, NULL, 2, 1),
-(11, 6, '1000.00', '0.00', NULL, NULL, 2, NULL);
+(11, 6, '1000.00', '0.00', NULL, NULL, 2, NULL),
+(12, 8, '1200.00', '15.00', NULL, NULL, 5, NULL),
+(13, 3, '1200.00', '7.00', NULL, NULL, 7, NULL),
+(14, 3, '1250.00', '15.00', NULL, NULL, 4, NULL);
 
 -- --------------------------------------------------------
 
@@ -994,13 +1030,13 @@ CREATE TABLE IF NOT EXISTS `product` (
 
 INSERT INTO `product` (`id`, `product_code`, `sku`, `slug`, `product_name`, `product_description`, `meta_title`, `meta_description`, `stok_piece`, `supply_price`, `markup`, `discount`, `discount_date`, `one_or_more`, `other_count`, `other_bonus`, `bonus_comment`, `wish_list`, `best_selling`, `order_arrival`, `created_at`, `updated_at`, `deleted_at`) VALUES
 (1, 3021, 'TFDTDDSF-545', 'noutbuk-acer-a315-57g-nxhzrer005-n', 'Noutbuk Acer A315-57G (NX.HZRER.005-N)', '<p>Noutbuk Acer A315-57G (NX.HZRER.005-N)</p>', 'Noutbuk Acer A315-57G (NX.HZRER.005-N)', 'Noutbuk Acer A315-57G (NX.HZRER.005-N)', 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 3, NULL, '2022-01-20 10:37:11', '2022-01-23 22:00:29', NULL),
-(2, 2083, 'TFDTDDSF-545', 'noutbuk-lenovo-l3-15iml05-grey-81y300pqrk-n', 'Noutbuk Lenovo L3 15IML05 Grey (81Y300PQRK-N)', '<p><a href=\"https://www.bakuelectronics.az/catalog/noutbuklar-komputerler/noutbuklar/noutbuk-lenovo-l3-15iml05-grey-81y300pqrk-n.html\">Noutbuk Lenovo L3 15IML05 Grey (81Y300PQRK-N)</a></p>', 'Noutbuk Lenovo L3 15IML05 Grey (81Y300PQRK-N)', 'Noutbuk Lenovo L3 15IML05 Grey (81Y300PQRK-N)', 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 4, '2022-01-29 19:48:00', '2022-01-20 10:37:55', '2022-01-31 09:00:05', NULL),
+(2, 2083, 'TFDTDDSF-545', 'noutbuk-lenovo-l3-15iml05-grey-81y300pqrk-n', 'Noutbuk Lenovo L3 15IML05 Grey (81Y300PQRK-N)', '<p><a href=\"https://www.bakuelectronics.az/catalog/noutbuklar-komputerler/noutbuklar/noutbuk-lenovo-l3-15iml05-grey-81y300pqrk-n.html\">Noutbuk Lenovo L3 15IML05 Grey (81Y300PQRK-N)</a></p>', 'Noutbuk Lenovo L3 15IML05 Grey (81Y300PQRK-N)', 'Noutbuk Lenovo L3 15IML05 Grey (81Y300PQRK-N)', 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 4, '2022-01-29 19:48:00', '2022-01-20 10:37:55', '2022-02-02 07:08:56', NULL),
 (3, 15582, 'TFDTDDSF-545', 'noutbuk-lenovo-ideapad-3-15itl6-82h800nwrk-n', 'Noutbuk Lenovo Ideapad 3 15ITL6 (82H800NWRK-N)', '<h2>Noutbuk Lenovo Ideapad 3 15ITL6 (82H800NWRK-N)</h2>', 'Noutbuk, Lenovo, Ideapad', 'Noutbuk Lenovo Ideapad 3 15ITL6 (82H800NWRK-N)', 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 5, NULL, '2022-01-22 08:32:24', '2022-01-31 10:50:00', NULL),
 (4, 14179, 'TFDTDDSF-545', 'samsung-galaxy-a22-5g-sm-a226', 'Samsung Galaxy A22 5G (SM-A226)', '<p>Noutbuk Acer A315-57G (NX.HZRER.005-N)</p>', 'Samsung Galaxy A22 5G (SM-A226)', 'Samsung Galaxy A22 5G (SM-A226)', 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 7, NULL, '2022-01-22 20:10:48', '2022-01-28 06:50:34', NULL),
 (5, 18155, 'TFDTDDSF-545', 'samsung-galaxy-a32-64gb-sm-a325', 'Samsung Galaxy A32 64GB (SM-A325)', '<h1><strong>Samsung Galaxy A32 64GB (SM-A325)</strong></h1>', 'Samsung Galaxy A32 64GB (SM-A325)', 'Samsung Galaxy A32 64GB (SM-A325)', 0, NULL, NULL, 15, '2022-01-23 20:21:00', NULL, NULL, NULL, NULL, 0, 0, NULL, '2022-01-22 20:21:41', '2022-01-22 20:24:13', NULL),
 (6, 18434, 'TFDTDDSF-545', 'lenovo-tab-m7-tb-7306x-za8d0057ru', 'Lenovo Tab M7 TB-7306X (ZA8D0057RU)', '<h1><strong>Lenovo Tab M7 TB-7306X (ZA8D0057RU)</strong></h1>', 'Lenovo Tab M7 TB-7306X (ZA8D0057RU)', 'Lenovo Tab M7 TB-7306X (ZA8D0057RU)', 0, NULL, NULL, 5, '2022-01-29 20:25:00', NULL, NULL, NULL, NULL, 0, 0, '2022-01-25 23:02:00', '2022-01-22 20:25:52', '2022-01-25 16:35:40', NULL),
 (7, 21087, 'TFDTDDSF-545', 'lenovo-ic-aio-3-24imb05-f0eu00mnrk', 'Lenovo IC AIO 3 24IMB05 (F0EU00MNRK)', '<h1><strong>Lenovo IC AIO 3 24IMB05 (F0EU00MNRK)</strong></h1><p><br>&nbsp;</p>', 'Lenovo IC AIO 3 24IMB05 (F0EU00MNRK)', 'Lenovo IC AIO 3 24IMB05 (F0EU00MNRK)', 0, NULL, NULL, NULL, '2022-01-30 20:27:00', 3, NULL, NULL, 2, 0, 1, NULL, '2022-01-22 20:27:29', '2022-01-31 09:01:07', NULL),
-(8, 5066, 'TFDTDDSF-545', 'hp-pro-300-g6-mt-294u7ea', 'HP Pro 300 G6 MT (294U7EA)', '<h1><strong>HP Pro 300 G6 MT (294U7EA)</strong></h1><p><br>&nbsp;</p>', 'HP Pro 300 G6 MT (294U7EA)', 'HP Pro 300 G6 MT (294U7EA)', 0, NULL, NULL, 10, '2022-01-26 19:30:00', 5, NULL, NULL, NULL, 0, 1, NULL, '2022-01-22 20:29:00', '2022-01-26 13:37:22', NULL);
+(8, 5066, 'TFDTDDSF-545', 'hp-pro-300-g6-mt-294u7ea', 'HP Pro 300 G6 MT (294U7EA)', '<h1><strong>HP Pro 300 G6 MT (294U7EA)</strong></h1><p><br>&nbsp;</p>', 'HP Pro 300 G6 MT (294U7EA)', 'HP Pro 300 G6 MT (294U7EA)', 0, NULL, NULL, 10, '2022-01-26 19:30:00', 5, NULL, NULL, NULL, 0, 1, NULL, '2022-01-22 20:29:00', '2022-02-02 07:51:30', NULL);
 
 -- --------------------------------------------------------
 
@@ -1011,25 +1047,26 @@ INSERT INTO `product` (`id`, `product_code`, `sku`, `slug`, `product_name`, `pro
 DROP TABLE IF EXISTS `product_companies`;
 CREATE TABLE IF NOT EXISTS `product_companies` (
   `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT,
-  `product_id` int UNSIGNED NOT NULL,
-  `company_id` int UNSIGNED NOT NULL,
+  `product_id` int UNSIGNED DEFAULT NULL,
+  `company_id` int UNSIGNED DEFAULT NULL,
+  `main_product_price_id` bigint UNSIGNED NOT NULL,
   `price_id` bigint UNSIGNED NOT NULL,
   `discount` decimal(8,2) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `product_companies_product_id_foreign` (`product_id`),
   KEY `product_companies_company_id_foreign` (`company_id`),
-  KEY `product_companies_price_id_foreign` (`price_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  KEY `product_companies_price_id_foreign` (`price_id`),
+  KEY `product_companies_main_product_price_id_foreign` (`main_product_price_id`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=48 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Tablo döküm verisi `product_companies`
 --
 
-INSERT INTO `product_companies` (`id`, `product_id`, `company_id`, `price_id`, `discount`) VALUES
-(5, 1, 3, 3, '10.00'),
-(6, 1, 8, 4, '10.00'),
-(7, 2, 7, 5, '20.00'),
-(8, 2, 4, 7, '20.00');
+INSERT INTO `product_companies` (`id`, `product_id`, `company_id`, `main_product_price_id`, `price_id`, `discount`) VALUES
+(36, 2, 7, 10, 5, '20.00'),
+(37, 2, 4, 10, 7, '20.00'),
+(47, 1, 8, 2, 4, '10.00');
 
 -- --------------------------------------------------------
 
@@ -1131,16 +1168,16 @@ CREATE TABLE IF NOT EXISTS `product_related` (
   PRIMARY KEY (`id`),
   KEY `product_related_product_id_foreign` (`product_id`),
   KEY `product_related_related_id_foreign` (`related_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=73 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Tablo döküm verisi `product_related`
 --
 
 INSERT INTO `product_related` (`id`, `product_id`, `related_id`) VALUES
-(16, 1, 2),
-(17, 1, 3),
-(18, 1, 4);
+(70, 1, 2),
+(71, 1, 3),
+(72, 1, 4);
 
 -- --------------------------------------------------------
 
@@ -1154,7 +1191,18 @@ CREATE TABLE IF NOT EXISTS `rating` (
   `product_id` int NOT NULL,
   `rating` int NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Tablo döküm verisi `rating`
+--
+
+INSERT INTO `rating` (`id`, `product_id`, `rating`) VALUES
+(1, 4, 4),
+(2, 4, 4),
+(3, 4, 3),
+(4, 4, 5),
+(5, 4, 2);
 
 -- --------------------------------------------------------
 
@@ -1175,7 +1223,7 @@ CREATE TABLE IF NOT EXISTS `reviews` (
   `deleted_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `product_id` (`product_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Tablo döküm verisi `reviews`
@@ -1371,15 +1419,16 @@ CREATE TABLE IF NOT EXISTS `user` (
   `deleted_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `user_email_uindex` (`email`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Tablo döküm verisi `user`
 --
 
 INSERT INTO `user` (`id`, `first_name`, `last_name`, `email`, `mobile`, `password`, `activation_key`, `is_active`, `bonus`, `remember_token`, `created_at`, `updated_at`, `deleted_at`) VALUES
-(1, 'Məhəmməd', 'Qalayçiyev', 'qalayciyev@gmail.com', '+994514598208', '$2y$10$HcYh8JgybwYOErMj4gMd.ury.ML0T/3xYXgou9oCtxU0Bi7HaHykm', NULL, 1, 8, 'OWzzxYPsR76yXt7W4WnaqHKpSTfQuiMBPAlMaTbnhYOp8xLmZJ6WAnf4wXqK', '2022-01-21 09:20:15', '2022-01-26 13:37:22', NULL),
-(2, 'Famil', 'Qasımov', 'familqasimov@gmail.com', '+99455738342', '$2y$10$gwq0Moqs5e3m1BmjK6QypeTwc4XdbDLqxuREHvhgjqDdObmfRr3i.', NULL, 1, 0, NULL, '2022-01-23 05:42:44', '2022-01-23 05:42:44', NULL);
+(1, 'Məhəmməd', 'Qalayçiyev', 'qalayciyev@gmail.com', '+994514598208', '$2y$10$HcYh8JgybwYOErMj4gMd.ury.ML0T/3xYXgou9oCtxU0Bi7HaHykm', NULL, 1, 8, 'fjSAqGegSdajxYE2NeJcpHt6Y567axLnENo4QyA7JbhFKhnQs91SMwkks0Yj', '2022-01-21 09:20:15', '2022-01-26 13:37:22', NULL),
+(2, 'Famil', 'Qasımov', 'familqasimov@gmail.com', '+99455738342', '$2y$10$gwq0Moqs5e3m1BmjK6QypeTwc4XdbDLqxuREHvhgjqDdObmfRr3i.', NULL, 1, 0, NULL, '2022-01-23 05:42:44', '2022-01-23 05:42:44', NULL),
+(7, 'Mehemmed', 'Qalayciyev', 'mqalayciyev@mail.ru', '+994514598208', '$2y$10$FNBmUkCE7RdAeqGXjCiK7OE2IKhzP1N7OhNV2TzRh0afJ3L5o7VAy', NULL, 1, 0, NULL, '2022-02-01 10:24:22', '2022-02-01 10:24:22', NULL);
 
 -- --------------------------------------------------------
 
@@ -1481,6 +1530,13 @@ ALTER TABLE `order`
   ADD CONSTRAINT `order_cart_id_foreign` FOREIGN KEY (`cart_id`) REFERENCES `cart` (`id`) ON DELETE CASCADE;
 
 --
+-- Tablo kısıtlamaları `order_returns`
+--
+ALTER TABLE `order_returns`
+  ADD CONSTRAINT `order_returns_order_id_foreign` FOREIGN KEY (`order_id`) REFERENCES `order` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `order_returns_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE;
+
+--
 -- Tablo kısıtlamaları `price_list`
 --
 ALTER TABLE `price_list`
@@ -1493,6 +1549,7 @@ ALTER TABLE `price_list`
 --
 ALTER TABLE `product_companies`
   ADD CONSTRAINT `product_companies_company_id_foreign` FOREIGN KEY (`company_id`) REFERENCES `product` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `product_companies_ibfk_1` FOREIGN KEY (`main_product_price_id`) REFERENCES `price_list` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `product_companies_price_id_foreign` FOREIGN KEY (`price_id`) REFERENCES `price_list` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `product_companies_product_id_foreign` FOREIGN KEY (`product_id`) REFERENCES `product` (`id`) ON DELETE CASCADE;
 
