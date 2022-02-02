@@ -378,7 +378,7 @@ class ProductController extends Controller
                 return redirect()
                     ->route('manage.product.edit', $entry->id)
                     ->with('message_type', 'info')
-                    ->with('message', 'Kompaniyanın endirim faizi qeyd edilməyib');
+                    ->with('message', 'Kompaniyanın endirim məbləği qeyd edilməyib');
             }
             if(!request('main_product_price_id')){
                 // return 'error';
