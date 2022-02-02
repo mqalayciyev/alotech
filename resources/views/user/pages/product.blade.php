@@ -458,18 +458,11 @@
                                                             </div>
                                                             <div class="flex-center-between mb-1">
                                                                 <div class="prodcut-price">
-                                                                    @if (count($filter))
-                                                                        @foreach ($filter as $item)
-                                                                            @if ($item)
-                                                                                @if ($product->discount)
-                                                                                    <del class="company_product_amount currency_azn" data-price-id="{{ $item['id'] }}">{{ $item['sale_price'] }}</del>
-                                                                                    <div class="font-size-20 text-red company_product_amount_discount currency_azn" >{{ number_format($item['sale_price'] * ((100 - $product->discount) / 100), 2) }}</div>
-                                                                                @else
-                                                                                    <div class="font-size-20 text-red company_product_amount currency_azn" data-price-id="{{ $item['id'] }}">{{ $item['sale_price'] }}</div>
-                                                                                @endif
-                                                                                @break
-                                                                            @endif
-                                                                        @endforeach
+                                                                    @if ($product->discount)
+                                                                        <del class="currency_azn" data-price-id="{{ $company->first()->mainPrice->id }}">{{ $company->first()->mainPrice->sale_price }}</del>
+                                                                        <div class="font-size-20 text-red currency_azn" >{{ number_format($company->first()->mainPrice->sale_price * ((100 - $product->discount) / 100), 2) }}</div>
+                                                                    @else
+                                                                        <div class="font-size-20 text-red currency_azn" data-price-id="{{ $company->first()->mainPrice->id }}">{{ $company->first()->mainPrice->sale_price }}</div>
                                                                     @endif
 
                                                                 </div>
@@ -524,28 +517,11 @@
                                     <div class="col-md-auto">
                                         <div class="mr-xl-15">
                                             <div class="mb-3">
-                                                @php
-                                                    $price_main = 0;
-                                                @endphp
-                                                @if (count($filter))
-                                                    @foreach ($filter as $item)
-                                                        @if ($item)
-                                                            @if ($product->discount)
-                                                                @php $price_main = $item['sale_price'] * ((100 - $product->discount) / 100) @endphp
-                                                            @else
-                                                                @php $price_main = $item['sale_price'] @endphp
-                                                            @endif
-                                                            @break
-                                                        @endif
-                                                    @endforeach
-                                                @endif
-
-
-                                                <del class="font-size-20 text-lh-1dot2 company_total_amount currency_azn">{{ number_format(($price_main + $price_company), 2) }}</del>
-                                                <div class="text-red font-size-26 text-lh-1dot2 company_total_amount_discount currency_azn">{{ number_format(($price_main + $price_company) - $company->first()->discount, 2) }}</div>
+                                                <del class="font-size-20 text-lh-1dot2  currency_azn">{{ number_format(($company->first()->mainPrice->sale_price + $price_company), 2) }}</del>
+                                                <div class="text-red font-size-26 text-lh-1dot2  currency_azn">{{ number_format(($company->first()->mainPrice->sale_price + $price_company) - $company->first()->discount, 2) }}</div>
                                                 <div class="text-gray-6">{{ count($company) + 1 }} məhsul üçün</div>
                                             </div>
-                                            <a href="javascript:void(0)" data-company="1" data-piece="1" data-type="product__single" data-id="{{ $product->id }}" data-discount="{{ $product->discount }}" class="btn btn-sm btn-block btn-primary-dark btn-wide transition-3d-hover add-to-cart" data-company="1">Hamısını səbətə at</a>
+                                            <a href="javascript:void(0)" data-size="{{ $company->first()->mainPrice->size_id }}" data-color="{{ $company->first()->mainPrice->color_id }}" data-id="{{ $product->id }}" data-price-id="{{ $company->first()->mainPrice->id }}" data-amount="{{ $company->first()->mainPrice->sale_price }}" data-discount="{{ $product->discount }}" class="btn btn-sm btn-block btn-primary-dark btn-wide transition-3d-hover add-cart">Hamısını səbətə at</a>
                                         </div>
                                     </div>
                                 </div>
@@ -963,6 +939,56 @@
 
                 })
             }
+
+            $(document).on('click', '.add-cart', function() {
+            let discount = parseFloat($(this).data('discount'))
+            let priceId = parseInt($(this).data('price-id'))
+            let amount = parseFloat($(this).data('amount'))
+            let size = parseInt($(this).data('size'))
+            let color = parseInt($(this).data('color'))
+            let id = parseInt($(this).data('id'));
+            let piece = 1
+            let company = 1
+            if (discount) {
+                amount = amount * ((100 - discount) / 100)
+            }
+
+
+            $.ajax({
+                url: '{{ route('cart.add_to_cart') }}',
+                method: 'GET',
+                data: {
+                    id: id,
+                    piece: piece,
+                    size: size,
+                    color: color,
+                    priceId,
+                    amount,
+                    company,
+                    discount: discount ? discount : 0
+                },
+                success: function(data) {
+                    console.log(data)
+                    toastr.options = {
+                        "closeButton": true,
+                        "progressBar": true
+                    }
+                    if (data.status == 'success') {
+                        $('.total-amount').html(data.total);
+                        $('.show_cartCount').html(data.count);
+
+                        toastr.success(data.message);
+                    } else {
+                        let msg = "";
+                        let message = data.message;
+
+                        for (const value of Object.values(message)) {
+                            toastr.error(value);
+                        }
+                    }
+                }
+            });
+        });
 
         });
     </script>

@@ -16,6 +16,7 @@ class CreateProductCompaniesTable extends Migration
         Schema::create('product_companies', function (Blueprint $table) {
             $table->id();
             $table->integer('product_id')->unsigned();
+            $table->bigInteger('main_product_price_id')->unsigned();
             $table->integer('company_id')->unsigned();
             $table->bigInteger('price_id')->unsigned();
             $table->decimal('discount', 8,2)->nullable();
@@ -23,6 +24,7 @@ class CreateProductCompaniesTable extends Migration
 
             $table->foreign('product_id')->references("id")->on("product")->onDelete('cascade');
             $table->foreign('company_id')->references("id")->on("product")->onDelete('cascade');
+            $table->foreign('main_product_price_id')->references("id")->on("price_list")->onDelete('cascade');
             $table->foreign('price_id')->references("id")->on("price_list")->onDelete('cascade');
         });
     }

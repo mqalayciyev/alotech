@@ -38,7 +38,7 @@ class ProductController extends Controller
         $sizes = SizeProduct::where('product_id', $product->id)->get();
         $colors = ColorProduct::where('product_id', $product->id)->get();
         $related = ProductRelated::with('product')->where('product_id', $product->id)->get();
-        $company = ProductCompany::with(['product', 'product.image', 'price', 'price.size', 'price.color'])->where('product_id', $product->id)->get();
+        $company = ProductCompany::with(['product', 'product.image', 'mainPrice', 'price', 'price.size', 'price.color'])->where('product_id', $product->id)->get();
         $price_company = 0;
 
         if(count($company) > 0){

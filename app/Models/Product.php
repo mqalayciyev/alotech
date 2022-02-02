@@ -79,7 +79,7 @@ class Product extends Model
     }
     public function companies()
     {
-        return $this->belongsToMany('App\Models\Product', 'product_companies');
+        return $this->hasMany('App\Models\Product', 'product_companies');
     }
     public function company_discount()
     {

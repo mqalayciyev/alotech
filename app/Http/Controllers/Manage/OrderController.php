@@ -9,7 +9,6 @@ use App\Models\CartProduct;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\User;
-use Barryvdh\DomPDF\PDF;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;

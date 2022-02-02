@@ -18,6 +18,10 @@ class ProductCompany extends Model
         return $this->hasOne('App\Models\Product', 'id', 'company_id');
     }
 
+    public function mainPrice()
+    {
+        return $this->hasOne('App\Models\PriceList', 'id', 'main_product_price_id');
+    }
     public function price()
     {
         return $this->hasOne('App\Models\PriceList', 'id', 'price_id');

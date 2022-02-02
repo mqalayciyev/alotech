@@ -118,6 +118,7 @@ class ProductController extends Controller
         $product_sizes = [];
         $product_related = [];
         $product_company = [];
+        $main_product = [];
 
         if ($id > 0) {
             $entry = Product::find($id);
@@ -126,7 +127,15 @@ class ProductController extends Controller
             $product_colors = $entry->colors()->pluck('color_id')->all();
             $product_sizes = $entry->sizes()->pluck('size_id')->all();
             $product_related = $entry->related()->pluck('related_id')->all();
-            $product_company = $entry->company()->pluck('company_id')->all();
+
+            $query = PriceList::where('product_id', $id)->with('companies');
+            $query->whereHas('companies', function($q) {
+                $q->where('product_companies.id', '!=', null);
+            });
+
+            $product_company = $query->first() ? $query->first()->companies->pluck('price_id') : [];
+            $main_product = $query->first();
+            // dd($query->first());
         }
 
 
@@ -140,7 +149,7 @@ class ProductController extends Controller
         $images = ProductImage::all();
         // echo "<pre>";
         // print_r($entry->colors);
-        return view('manage.pages.product.form', compact('entry', 'products', 'company_product_price', 'product_related', 'product_company', 'product_colors', 'product_sizes', 'categories', 'product_categories', 'images', 'brands', 'tags', 'colors', 'sizes',  'entry_category', 'product_brands'));
+        return view('manage.pages.product.form', compact('entry', 'products', 'company_product_price', 'product_related', 'main_product', 'product_company', 'product_colors', 'product_sizes', 'categories', 'product_categories', 'images', 'brands', 'tags', 'colors', 'sizes',  'entry_category', 'product_brands'));
     }
     public function categories()
     {
@@ -361,7 +370,7 @@ class ProductController extends Controller
         else{
             ProductRelated::where('product_id', $entry->id)->delete();
         }
-        $company = request('company_price_id');
+        $company = request('price_id');
         // return $company;
         if ($company) {
             if(!request('company_discount')){
@@ -371,12 +380,20 @@ class ProductController extends Controller
                     ->with('message_type', 'info')
                     ->with('message', 'Kompaniyanın endirim faizi qeyd edilməyib');
             }
+            if(!request('main_product_price_id')){
+                // return 'error';
+                return redirect()
+                    ->route('manage.product.edit', $entry->id)
+                    ->with('message_type', 'info')
+                    ->with('message', 'Əsas məhsul qeyd edilməyib');
+            }
             ProductCompany::where('product_id', $entry->id)->delete();
             foreach ($company as $id) {
                 $exists_price = PriceList::find($id);
                 if ($exists_price) {
                     ProductCompany::updateOrCreate([
                         'product_id' => $entry->id,
+                        'main_product_price_id' => request('main_product_price_id'),
                         'company_id' => $exists_price->product_id,
                         'price_id' => $exists_price->id,
                     ], ['discount' => request('company_discount')]);

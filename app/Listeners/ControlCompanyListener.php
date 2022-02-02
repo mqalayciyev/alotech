@@ -38,23 +38,23 @@ class ControlCompanyListener
         // }
         // session()->put('discount', rand());
         // session()->save();
-        $company = collect(ProductCompany::all())->unique('product_id');
+        $company = collect(ProductCompany::all())->unique('main_product_price_id');
         $array = [];
         foreach ($company as $item) {
-            $array[] = $item->product_id;
+            $array[] = $item->main_product_price_id;
         }
         $cart = Cart::content()->toArray();
         $discount = 0;
         foreach (Cart::content() as $content) {
-            if(in_array($content->id, $array)){
+            if(in_array($content->options->price_id, $array)){
                 $count[] = $content->qty;
-                $companyProducts = ProductCompany::where('product_id', $content->id)->get();
+                $companyProducts = ProductCompany::where('main_product_price_id', $content->options->price_id)->get();
                 $null = 0;
                 foreach ($companyProducts as $value) {
                     // $value->company_id;
-                    $id = $value->company_id;
+                    $id = $value->price_id;
                     $result = array_filter($cart, function($var) use ($id) {
-                        return $var['id'] == $id;
+                        return $var['options']['price_id'] == $id;
                     });
                     if(count($result) == 0){
                         $null = 1;
@@ -81,7 +81,7 @@ class ControlCompanyListener
             }
         }
 
-        
+
         if(session()->get('discount') != $discount){
             session()->put('discount', $discount);
             session()->save();
@@ -89,6 +89,6 @@ class ControlCompanyListener
         else{
             session()->put('discount', $discount);
         }
-       
+
     }
 }

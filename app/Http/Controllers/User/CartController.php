@@ -325,22 +325,33 @@ class CartController extends Controller
         if($wholesale_count > 0 && $qty >= $wholesale_count){
             $price = $wholesale_price;
         }
-        $image = ProductImage::where('product_id', $product->id)->where('color_id', $color)->orWhere('color_id', null)->first()->image_name;
+        $img = ProductImage::where('product_id', $product->id)->where('color_id', $color)->first();
+        if(!$img){
+            $img = ProductImage::where('product_id', $product->id)->first();
+        }
+
+        $image = $img->image_name;
         // Cart::destroy();
 
 
         if(request('company')){
             $company = ProductCompany::where('product_id', $product->id)->with(['product', 'product.images', 'price'])->get();
             foreach ($company as $item) {
+                $imgC = ProductImage::where('product_id', $item->product->id)->where('color_id', $item->price->color_id)->first();
+                if(!$imgC){
+                    $imgC = ProductImage::where('product_id', $item->product->id)->first();
+                }
 
-                $imgC = ProductImage::where('product_id', $item->product->id)->where('color_id', $item->price->color_id)->orWhere('color_id', null)->first()->image_name;
+                $imageC = $imgC->image_name;
+
+
 
                 $priceC = $item->price->sale_price;
 
                 if($item->product->discount){
                     $priceC = $priceC * ((100 - $item->product->discount) / 100);
                 }
-                $cartItemC = Cart::add($item->product->id, $item->product->product_name, 1, $priceC, ['slug' => $item->product->slug, 'price_id' => $item->price->id, 'discount' => $item->product->discount, 'image' => $imgC, 'color'=> $item->price->color_id, 'size' => $item->price->size_id]);
+                $cartItemC = Cart::add($item->product->id, $item->product->product_name, 1, $priceC, ['slug' => $item->product->slug, 'price_id' => $item->price->id, 'discount' => $item->product->discount, 'image' => $imageC, 'color'=> $item->price->color_id, 'size' => $item->price->size_id]);
 
                 if (auth()->check()) {
                     $active_cart_id = session('active_cart_id');

@@ -730,12 +730,27 @@
                                         <div class="row">
                                             <div class="col-md-12">
                                                 <div class="form-group">
-                                                    <label for="product_company">Bu məhsula aid kompaniya məhsulları</label>
-                                                    <select class="form-control" id="product_company" name="company_price_id[]"
+                                                    <label for="main_product_price">Əsas məhsul</label>
+                                                    <select class="form-control" id="main_product_price" name="main_product_price_id"
+                                                            data-placeholder="Məhsulları seçin">
+                                                        @if ($entry->id > 0)
+                                                            @foreach($entry->price as $price)
+                                                                <option  value="{{ old('main_product_price_id', $price->id) }}" {{  old('main_product_price_id', $main_product ? $main_product->id : null) == $price->id ? 'selected' : ''  }}>{{ $price->product->product_name }} ( {{ $price->sale_price }} AZN ) ( {{ $price->stock_piece }} ) {{ $price->color ? '( ' . $price->color->title . ' )' : null }} {{ $price->size ? '( ' . $price->size->name . ' )' : null }}</option>
+                                                            @endforeach
+                                                        @endif
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <div class="form-group">
+                                                    <label for="product_company">Birlikdə satılan məhsullar</label>
+                                                    <select class="form-control" id="product_company" name="price_id[]"
                                                             data-placeholder="Məhsulları seçin"
                                                             multiple="multiple">
                                                         @foreach($company_product_price as $price)
-                                                            <option  value="{{ old('company_price_id', $price->id) }}" {{ collect(old('company_price_id', $product_company))->contains($price->id) ? 'selected' : '' }}>{{ $price->product->product_name }} ( {{ $price->sale_price }} AZN ) ( {{ $price->stock_piece }} ) {{ $price->color ? '( ' . $price->color->title . ' )' : null }} {{ $price->size ? '( ' . $price->size->name . ' )' : null }}</option>
+                                                            <option  value="{{ old('price_id', $price->id) }}" {{ collect(old('price_id', $product_company))->contains($price->id) ? 'selected' : '' }}>{{ $price->product->product_name }} ( {{ $price->sale_price }} AZN ) ( {{ $price->stock_piece }} ) {{ $price->color ? '( ' . $price->color->title . ' )' : null }} {{ $price->size ? '( ' . $price->size->name . ' )' : null }}</option>
                                                         @endforeach
                                                     </select>
                                                 </div>
@@ -811,10 +826,10 @@
 
 
 
-            if($("#product_name").val().trim() !== '' || $("#meta-discription").val().trim() !== ''){
+            if($("#product_name").val() !== '' || $("#meta-discription").val() !== ''){
                 let metaView = $("#meta-view")
-                $(metaView).find(".title").html($("#product_name").val().trim())
-                $(metaView).find(".description").html($("#meta-description").val().trim())
+                $(metaView).find(".title").html($("#product_name").val())
+                $(metaView).find(".description").html($("#meta-description").val())
             }
 
             $("#product_name").on('keyup', function(event){
@@ -828,6 +843,7 @@
                 $(metaView).find(".description").html(discription)
             })
 
+            @if($entry->id > 0)
             $('#index_table').DataTable({
                     order: [[0, "asc"]],
                     processing: true,
@@ -866,6 +882,10 @@
                         }
                     }
                 });
+
+            @endif
+
+
 
             $(document).on('click', '.down-up', function () {
                 var id = $(this).data('id');

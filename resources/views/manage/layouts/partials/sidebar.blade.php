@@ -132,7 +132,15 @@
                     </span>
                 </a>
             </li>
-
+            <li class="{{ url()->current() == route('manage.return') ? 'active' : '' }}">
+                <a href="{{ route('manage.return') }}">
+                    <i class="fa fa-cart-arrow-down"></i> <span>Qaytarma</span>
+                    <span class="pull-right-container">
+                        <small
+                            class="label pull-right bg-gray">{{ @$statistics['total_return'] ? $statistics['total_return'] : 0 }}</small>
+                    </span>
+                </a>
+            </li>
             <li class="{{ url()->current() == route('manage.slider') ? 'active' : '' }}">
                 <a href="{{ route('manage.slider') }}">
                     <i class="fa fa-slideshare"></i> <span>@lang('admin.Sliders')</span>

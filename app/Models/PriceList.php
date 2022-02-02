@@ -23,4 +23,8 @@ class PriceList extends Model
     {
         return $this->belongsTo('App\Models\Size');
     }
+    public function companies()
+    {
+        return $this->hasMany('App\Models\ProductCompany', 'main_product_price_id', 'id');
+    }
 }

@@ -355,6 +355,14 @@ Route::namespace('Manage')->prefix('manage')->group(function () {
             Route::get('/mass_remove', 'OrderController@mass_remove')->name('manage.order.mass_remove');
             Route::get('/exported/{id}', 'OrderController@exported')->name('manage.order.exported');
         });
+        Route::group(['prefix' => 'return'], function () {
+            Route::get('/', 'ReturnController@index')->name('manage.return');
+            Route::get('/index_data', 'ReturnController@index_data')->name('manage.return.index_data');
+            Route::post('/mail', 'ReturnController@mail')->name('manage.return.mail');
+            Route::post('/view', 'ReturnController@view')->name('manage.return.view');
+            Route::get('/delete/{id}', 'ReturnController@delete')->name('manage.return.delete');
+            Route::get('/mass_remove', 'ReturnController@mass_remove')->name('manage.return.mass_remove');
+        });
 
         Route::group(["prefix" => "raports"], function () {
             Route::get('/export/{type}', 'OrderController@export')->name('manage.raports.export');

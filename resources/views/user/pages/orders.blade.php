@@ -101,6 +101,7 @@
             e.preventDefault()
 
             let data = new FormData(e.target);
+            // data.append("_token", "{{ csrf_token() }}");
             console.log(data)
             $.ajax({
                 url: '{{ route('return.order') }}',

@@ -29,6 +29,7 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Event;
 use App\Events\ControlCompany;
+use App\Models\OrderReturn;
 use Carbon\Carbon;
 use Illuminate\Pagination\Paginator;
 
@@ -63,6 +64,7 @@ class AppServiceProvider extends ServiceProvider
             $statistics = Cache::remember('statistics', $endTime, function () {
                 return [
                     'total_order' => Order::count(),
+                    'total_return' => OrderReturn::count(),
                     'total_payment_approved' => Order::where('status', 'Payment approved')->count(),
                     'total_order_completed' => Order::where('status', 'Order Completed')->count(),
                     'total_order_pending' => Order::where('status', 'Pending')->count(),

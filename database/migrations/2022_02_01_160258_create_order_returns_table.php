@@ -18,6 +18,7 @@ class CreateOrderReturnsTable extends Migration
             $table->integer('order_id')->unsigned();
             $table->integer('user_id')->unsigned();
             $table->text('description');
+            $table->tinyInteger('status')->default(0)->nullable();
             $table->timestamps();
 
             $table->engine = "InnoDB";
