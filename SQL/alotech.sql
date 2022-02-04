@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Anamakine: 127.0.0.1:3306
--- Üretim Zamanı: 02 Şub 2022, 08:07:05
+-- Üretim Zamanı: 04 Şub 2022, 07:27:57
 -- Sunucu sürümü: 8.0.27
 -- PHP Sürümü: 7.4.26
 
@@ -1322,7 +1322,7 @@ CREATE TABLE IF NOT EXISTS `sliders` (
   `slider_name` text COLLATE utf8mb4_general_ci,
   `slider_image` varchar(191) COLLATE utf8mb4_general_ci NOT NULL,
   `slider_icon` varchar(191) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `slider_slug` varchar(191) COLLATE utf8mb4_general_ci NOT NULL,
+  `slider_slug` varchar(191) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
   `slider_order` int NOT NULL,
   `slider_active` tinyint(1) NOT NULL DEFAULT '1',
   `created_at` timestamp NULL DEFAULT NULL,

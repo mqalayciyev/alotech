@@ -111,7 +111,10 @@ class OrderController extends Controller
                 }
 
                 $user = User::find($entry->cart->user_id);
-                $user->update(['bonus' => $user->bonus+$entry->bonus_amount/$entry->bonus_value]);
+                if($entry->bonus_value > 0){
+                    $user->update(['bonus' => $user->bonus+$entry->bonus_amount/$entry->bonus_value]);
+                }
+
                 $data['exported'] = 1;
             }
 

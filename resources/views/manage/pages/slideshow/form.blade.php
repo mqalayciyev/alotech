@@ -175,7 +175,7 @@
                                 <div class="col-md-12">
                                     <div class="form-group">
                                         <div>
-                                            <img src="{{ asset('assets/img/sliders/' . $flight->slider_icon) }}" alt="" style="max-width: 200px; border: 1px solid silver">
+                                            <img src="{{ $flight->slider_icon ? asset('assets/img/sliders/' . $flight->slider_icon) : '' }}" alt="" style="max-width: 200px; border: 1px solid silver">
                                         </div>
                                         <label for="slider_icon">İcon şəkli </label>
                                         <p class="m-0"><small><i class="fa fa-info-circle text-info"></i> Tövsiyyə edilən şəkil ölçüsü 500x380</small></p>
@@ -233,9 +233,11 @@
             }
         });
 
-        image_crop.croppie('bind', {
-            url: "{{ asset('assets/img/sliders/' . $flight->slider_image) }}",
-        });
+        @if($flight->id > 0)
+                    image_crop.croppie('bind', {
+                        url: "{{ asset('assets/img/sliders/' . $flight->slider_image) }}",
+                    });
+        @endif
 
         let url = false;
 
