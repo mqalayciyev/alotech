@@ -81,15 +81,17 @@ class SlideshowController extends Controller
 
     public function save()
     {
-
-        $validator = Validator::make(request()->all(), [
-            'slider_slug' => 'required'
-        ]);
-        if ($validator->fails()) {
-            return response()->json(['status' => 'error', 'message' => 'Link boş ola bilməz']);
-        }
-
         $id = request('id');
+        if ($id <= 0) {
+            $validator = Validator::make(request()->all(), [
+            'image' => 'required'
+            ]);
+            if ($validator->fails()) {
+                return response()->json(['status' => 'error', 'message' => 'Şəkil boş ola bilməz']);
+            }
+        }
+        
+        
         $data = request()->only('slider_slug', 'slider_name', 'slider_active');
 
         // return request();

@@ -29,18 +29,16 @@
                             <ul class="list-unstyled dropdown-list">
                                 <!-- Menu List -->
                                 @foreach ($category->top_category->alt_category as $alt_category)
-                                    @if ($alt_category->second_id == null)
-                                        <li><a class="dropdown-item {{ $alt_category->id == $current_id ? 'active' : null }}"
-                                                href="{{ route('category', $alt_category->slug) }}">{{ $alt_category->category_name }}</a>
-                                        </li>
-                                        <ul class="list-unstyled dropdown-list">
-                                            @foreach ($alt_category->second_category as $second_category)
-                                                <li><a class="dropdown-item {{ $second_category->id == $current_id ? 'active' : null }}"
-                                                        href="{{ route('category', $second_category->slug) }}">{{ $second_category->category_name }}</a>
-                                                </li>
-                                            @endforeach
-                                        </ul>
-                                    @endif
+                                    <li><a class="dropdown-item {{ $alt_category->id == $current_id ? 'active' : null }}"
+                                           href="{{ route('category', $alt_category->slug) }}">{{ $alt_category->category_name }}</a>
+                                    </li>
+                                    <ul class="list-unstyled dropdown-list">
+                                        @foreach ($alt_category->alt_category as $child)
+                                            <li><a class="dropdown-item {{ $child->id == $current_id ? 'active' : null }}"
+                                                   href="{{ route('category', $child->slug) }}">{{ $child->category_name }}</a>
+                                            </li>
+                                        @endforeach
+                                    </ul>
                                 @endforeach
                                 <!-- End Menu List -->
                             </ul>
@@ -53,18 +51,16 @@
                             <ul class="list-unstyled dropdown-list">
                                 <!-- Menu List -->
                                 @foreach ($category->alt_category as $alt_category)
-                                    @if ($alt_category->second_id == null)
-                                        <li><a class="dropdown-item {{ $alt_category->id == $current_id ? 'active' : null }}"
-                                                href="{{ route('category', $alt_category->slug) }}">{{ $alt_category->category_name }}</a>
-                                        </li>
-                                        <ul class="list-unstyled dropdown-list">
-                                            @foreach ($alt_category->second_category as $second_category)
-                                                <li><a class="dropdown-item {{ $second_category->id == $current_id ? 'active' : null }}"
-                                                        href="{{ route('category', $second_category->slug) }}">{{ $second_category->category_name }}</a>
-                                                </li>
-                                            @endforeach
-                                        </ul>
-                                    @endif
+                                    <li><a class="dropdown-item {{ $alt_category->id == $current_id ? 'active' : null }}"
+                                           href="{{ route('category', $alt_category->slug) }}">{{ $alt_category->category_name }}</a>
+                                    </li>
+                                    <ul class="list-unstyled dropdown-list">
+                                        @foreach ($alt_category->alt_category as $child)
+                                            <li><a class="dropdown-item {{ $child->id == $current_id ? 'active' : null }}"
+                                                   href="{{ route('category', $child->slug) }}">{{ $child->category_name }}</a>
+                                            </li>
+                                        @endforeach
+                                    </ul>
                                 @endforeach
                                 <!-- End Menu List -->
                             </ul>
@@ -196,18 +192,16 @@
                                     <ul class="list-unstyled dropdown-list">
                                         <!-- Menu List -->
                                         @foreach ($category->top_category->alt_category as $alt_category)
-                                            @if ($alt_category->second_id == null)
                                                 <li><a class="dropdown-item {{ $alt_category->id == $current_id ? 'active' : null }}"
                                                         href="{{ route('category', $alt_category->slug) }}">{{ $alt_category->category_name }}</a>
                                                 </li>
                                                 <ul class="list-unstyled dropdown-list">
-                                                    @foreach ($alt_category->second_category as $second_category)
-                                                        <li><a class="dropdown-item {{ $second_category->id == $current_id ? 'active' : null }}"
-                                                                href="{{ route('category', $second_category->slug) }}">{{ $second_category->category_name }}</a>
+                                                    @foreach ($alt_category->alt_category as $child)
+                                                        <li><a class="dropdown-item {{ $child->id == $current_id ? 'active' : null }}"
+                                                                href="{{ route('category', $child->slug) }}">{{ $child->category_name }}</a>
                                                         </li>
                                                     @endforeach
                                                 </ul>
-                                            @endif
                                         @endforeach
                                         <!-- End Menu List -->
                                     </ul>
@@ -223,18 +217,16 @@
                                     <ul class="list-unstyled dropdown-list">
                                         <!-- Menu List -->
                                         @foreach ($category->alt_category as $alt_category)
-                                            @if ($alt_category->second_id == null)
                                                 <li><a class="dropdown-item {{ $alt_category->id == $current_id ? 'active' : null }}"
                                                         href="{{ route('category', $alt_category->slug) }}">{{ $alt_category->category_name }}</a>
                                                 </li>
                                                 <ul class="list-unstyled dropdown-list">
-                                                    @foreach ($alt_category->second_category as $second_category)
-                                                        <li><a class="dropdown-item {{ $second_category->id == $current_id ? 'active' : null }}"
-                                                                href="{{ route('category', $second_category->slug) }}">{{ $second_category->category_name }}</a>
+                                                    @foreach ($alt_category->alt_category as $child)
+                                                        <li><a class="dropdown-item {{ $child->id == $current_id ? 'active' : null }}"
+                                                                href="{{ route('category', $child->slug) }}">{{ $child->category_name }}</a>
                                                         </li>
                                                     @endforeach
                                                 </ul>
-                                            @endif
                                         @endforeach
                                         <!-- End Menu List -->
                                     </ul>

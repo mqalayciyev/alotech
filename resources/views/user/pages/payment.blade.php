@@ -36,7 +36,7 @@
                                 <div class="p-4 mb-4 checkout-table">
                                     @php
                                         $total = Cart::total();
-                                        $delivery = $user_detail->city ? $user_detail->userCity->delivery_amount : 0;
+                                        $delivery = $user_detail->city && $user_detail->userCity->delivery_amount ? $user_detail->userCity->delivery_amount : 0;
                                         $end = $total + $delivery;
                                     @endphp
                                     <!-- Title -->

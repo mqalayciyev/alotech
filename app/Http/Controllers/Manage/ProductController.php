@@ -41,7 +41,7 @@ class ProductController extends Controller
         return DataTables::eloquent($rows)
             ->editColumn('image_name', function ($row) {
                 $image = '<img src="';
-                $image .= $row->image->image_name != null ? asset("assets/img/products/" . $row->image->image_name) : "http://via.placeholder.com/50x50?text=ProductPhoto";
+                $image .= $row->image  ? asset("assets/img/products/" . $row->image->image_name) : "http://via.placeholder.com/50x50?text=ProductPhoto";
                 $image .= '" class="img-responsive" style="width: 50px; height:50px;">';
                 return $image;
             })
@@ -378,7 +378,7 @@ class ProductController extends Controller
                 return redirect()
                     ->route('manage.product.edit', $entry->id)
                     ->with('message_type', 'info')
-                    ->with('message', 'Kompaniyanın endirim faizi qeyd edilməyib');
+                    ->with('message', 'Kompaniyanın endirim məbləği qeyd edilməyib');
             }
             if(!request('main_product_price_id')){
                 // return 'error';

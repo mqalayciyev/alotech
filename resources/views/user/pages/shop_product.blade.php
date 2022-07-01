@@ -22,7 +22,7 @@
                                     <div class="mb-2 position-relative">
                                         <a href="{{ route('product', $product->slug) }}" class="d-block text-center">
                                             <img class="img-fluid"
-                                                src="{{ $product->image->image_name ? asset('assets/img/products/' . $product->image->image_name) : asset('assets/img/' . old('logo', $website_info->logo)) }}"
+                                                src="{{ $product->image ? asset('assets/img/products/' . $product->image->image_name) : asset('assets/img/' . old('logo', $website_info->logo)) }}"
                                                 alt="{{ $product->product_name }}">
                                         </a>
                                         @if (count($product->price) > 1)
@@ -133,7 +133,7 @@
                                 <div class="mb-2 position-relative">
                                     <a href="{{ route('product', $product->slug) }}" class="d-block text-center">
                                         <img class="img-fluid"
-                                            src="{{ $product->image->image_name ? asset('assets/img/products/' . $product->image->image_name) : asset('assets/img/' . old('logo', $website_info->logo)) }}"
+                                            src="{{ $product->image ? asset('assets/img/products/' . $product->image->image_name) : asset('assets/img/' . old('logo', $website_info->logo)) }}"
                                             alt="{{ $product->product_name }}">
                                     </a>
                                     @if (count($product->price) > 1)
@@ -204,7 +204,7 @@
                                         @endforeach
                                         @endif
                                     </div>
-                                    <div style="max-height: 150px; overflow: hidden;">
+                                    <div style="max-height: 150px; overflow: hidden; letter-spacing: 2px;">
                                        {{ strip_tags($product->product_description) }}
                                     </div>
                                 </div>

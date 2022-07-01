@@ -88,7 +88,7 @@ Route::namespace('User')->group(function () {
     Route::middleware(['auth'])->group(function () {
         Route::get('/account', 'UserController@index')->name('my_account');
         Route::get('/payments', 'PaymentController@index')->name('payment');
-        
+
         Route::post('/pay', 'PaymentController@pay')->name('pay');
         Route::post('/user/sign-out', 'UserController@logout')->name('logout');
         Route::get('/orders', 'OrderController@index')->name('orders');
@@ -107,7 +107,7 @@ Route::namespace('User')->group(function () {
     Route::get('/quick-payment', 'PaymentController@quickPayment')->name('quickPayment');
     Route::post('/quick-pay', 'PaymentController@quickPay')->name('quickPay');
 
-    Route::post('/payment/return/{orderid}/{quickpay?}', 'PaymentController@paymentPageReturn')->withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class])->name('payment.return');
+    Route::post('/payment/return', 'PaymentController@paymentPageReturn')->name('payment.return');
 
     Route::middleware(['guest'])->group(function () {
         Route::prefix('user')->group(function () {
@@ -259,6 +259,11 @@ Route::namespace('Manage')->prefix('manage')->group(function () {
         Route::group(['prefix' => 'logs'], function () {
             Route::get('/', 'LogsController@index')->name('manage.logs');
             Route::get('/index_data', 'LogsController@index_data')->name('manage.logs.index_data');
+        });
+        Route::group(['prefix' => 'get'], function () {
+            Route::get('/category/list', 'CommonController@getCatgeory')->name('manage.category.list.update');
+            Route::get('/brand/list', 'CommonController@getBrand')->name('manage.brand.list.update');
+            Route::get('/product/list', 'CommonController@getProduct')->name('manage.product.list.update');
         });
         Route::group(['prefix' => 'xml_import'], function () {
             Route::get('/', 'XMLController@index')->name('manage.xml_import');

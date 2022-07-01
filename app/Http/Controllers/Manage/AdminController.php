@@ -82,27 +82,8 @@ class AdminController extends Controller
                 return $output;
             })
             ->editColumn('is_manage', function ($row) {
-                if($row->is_manage == 1){
-                    $bg = "success";
-                }
-                elseif($row->is_manage == 2){
-                    $bg = "info";
-                }
-                elseif($row->is_manage == 3){
-                    $bg = "primary";
-                }
-
-                $output = '<span class="label label-' . $bg . '">';
-
-                if($row->is_manage == 1){
-                    $output .= "Admin";
-                }
-                elseif($row->is_manage == 2){
-                    $output .= "Demo";
-                }
-                elseif($row->is_manage == 3){
-                    $output .= "Istifadəçi";
-                }
+                $output = '<span class="label label-' . (($row->is_manage == 1) ? 'success' : 'warning') . '">';
+                $output .= ($row->is_manage == 1) ? __('admin.Active') : __('admin.Passive');
                 $output .= '</span>';
                 return $output;
             })

@@ -13,6 +13,8 @@ class Category extends Model
     //protected $fillable = ['category_name', 'slug'];
     protected $guarded = [];
 
+    protected $with = ['products'];
+
 
     protected $casts = [
         'created_at' => 'datetime:d.m.Y H:m:s',
@@ -30,22 +32,10 @@ class Category extends Model
             'category_name' => __('admin.Parent Category')
         ]);
     }
-    public function second_top_category()
-    {
-        return $this->belongsTo('App\Models\Category', 'second_id')->withDefault([
-            'category_name' => __('admin.Parent Category')
-        ]);
-    }
 
     public function alt_category(){
         return $this->hasMany('App\Models\Category','top_id','id') ;
     }
-    public function second_category(){
-        return $this->hasMany('App\Models\Category','second_id','id') ;
-    }
-    public function image()
-    {
-        return $this->hasOne('App\Models\CategoryImage')->withDefault();
-    }
+
 
 }

@@ -2,7 +2,7 @@
 @section('title', 'Veb sayt məlumatı')
 @section('content')
     <section class="content">
-        <form action="{{ route('manage.info.save') }}" method="post" enctype="multipart/form-data">
+        <form action="{{ route('manage.info.save') }}" method="post" enctype="multipart/form-data" accept-charset="UTF-8">
             @csrf
             <div>
                 <div class="pull-left"><h3>Veb sayt məlumatı</h3></div>
@@ -11,6 +11,7 @@
                 </div>
                 <div class="clearfix"></div>
             </div>
+            
             @include('general.back.alert')
             @include('general.back.validate')
             <div class="row">

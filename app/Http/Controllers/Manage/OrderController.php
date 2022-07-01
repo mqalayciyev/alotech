@@ -105,13 +105,23 @@ class OrderController extends Controller
                 foreach ($cartProduct as $value) {
                     $product = Product::where('id', $value->product_id)->first();
                     if($product){
-                        $priceList = PriceList::find($value->options->price_id);
-                        PriceList::where('id', $value->options->price_id)->update(['stock_piece' => $priceList->stock_piece + $value->piece]);
+                        $priceList = PriceList::find($value->price_id);
+                        if($priceList){
+                            $stock = $priceList->stock_piece + $value->piece;
+                            PriceList::where('id', $value->price_id)->update(['stock_piece' => $stock]);
+                        }
+                        
                     }
                 }
 
-                $user = User::find($entry->cart->user_id);
-                $user->update(['bonus' => $user->bonus+$entry->bonus_amount/$entry->bonus_value]);
+                
+                
+                if($entry->status != 'Your order is canceled'){
+                    $user = User::find($entry->cart->user_id);
+                    if($entry->bonus_value > 0){
+                        $user->update(['bonus' => $user->bonus+$entry->bonus_amount/$entry->bonus_value]);
+                    }
+                }
                 $data['exported'] = 1;
             }
 

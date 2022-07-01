@@ -13,43 +13,57 @@ class InfoController extends Controller
     public function index(){
         return view('manage.pages.info.index');
     }
+    
     public function save(Request $request)
     {
-        $data = $request->except('_token', 'logo');
+        $data = $request->except('_token', 'logo', 'favicon');
+        
+        $info = Info::find(1);
 
         if (request()->hasFile('logo')) {
             $logo = request()->file('logo');
 
-            $filename = 'logo.' . $logo->extension();
+            $filename = 'logo_' . time() . "." . $logo->extension();
 
-            $destinationPath = 'assets/img/';
+            $destinationPath = public_path('assets/img/');
             $logo->move($destinationPath, $filename);
             $data['logo'] = $filename;
+            $image = app_path("assets/img/{$info->logo}");
+            if(file_exists($image))
+            {
+                unlink($image);
+            }
 
         }
         if (request()->hasFile('favicon')) {
             $logo = request()->file('favicon');
 
-            $filename = 'favicon.' . $logo->extension();
+            $filename = 'favicon_' . time() . "." . $logo->extension();
 
-            $destinationPath = 'assets/img/';
+            $destinationPath = public_path('assets/img/');
             $logo->move($destinationPath, $filename);
             $data['favicon'] = $filename;
+            
+            $image = app_path("assets/img/{$info->favicon}");
+            if(file_exists($image))
+            {
+                unlink($image);
+            }
         }
-
-        $update = Info::find(1);
-        $update->update($data);
-
+        
+        
+        $update = Info::where('id', 1)->update($data);
+        
         if ($update) {
             $request->session()->flash('message_icon', 'check');
             $request->session()->flash('message_type', 'success');
             $request->session()->flash('message', 'Məlumat yeniləndi');
         } else {
             $request->session()->flash('message_icon', 'warning');
-            $request->session()->flash('message_type', 'warning');
-            $request->session()->flash('message', 'Xəta! Zəhmət olmasa bir daha cəhd edin');
+            $request->session()->flash('message_type', 'info');
+            $request->session()->flash('message', 'Yenilənəcək məlumat yoxdur');
         }
-        return back();
+        return redirect()->route('manage.info');
     }
 
 }

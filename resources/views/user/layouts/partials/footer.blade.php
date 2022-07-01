@@ -17,16 +17,27 @@
                                     </div>
                                     <div class="col pl-3">
                                         <div class="font-size-13 font-weight-light">Bizimlə əlaqə saxlayın</div>
-                                        <a href="tel:{{ old('mobile', $website_info->mobile) }}" class="font-size-20 text-gray-90">{{ old('mobile', $website_info->mobile) }}, </a><a href="tel:{{ old('phone', $website_info->phone) }}" class="font-size-20 text-gray-90">{{ old('phone', $website_info->phone) }}</a>
+                                        <a href="tel:{{ $website_info->mobile }}" class="font-size-20 text-gray-90">{{ $website_info->mobile }}, </a><a href="tel:{{ $website_info->phone }}" class="font-size-20 text-gray-90">{{ $website_info->phone }}</a>
                                     </div>
                                 </div>
                             </div>
-                            <div class="mb-4">
-                                <h6 class="mb-1 font-weight-bold">Ünvan</h6>
-                                <address class="">
-                                    {{ old('address', $website_info->address) }}
-                                </address>
+                            <div class="row">
+                                <div class="mb-4 col-sm">
+                                    <h6 class="mb-1 font-weight-bold">Vergi ödəyicisi </h6>
+                                    <address class="">6001199491, Alotech MMC, Qasımov Famil Rafiq oğlu</address>
+                                </div>
+                                <div class="mb-4 col-sm">
+                                    <h6 class="mb-1 font-weight-bold">Hüquqi ünvan</h6>
+                                    <address class="">AZ2300, Göyçay rayonu, Göyçay şəhəri, Vaqif, ev 17</address>
+                                </div>
+                                <div class="mb-4 col-sm">
+                                    <h6 class="mb-1 font-weight-bold">Ünvan</h6>
+                                    <address class="">
+                                        {{ $website_info->address }}
+                                    </address>
+                                </div>
                             </div>
+                            
                             <div class="my-4 my-md-4">
                                 <ul class="list-inline mb-0 opacity-7">
                                     <li class="list-inline-item mr-0 {{ $website_info->facebook ? '' : 'd-none' }}">
@@ -107,7 +118,7 @@
                 <div class="container">
                     <div class="flex-center-between d-block d-md-flex">
                         <div class="mb-3 mb-md-0">© <a href="#" class="font-weight-bold text-gray-90">Alotech</a> - Bütün hüquqlar qorunur
-                        <p style="vertical-align: baseline">Bu sayt <a href="https://inova.az/"><img src="https://goycay-avm.az/assets/img/inova.webp" target="_blank" style="width: 50px;"></a> E-Ticarət tərəfindən ilə hazırlanmışdır</p></div>
+                        <p style="vertical-align: baseline">Bu sayt <a href="https://inova.az/"><img src="https://goycay-avm.az/assets/img/inova.webp" target="_blank" style="width: 50px;"></a> E-Ticarət tərəfindən hazırlanmışdır</p></div>
                         <div class="text-md-right">
                             <span class="d-inline-block bg-white border rounded p-1">
                                 <img class="max-width-5" src="{{ asset('assets/img/payment/img1.jpg') }}" alt="Image Description">

@@ -109,7 +109,7 @@ class ProductController extends Controller
                 $entry->categories()->sync($category);
                 $entry->brands()->sync($brands);
 
-                if (isset($product['colors']) && $product['colors'] != null) {
+                if (count($product['colors']) > 0) {
                     $colors = $product['colors'];
                     foreach ($colors as $color) {
                         if($color['color_name']){
@@ -130,7 +130,7 @@ class ProductController extends Controller
                 }
 
 
-                if (isset($product['sizes']) && $product['sizes'] != null) {
+                if (count($product['sizes']) > 0) {
                     $sizes = $product['sizes'];
                     foreach ($sizes as $size) {
                         if($size){
@@ -178,9 +178,7 @@ class ProductController extends Controller
                     $data_price['wholesale_count'] = $price['wholesale_count'];
                     $data_price['wholesale_price'] = $price['wholesale_price'];
                     $data_price['stock_piece'] = $price['stock_piece'];
-                    if(!$price['sale_price'] ){
-                        $data_price['sale_price'] = 0;
-                    }
+                    $price['sale_price'] = $data_price['sale_price'];
 
 
                     $data_price['color_id'] = $color_id;

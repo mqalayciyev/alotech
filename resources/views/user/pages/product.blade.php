@@ -1,7 +1,12 @@
 @extends('user.layouts.app')
 @section('title', 'Product - ' . $product->product_name)
 @section('description', $product->meta_description)
-@section('image', asset('img/products/' . $product->images[0]->main_name))
+@php
+    $image = $product->image ? asset('img/products/' . $product->image->main_name) : asset('assets/img/' . $website_info->logo);
+@endphp
+
+@section('image', $image)
+
 @section('keywords', $product->meta_title)
 @section('head')
     {{-- <link rel="stylesheet" href="{{ asset('plugins/lightGallery-master/dist/css/lightgallery.min.css') }}"> --}}
@@ -162,7 +167,7 @@
                             @endforeach
 
                             <div class="mb-2">
-                                <ul class="font-size-14 pl-3 ml-1 text-gray-110">
+                                <ul class="font-size-14 pl-3 ml-1 text-gray-110" style="line-height: 1.8rem;">
                                     @foreach ($price as $item)
                                             @if ($item)
                                                 @if ($item['wholesale_count'])

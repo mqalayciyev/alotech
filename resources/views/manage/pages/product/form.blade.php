@@ -162,26 +162,22 @@
                             <label for="top_id">@lang('admin.Top Category')</label>
                             <select name="top_id" id="top_id" class="form-control">
                                 <option value="">@lang('admin.Parent Category')</option>
-                                @foreach($categories as $category)
-                                    @if($category->top_id==null)
-                                        <option style="color:#000;"
-                                                value="{{ $category->id }}" {{ $entry_category->top_category->id == $category->id ? 'selected' : '' }}>
-                                            {{ $category->category_name }}</option>
+                                @foreach($categories->where('top_id', 'null') as $category)
+                                    <option style="color:#000;"
+                                            value="{{ $category->id }}" {{ $entry_category->top_category->id == $category->id ? 'selected' : '' }}>
+                                        {{ $category->category_name }}</option>
 
-                                        @foreach ($category->alt_category as $alt_category)
-                                            @if ($alt_category->second_id == null)
-                                                <option value="{{ $alt_category->id }}"
-                                                        {{ $entry_category->top_category->id == $alt_category->id ? 'selected' : '' }}>
-                                                        - - {{ $alt_category->category_name }}</option>
+                                    @foreach ($category->alt_category as $alt_category)
+                                        <option value="{{ $alt_category->id }}"
+                                            {{ $entry_category->top_category->id == $alt_category->id ? 'selected' : '' }}>
+                                            - - {{ $alt_category->category_name }}</option>
 
-                                                    @foreach ($alt_category->second_category as $second_category)
-                                                        <option value="{{ $alt_category->id }}"
-                                                            {{ $entry_category->top_category->id == $alt_category->id ? 'selected' : '' }}>
-                                                            - - - - {{ $second_category->category_name }}</option>
-                                                    @endforeach
-                                            @endif
+                                        @foreach ($alt_category->alt_category as $child)
+                                            <option value="{{ $child->id }}"
+                                                {{ $entry_category->top_category->id == $child->id ? 'selected' : '' }}>
+                                                - - - - {{ $child->category_name }}</option>
                                         @endforeach
-                                    @endif
+                                    @endforeach
                                 @endforeach
                             </select>
                         </div>
@@ -412,24 +408,21 @@
                                                             data-placeholder="@lang('admin.Select category')"
                                                             style="width: 100%;">
                                                         <option></option>
-                                                        @foreach($categories as $category)
-                                                            @if($category->top_id==null)
-                                                                <option class="text text-primary"
-                                                                        value="{{ $category->id }}" {{ collect(old('categories', $product_categories))->contains($category->id) ? 'selected' : '' }}>{{ $category->category_name }}</option>
+                                                        @foreach($categories->where('top_id', null) as $category)
+                                                            <option class="text text-primary"
+                                                                    value="{{ $category->id }}" {{ collect(old('categories', $product_categories))->contains($category->id) ? 'selected' : '' }}>{{ $category->category_name }}</option>
 
-                                                                @foreach ($category->alt_category as $alt_category)
-                                                                    @if ($alt_category->second_id == null)
-                                                                        <option value="{{ $alt_category->id }}"
-                                                                            {{ collect(old('categories', $product_categories))->contains($alt_category->id) ? 'selected' : '' }}>
-                                                                            - - {{ $alt_category->category_name }}</option>
-                                                                            @foreach ($alt_category->second_category as $second_category)
-                                                                                <option value="{{ $second_category->id }}"
-                                                                                    {{ collect(old('categories', $product_categories))->contains($second_category->id) ? 'selected' : '' }}>
-                                                                                    - - - - {{ $second_category->category_name }}</option>
-                                                                            @endforeach
-                                                                    @endif
+                                                            @foreach ($category->alt_category as $alt_category)
+
+                                                                <option value="{{ $alt_category->id }}"
+                                                                    {{ collect(old('categories', $product_categories))->contains($alt_category->id) ? 'selected' : '' }}>
+                                                                    - - {{ $alt_category->category_name }}</option>
+                                                                @foreach ($alt_category->alt_category as $child)
+                                                                    <option value="{{ $child->id }}"
+                                                                        {{ collect(old('categories', $product_categories))->contains($child->id) ? 'selected' : '' }}>
+                                                                        - - - - {{ $child->category_name }}</option>
                                                                 @endforeach
-                                                            @endif
+                                                            @endforeach
                                                         @endforeach
                                                     </select>
                                                 </div>

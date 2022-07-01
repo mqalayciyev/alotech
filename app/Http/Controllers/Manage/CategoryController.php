@@ -26,13 +26,10 @@ class CategoryController extends Controller
         return DataTables::eloquent($rows)
             ->addColumn('parent_category', function ($row) {
                 $name = '';
-                if($row->top_id == null && $row->second_id == null){
+                if($row->top_id == null){
                     $name = "Əsas Kateqoriya";
                 }
-                if($row->top_id != null && $row->second_id != null){
-                    $name = $row->second_top_category->category_name;
-                }
-                if($row->top_id != null && $row->second_id == null){
+                else{
                     $name = $row->top_category->category_name;
                 }
 
@@ -77,15 +74,8 @@ class CategoryController extends Controller
 
         if(request('top_id')){
             $category = Category::find(request('top_id'));
-
-            if($category->top_id){
-                $data['top_id'] = $category->top_id;
-                $data['second_id'] = $category->id;
-                $data['slug'] =  str_slug($category->top_category->category_name) . '-' . str_slug($category->category_name) . '-' . str_slug(request('category_name'));
-            }
-            else{
-                $data['slug'] =  str_slug($category->category_name) . '-' . str_slug(request('category_name'));
-            }
+            $data['top_id'] = request('top_id');
+            $data['slug'] =  str_slug($category->category_name) . '-' . str_slug(request('category_name'));
         }
         else{
             $data['slug'] = str_slug(request('category_name'));

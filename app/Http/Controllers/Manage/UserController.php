@@ -28,7 +28,7 @@ class UserController extends Controller
                 $sql = "CONCAT(user.first_name,' ',user.last_name)  like ?";
                 $query->whereRaw($sql, ["%{$keyword}%"]);
             })
-            
+
             ->editColumn('is_active', function ($row) {
                 $output = '<span class="label label-' . (($row->is_active == 1) ? 'success' : 'warning') . '">';
                 $output .= ($row->is_active == 1) ? __('admin.Active') : __('admin.Passive');
@@ -42,15 +42,10 @@ class UserController extends Controller
                 return $output;
             })
             ->addColumn('action', function ($row) {
-                if(auth('manage')->user()->is_manage == 2){
-                    $disabled = 'none';
-                }
-                else{
-                    $disabled = '';
-                }
+
                 return '<div>
                 <a href="' . route('manage.user.edit', $row->id) . '" class="btn btn-sm btn-primary edit"> <i class="fa fa-edit"></i> ' . __('admin.Edit') . '</a>
-                <a href="javascript:void(0);" class="btn btn-sm btn-danger delete" style="display: ' . $disabled .'" id="' . $row->id . '"> <i class="fa fa-remove"></i> ' . __('admin.Delete') . '</a>
+                <a href="javascript:void(0);" class="btn btn-sm btn-danger delete" id="' . $row->id . '"> <i class="fa fa-remove"></i> ' . __('admin.Delete') . '</a>
                 </div>';
             })
             ->addColumn('checkbox', '<input type="checkbox" name="checkbox[]" id="checkbox" class="checkbox" value="{{$id}}" />')
@@ -75,7 +70,7 @@ class UserController extends Controller
                 'email' => 'required|email',
 				'email' => Rule::unique('admin')->ignore($id)
         ]);
-        
+
 
         $data = request()->only('first_name', 'last_name', 'email', 'mobile');
 
@@ -86,10 +81,10 @@ class UserController extends Controller
         // $data['is_manage'] = request()->has('is_manage') && request('is_manage') == 1 ? 1 : 0;
 
         if ($id > 0) {
-            $entry = User::where('id', $id)->firstOrFail(); 
+            $entry = User::where('id', $id)->firstOrFail();
             $entry->update($data);
             $entry->save();
-        } 
+        }
         else {
             $entry = User::create($data);
             $entry->save();

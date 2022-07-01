@@ -18,12 +18,13 @@ use Illuminate\Support\Facades\Route;
 //     return $request->user();
 // });
 Route::namespace('API')->group(function () {
-    Route::middleware(['api.auth'])->group(function () {
-        Route::apiResources([
-            'products' => ProductController::class,
-            'categories' => CategoryController::class,
-            'brands' => BrandController::class,
-            'orders' => OrderController::class,
-        ]);
-    });
+    // Route::middleware(['api.auth'])->group(function () {
+    //     Route::apiResources([
+    //         'products' => ProductController::class,
+    //         'categories' => CategoryController::class,
+    //         'brands' => BrandController::class,
+    //         'orders' => OrderController::class,
+    //     ]);
+    // });
+    Route::post('/orders', 'OrderController@index');
 });

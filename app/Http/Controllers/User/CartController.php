@@ -330,7 +330,7 @@ class CartController extends Controller
             $img = ProductImage::where('product_id', $product->id)->first();
         }
 
-        $image = $img->image_name;
+        $image =  $img ?  $img->image_name : '';
         // Cart::destroy();
 
 
@@ -342,7 +342,7 @@ class CartController extends Controller
                     $imgC = ProductImage::where('product_id', $item->product->id)->first();
                 }
 
-                $imageC = $imgC->image_name;
+                $imageC = $imgC ?  $imgC->image_name : '';
 
 
 

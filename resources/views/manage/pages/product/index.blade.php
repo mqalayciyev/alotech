@@ -19,6 +19,8 @@
     <section class="content-header">
         <h1 class="pull-left">@lang('admin.Products')</h1>
         <div class="pull-right">
+            <a href="{{ route('manage.product.list.update') }}" class="btn btn-info"><i class="fa fa-refresh"></i>
+                Məhsulları yenilə</a>
             <a href="{{ route('manage.product.delete_all') }}" class="btn btn-danger">Hamısını sil</a>
             <a href="{{ route('manage.product.new') }}" class="btn btn-success">@lang('admin.Add New Product')</a>
         </div>

@@ -3,7 +3,7 @@
 @section('head')
     <!-- DataTables -->
     <link rel="stylesheet"
-        href="{{ asset('manager/bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css') }}">
+          href="{{ asset('manager/bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css') }}">
 @endsection
 @section('content')
     @if (@$manage == 2)
@@ -20,6 +20,8 @@
     <section class="content-header">
         <h1 class="pull-left">@lang('admin.Categories')</h1>
         <div class="pull-right">
+            <a href="{{ route('manage.category.list.update') }}" class="btn btn-info"><i class="fa fa-refresh"></i>
+                Kateqoriyaları yenilə</a>
             <a href="{{ route('manage.category.delete_all') }}" class="btn btn-danger">Hamısını sil</a>
             <button class="btn btn-success" id="add_data">
                 <i class="fa fa-plus"></i> @lang('admin.Add New Category')
@@ -51,36 +53,35 @@
                                                 <label for="top_id">@lang('admin.Top Category')</label>
                                                 <select name="top_id" id="top_id" class="form-control">
                                                     <option value="">@lang('admin.Parent Category')</option>
-                                                    @foreach ($categories as $category)
-                                                        @if ($category->top_id == null)
-                                                            <option style="color:#000;" value="{{ $category->id }}"
-                                                                {{ $entry->top_category->id == $category->id ? 'selected' : '' }}>
-                                                                {{ $category->category_name }}</option>
-                                                            @foreach ($category->alt_category as $alt_category)
-                                                                @if ($alt_category->second_id == null)
-                                                                    <option value="{{ $alt_category->id }}"
-                                                                        {{ $entry->top_category->id == $alt_category->id ? 'selected' : '' }}>
-                                                                        - - {{ $alt_category->category_name }}</option>
-                                                                        @foreach ($alt_category->second_category as $second_category)
-                                                                            <option value="{{ $alt_category->id }}"
-                                                                                {{ $entry->top_category->id == $alt_category->id ? 'selected' : '' }}>
-                                                                                - - - - {{ $second_category->category_name }}</option>
-                                                                        @endforeach
-                                                                @endif
+                                                    @foreach ($categories->where('top_id', null) as $category)
+                                                        <option style="color:#000;" value="{{ $category->id }}"
+                                                            {{ $entry->top_category->id == $category->id ? 'selected' : '' }}>
+                                                            {{ $category->category_name }}</option>
+                                                        @foreach ($category->alt_category as $alt_category)
+                                                            <option value="{{ $alt_category->id }}"
+                                                                {{ $entry->top_category->id == $alt_category->id ? 'selected' : '' }}>
+                                                                - - {{ $alt_category->category_name }}</option>
+                                                            @foreach ($alt_category->alt_category as $child)
+                                                                <option value="{{ $alt_category->id }}"
+                                                                    {{ $entry->top_category->id == $alt_category->id ? 'selected' : '' }}>
+                                                                    - - - - {{ $child->category_name }}</option>
                                                             @endforeach
-                                                        @endif
+
+                                                        @endforeach
                                                     @endforeach
                                                 </select>
                                             </div>
                                             <div class="form-group">
                                                 <label for="category_name">@lang('admin.Category Name')</label> <br>
                                                 <input type="text" name="category_name" class="form-control"
-                                                    id="category_name" placeholder="@lang('admin.Category Name')"
-                                                    value="{{ old('category_name') }}">
+                                                       id="category_name" placeholder="@lang('admin.Category Name')"
+                                                       value="{{ old('category_name') }}">
                                                 <input type="hidden" name="id" value="" id="id">
                                             </div>
                                             <div class="form-group">
-                                                <input type="checkbox" name="category_view" value="1" id="category_view"> <label for="category_view">Bu kategoriyanı ana səhifədə göstər</label>
+                                                <input type="checkbox" name="category_view" value="1"
+                                                       id="category_view"> <label for="category_view">Bu kategoriyanı
+                                                    ana səhifədə göstər</label>
                                             </div>
                                             {{-- <div class="form-group">
                                                 <input type="checkbox" name="no_order_amount" value="1" id="no_order_amount"> <label for="no_order_amount">Minimum sifariş məbləği aid edilməsin</label>
@@ -88,25 +89,31 @@
                                             <div class="form-group">
                                                 <img id="category_image_view" width="100" height="126"><br>
                                                 <div>
-                                                    <label for="category_image_delete"><input type="checkbox" name="category_image_delete" value="" id="category_image_delete"> Şəkli sil</label>
+                                                    <label for="category_image_delete"><input type="checkbox"
+                                                                                              name="category_image_delete"
+                                                                                              value=""
+                                                                                              id="category_image_delete">
+                                                        Şəkli sil</label>
                                                 </div>
                                                 <div>
                                                     <label for="category_name">Kateqoriya şəkli</label> <br>
-                                                    <input type="file" name="category_image" value="" id="category_image">
+                                                    <input type="file" name="category_image" value=""
+                                                           id="category_image">
                                                 </div>
                                             </div>
                                             <div class="form-group" style="visibility: hidden">
                                                 <label for="slug">@lang('admin.Slug')</label> <br>
                                                 <input type="text" name="slug" class="form-control" id="slug"
-                                                    placeholder="@lang('admin.Slug')" value="{{ old('slug') }}">
+                                                       placeholder="@lang('admin.Slug')" value="{{ old('slug') }}">
                                             </div>
                                         </div>
                                         <div class="modal-footer">
-                                            <input type="hidden" name="button_action" id="button_action" value="insert" />
+                                            <input type="hidden" name="button_action" id="button_action"
+                                                   value="insert"/>
                                             <button type="button" class="btn btn-default"
-                                                data-dismiss="modal">@lang('admin.Close')</button>
+                                                    data-dismiss="modal">@lang('admin.Close')</button>
                                             <input type="submit" {{ $disabled }} name="submit" id="action"
-                                                class="btn btn-success" value="@lang('admin.Save Category')" />
+                                                   class="btn btn-success" value="@lang('admin.Save Category')"/>
                                         </div>
                                     </form>
                                 </div>
@@ -118,25 +125,26 @@
                     <!-- /.box-header -->
                     <div class="box-body table-responsive">
                         <table id="index_table" class="table table-bordered table-striped table-hover display"
-                            style="width:100%">
+                               style="width:100%">
                             <thead>
-                                <tr>
-                                    <th>@lang('admin.Image')</th>
-                                    <th>@lang('admin.Top Category')</th>
-                                    <th>@lang('admin.Category Name')</th>
-                                    <th>Ana Səhifədə</th>
-                                    <th>@lang('admin.Updated at')</th>
-                                    <th>@lang('admin.Created at')</th>
-                                    <th>@lang('admin.Action')</th>
-                                    <th>
-                                        <button type="button" id="select_all" data-check="0" title="Hamısını seç" class="btn btn-danger btn-xs">
-                                            <i class="fa fa-square"></i>
-                                        </button>
-                                        <button type="button" {{ $disabled }} title="@lang('admin.Select and Delete')"
+                            <tr>
+                                <th>@lang('admin.Image')</th>
+                                <th>@lang('admin.Top Category')</th>
+                                <th>@lang('admin.Category Name')</th>
+                                <th>Ana Səhifədə</th>
+                                <th>@lang('admin.Updated at')</th>
+                                <th>@lang('admin.Created at')</th>
+                                <th>@lang('admin.Action')</th>
+                                <th>
+                                    <button type="button" id="select_all" data-check="0" title="Hamısını seç"
+                                            class="btn btn-danger btn-xs">
+                                        <i class="fa fa-square"></i>
+                                    </button>
+                                    <button type="button" {{ $disabled }} title="@lang('admin.Select and Delete')"
                                             name="bulk_delete" id="bulk_delete" class="btn btn-danger btn-xs"><i
-                                                class="fa fa-trash"></i></button>
-                                    </th>
-                                </tr>
+                                            class="fa fa-trash"></i></button>
+                                </th>
+                            </tr>
                             </thead>
                         </table>
                     </div>
@@ -152,7 +160,7 @@
     <script src="{{ asset('manager/bower_components/datatables.net/js/jquery.dataTables.min.js') }}"></script>
     <script src="{{ asset('manager/bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js') }}"></script>
     <script>
-        $(function() {
+        $(function () {
 
             $('#index_table').DataTable({
                 aLengthMenu: [[25, 50, 75, 100, 150, 200], [25, 50, 75, 100, 150, 200]],
@@ -164,8 +172,8 @@
                 serverSide: true,
                 ajax: '{{ route('manage.category.index_data') }}',
                 columns: [{
-                        data: 'image'
-                    },
+                    data: 'image'
+                },
                     {
                         data: 'parent_category'
                     },
@@ -217,7 +225,7 @@
                 }
             });
 
-            $('#add_data').click(function() {
+            $('#add_data').click(function () {
                 $('#form_modal').modal('show');
                 $('#form')[0].reset();
                 $('#form_output').html('');
@@ -225,7 +233,7 @@
                 $('#action').val('{{ __('admin.Save Category') }}');
             });
 
-            $('#form').on('submit', function(event) {
+            $('#form').on('submit', function (event) {
                 event.preventDefault();
                 var form_data = new FormData($(this)[0]);
                 $.ajax({
@@ -236,7 +244,7 @@
                     processData: false,
                     contentType: false,
                     dataType: 'json',
-                    success: function(data) {
+                    success: function (data) {
                         console.log(data)
                         if (data.error.length > 0) {
                             var error_html = '';
@@ -261,7 +269,7 @@
                 });
             });
 
-            $(document).on('click', '.edit', function() {
+            $(document).on('click', '.edit', function () {
                 var id = $(this).attr('id');
                 $.ajax({
                     url: '{{ route('manage.category.fetch_data') }}',
@@ -270,19 +278,17 @@
                         id: id
                     },
                     dataType: 'json',
-                    success: function(data) {
+                    success: function (data) {
                         $('#top_id').val(data.top_id);
                         $('#category_name').val(data.category_name);
-                        if(data.no_order_amount == 1){
+                        if (data.no_order_amount == 1) {
                             $('#no_order_amount').prop('checked', true);
-                        }
-                        else{
+                        } else {
                             $('#no_order_amount').prop('checked', false);
                         }
-                        if(data.category_view == 1){
+                        if (data.category_view == 1) {
                             $('#category_view').prop('checked', true);
-                        }
-                        else{
+                        } else {
                             $('#category_view').prop('checked', false);
                         }
                         $('#category_image_view').attr('src', data.category_image_view);
@@ -296,7 +302,7 @@
                 });
             });
 
-            $(document).on('click', '.delete', function() {
+            $(document).on('click', '.delete', function () {
                 var id = $(this).attr('id');
                 if (confirm('{{ __('admin.Are you sure you want to delete this data?') }}')) {
                     $.ajax({
@@ -305,7 +311,7 @@
                         data: {
                             id: id
                         },
-                        success: function(data) {
+                        success: function (data) {
                             alert(data);
                             $('#index_table').DataTable().ajax.reload();
                         }
@@ -315,10 +321,10 @@
                 }
             });
 
-            $(document).on('click', '#bulk_delete', function() {
+            $(document).on('click', '#bulk_delete', function () {
                 var id = [];
                 if (confirm('{{ __('admin.Are you sure you want to delete this data?') }}')) {
-                    $('.checkbox:checked').each(function() {
+                    $('.checkbox:checked').each(function () {
                         id.push($(this).val());
                     });
                     if (id.length > 0) {
@@ -328,7 +334,7 @@
                             data: {
                                 id: id
                             },
-                            success: function(data) {
+                            success: function (data) {
                                 alert(data);
                                 $('#index_table').DataTable().ajax.reload();
                             }
@@ -340,7 +346,7 @@
                     return false;
                 }
             });
-            $("input[name=name]").change(function() {
+            $("input[name=name]").change(function () {
 
                 var val = $(this).val();
                 $("input[name=slug]").val(val);

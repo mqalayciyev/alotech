@@ -146,7 +146,8 @@
                                     
                                     
                                     <select name="status" id="status" class="form-control" 
-                                        {{ old('status', $entry->status) == 'Payment is expected' ? 'disabled' : '' }}>
+                                        {{ old('status', $entry->status) == 'Payment is expected' ? 'disabled' : '' }}
+                                        {{ old('status', $entry->status) == 'Your order is canceled' ? 'disabled' : '' }}>
                                         <!--<option value="Payment is expected"-->
                                         <!--    {{ old('status', $entry->status) == 'Payment is expected' ? 'selected' : '' }}>-->
                                         <!--   Ödəniş gözlənilir-->

@@ -20,6 +20,8 @@
     <section class="content-header">
         <h1 class="pull-left">@lang('admin.Brands')</h1>
         <div class="pull-right">
+            <a href="{{ route('manage.brand.list.update') }}" class="btn btn-info"><i class="fa fa-refresh"></i>
+                Brendləri yenilə</a>
             <a href="{{ route('manage.brand.delete_all') }}" class="btn btn-danger">Hamısını sil</a>
             <button class="btn btn-success" id="add_data">
                 <i class="fa fa-plus"></i> @lang('admin.Add New Brand')

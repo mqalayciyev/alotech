@@ -14,13 +14,20 @@ use App\Models\Cart as CartModel;
 use App\Models\CartProduct;
 use App\Models\PriceList;
 use App\Models\Product;
+use App\Traits\Payment;
 use Carbon\Carbon;
 use Gloudemans\Shoppingcart\Facades\Cart;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Hash;
+use App\Library\Azericard;
+use Illuminate\Support\Facades\Log;
 
 class PaymentController extends Controller
 {
+
+    use Payment;
+
+
     public function index()
     {
         $info = Info::find(1);
@@ -155,12 +162,15 @@ class PaymentController extends Controller
 
         $info = Info::find(1);
 
+
         $bonus_amount = 0;
         $bonus = auth()->user()->bonus;
         if (request()->has('with_bonus')) {
             $bonus_amount = request('bonus_amount');
             $bonus = 0;
         }
+
+
 
         $shipping = request('delivery_amount');
 
@@ -170,8 +180,6 @@ class PaymentController extends Controller
             $bonus = abs($amount) / $info->bonus_amount;
             $amount = 0;
         }
-
-
 
         $paymentMethod =  request('payment_method');
         $order = request()->except(['payment_method', '_token']);
@@ -187,6 +195,9 @@ class PaymentController extends Controller
         // User::find(auth()->id())->update([
         //     'bonus' => $bonus
         // ]);
+
+
+
 
 
         foreach (Cart::content() as $item) {
@@ -207,8 +218,26 @@ class PaymentController extends Controller
             }
         }
 
+        // dd($order);
+
+
+
+//        $payment = $this->getWebPage($order['total_amount'], "https://alotech.az/payment/return");
+//        $payment = $this->getPayment($order['total_amount'], route('payment.return', $ordercreated->id));
+        $payment = $this->getPayment($order['total_amount'], "https://alotech.az/");
+
+        return view('user.pages.payment_submit', [
+            'result' => $payment,
+            'order' => $order
+        ]);
+//        return $payment;
+//         dd($payment);
+
+
 
         $ordercreated = Order::create($order);
+
+
 
 
         Cart::destroy();
@@ -259,75 +288,19 @@ class PaymentController extends Controller
             return redirect()->route('orders')
                 ->with(['message' => 'Sizin sifarişiniz qəbul edildi. Əlavə məlumatlar emailinizə göndərildi.']);
         } elseif ($paymentMethod == 2) {
+
             Order::where('id', $ordercreated->id)->update([
                 'bank' => 'Bank Kartı',
                 'order_status' => 'PENDING',
                 'status' => 'Payment is expected',
             ]);
 
-            $taksit = "TAKSİT=0";
+            $payment = $this->getPayment($order['total_amount'], "https://alotech.az/",  $ordercreated->id);
 
-            if (request('installment_number') != '0') {
-                $taksit = 'TAKSIT=' . request('installment_number');
-            }
-
-
-            $input_xml = '<?xml version="1.0" encoding="UTF-8"?>
-                <TKKPG>
-                    <Request>
-                        <Operation>CreateOrder</Operation>
-                        <Language>AZ</Language>
-                        <Order>
-                            <OrderType>Purchase</OrderType>
-                            <Merchant>E1790002</Merchant>
-                            <Amount>' . ($ordercreated['order_amount'] * 100) . '</Amount>
-                            <Currency>944</Currency>
-                            <Description>' . $taksit . '</Description>
-                            <ApproveURL>' . route('payment.return', [$ordercreated->id]) . '</ApproveURL>
-                            <CancelURL>' . route('payment.return', [$ordercreated->id]) . '</CancelURL>
-                            <DeclineURL>' . route('payment.return', [$ordercreated->id]) . '</DeclineURL>
-                            </Order>
-                </Request>
-                </TKKPG>';
-
-
-            function xmlRequest($request)
-            {
-
-                $url = "https://e-commerce.kapitalbank.az:5443/exec";
-                $keyFile  = realpath("payment/goycay_avm.key");
-
-                $certFile = realpath("payment/goycay_avm.crt");
-                // return $keyFile;
-                $ch = curl_init();
-                $options = array(
-                    CURLOPT_RETURNTRANSFER => true,
-                    CURLOPT_FOLLOWLOCATION => true,
-                    CURLOPT_SSL_VERIFYHOST => false,
-                    CURLOPT_SSL_VERIFYPEER => false,
-                    CURLOPT_USERAGENT => 'Mozilla/4.0 (compatible; MSIE 5.01; Windows NT 5.0)',
-                    CURLOPT_URL => $url,
-                    CURLOPT_SSLCERT => $certFile,
-                    CURLOPT_SSLKEY => $keyFile,
-                    CURLOPT_POSTFIELDS => $request,
-                    CURLOPT_POST => true
-                );
-                curl_setopt_array($ch, $options);
-                $output = curl_exec($ch);
-                $array_data = json_decode(json_encode(simplexml_load_string($output)), true);
-
-                return $array_data;
-            }
-
-
-
-
-            $response = xmlRequest($input_xml);
-
-
-            $url = $response['Response']['Order']['URL'] . '?ORDERID=' . $response['Response']['Order']['OrderID'] . '&SESSIONID=' . $response['Response']['Order']['SessionID'];
-
-            return redirect()->away($url);
+            return view('user.pages.payment_submit', [
+                'result' => $payment,
+                'order' => $order
+            ]);
         }
     }
     public function quickPay()
@@ -337,7 +310,7 @@ class PaymentController extends Controller
 
 
         $cart = Cart::content();
-        
+
         foreach ($cart as $cartItem) {
 
             $product = Product::where('id', $cartItem->id)->first();
@@ -400,7 +373,7 @@ class PaymentController extends Controller
         }
 
 
-        
+
 
         $active_cart_id = CartModel::active_cart_id();
         if (is_null($active_cart_id)) {
@@ -419,7 +392,7 @@ class PaymentController extends Controller
                 );
             }
         }
-        
+
 
 
         $shipping = request('delivery_amount');
@@ -493,72 +466,17 @@ class PaymentController extends Controller
             Order::where('id', $ordercreated->id)->update([
                 'bank' => 'Bank Kartı',
                 'order_status' => 'PENDING',
+                'quickpay' => 1,
                 'status' => 'Payment is expected',
             ]);
 
-            $taksit = "TAKSİT=0";
+            $payment = $this->getPayment($order['total_amount'], "https://alotech.az/",  $ordercreated->id);
 
-            if (request('installment_number') != '0') {
-                $taksit = 'TAKSIT=' . request('installment_number');
-            }
+            return view('user.pages.payment_submit', [
+                'result' => $payment,
+                'order' => $order
+            ]);
 
-
-            $input_xml = '<?xml version="1.0" encoding="UTF-8"?>
-                <TKKPG>
-                    <Request>
-                        <Operation>CreateOrder</Operation>
-                        <Language>AZ</Language>
-                        <Order>
-                            <OrderType>Purchase</OrderType>
-                            <Merchant>E1790002</Merchant>
-                            <Amount>' . ($ordercreated['order_amount'] * 100) . '</Amount>
-                            <Currency>944</Currency>
-                            <Description>' . $taksit . '</Description>
-                            <ApproveURL>' . route('payment.return', [$ordercreated->id]) . '</ApproveURL>
-                            <CancelURL>' . route('payment.return', [$ordercreated->id]) . '</CancelURL>
-                            <DeclineURL>' . route('payment.return', [$ordercreated->id]) . '</DeclineURL>
-                            </Order>
-                </Request>
-                </TKKPG>';
-
-
-            function xmlRequest($request)
-            {
-
-                $url = "https://e-commerce.kapitalbank.az:5443/exec";
-                $keyFile  = realpath("payment/goycay_avm.key");
-
-                $certFile = realpath("payment/goycay_avm.crt");
-                // return $keyFile;
-                $ch = curl_init();
-                $options = array(
-                    CURLOPT_RETURNTRANSFER => true,
-                    CURLOPT_FOLLOWLOCATION => true,
-                    CURLOPT_SSL_VERIFYHOST => false,
-                    CURLOPT_SSL_VERIFYPEER => false,
-                    CURLOPT_USERAGENT => 'Mozilla/4.0 (compatible; MSIE 5.01; Windows NT 5.0)',
-                    CURLOPT_URL => $url,
-                    CURLOPT_SSLCERT => $certFile,
-                    CURLOPT_SSLKEY => $keyFile,
-                    CURLOPT_POSTFIELDS => $request,
-                    CURLOPT_POST => true
-                );
-                curl_setopt_array($ch, $options);
-                $output = curl_exec($ch);
-                $array_data = json_decode(json_encode(simplexml_load_string($output)), true);
-
-                return $array_data;
-            }
-
-
-
-
-            $response = xmlRequest($input_xml);
-
-
-            $url = $response['Response']['Order']['URL'] . '?ORDERID=' . $response['Response']['Order']['OrderID'] . '&SESSIONID=' . $response['Response']['Order']['SessionID'];
-
-            return redirect()->away($url);
         }
     }
 
@@ -567,88 +485,36 @@ class PaymentController extends Controller
     {
         $order = Order::where('id', $id)->first();
 
+        $payment = $this->getPayment($order->order_amount, "https://alotech.az/",  $id);
 
-        $taksit = 'TAKSIT=0';
-        $input_xml = '<?xml version="1.0" encoding="UTF-8"?>
-                <TKKPG>
-                    <Request>
-                        <Operation>CreateOrder</Operation>
-                        <Language>AZ</Language>
-                        <Order>
-                            <OrderType>Purchase</OrderType>
-                            <Merchant>E1790002</Merchant>
-                            <Amount>' . ($order['order_amount'] * 100) . '</Amount>
-                            <Currency>944</Currency>
-                            <Description>' . $taksit . '</Description>
-                            <ApproveURL>' . route('payment.return', [$order->id]) . '</ApproveURL>
-                            <CancelURL>' . route('payment.return', [$order->id]) . '</CancelURL>
-                            <DeclineURL>' . route('payment.return', [$order->id]) . '</DeclineURL>
-                            </Order>
-                </Request>
-                </TKKPG>';
-
-
-        function xmlRequest($request)
-        {
-
-            $url = "https://e-commerce.kapitalbank.az:5443/exec";
-            $keyFile  = realpath("payment/goycay_avm.key");
-
-            $certFile = realpath("payment/goycay_avm.crt");
-            // return $keyFile;
-            $ch = curl_init();
-            $options = array(
-                CURLOPT_RETURNTRANSFER => true,
-                CURLOPT_FOLLOWLOCATION => true,
-                CURLOPT_SSL_VERIFYHOST => false,
-                CURLOPT_SSL_VERIFYPEER => false,
-                CURLOPT_USERAGENT => 'Mozilla/4.0 (compatible; MSIE 5.01; Windows NT 5.0)',
-                CURLOPT_URL => $url,
-                CURLOPT_SSLCERT => $certFile,
-                CURLOPT_SSLKEY => $keyFile,
-                CURLOPT_POSTFIELDS => $request,
-                CURLOPT_POST => true
-            );
-            curl_setopt_array($ch, $options);
-            $output = curl_exec($ch);
-            $array_data = json_decode(json_encode(simplexml_load_string($output)), true);
-
-            return $array_data;
-        }
-
-
-        $response = xmlRequest($input_xml);
-
-        // 	return $response;
-
-        $url = $response['Response']['Order']['URL'] . '?ORDERID=' . $response['Response']['Order']['OrderID'] . '&SESSIONID=' . $response['Response']['Order']['SessionID'];
-
-        return redirect()->away($url);
-    }
-
-    public function paymentPageReturn($orderid, $quickpay = null)
-    {
-
-
-
-        $msg = json_decode(json_encode(simplexml_load_string(request('xmlmsg'))), true);
-
-
-        $order = Order::where('id', $orderid)->first();
-        $cart = CartModel::where('id', $order->cart_id)->first();
-        Order::where('id', $orderid)->update([
-            'tran_date_time' =>  $msg['TranDateTime'],
+        return view('user.pages.payment_submit', [
+            'result' => $payment,
+            'order' => $order
         ]);
 
-        if ($msg['OrderStatus'] == 'APPROVED') {
+    }
+
+    public function paymentPageReturn(Request $request)
+    {
+        Log::info($request);
+
+        $response = $request->all();
+
+        $order =  Order::where('order_id', trim($response['ORDER'] . "-o"))->first();
+
+        $cart = CartModel::where('id', $order->cart_id)->first();
+
+        $order->tran_date_time = Carbon::now()->format('d-m-Y H:i:s');
+        $order->approval_code = isset($response['APPROVAL']) ? $response['APPROVAL'] : null;
+        $order->rrn = isset($response['RRN']) ? $response['RRN'] : null;
+        $order->save();
 
 
+        if ($response['ACTION'] == '0' && $response['RC'] == '00') {
 
-            Order::where('id', $orderid)->update([
+            Order::where('id', $order->id)->update([
                 'order_status' => 'APPROVED',
-                'status' => 'Your order has been received',
-                'brand' => $msg['Brand'],
-                'card' => $msg['PAN'],
+                'status' => 'Your order has been received'
             ]);
 
             $cartProduct = CartProduct::where('cart_id', $order->cart_id)->get();
@@ -667,11 +533,11 @@ class PaymentController extends Controller
                 'shipping' => $order['shipping'],
                 'payment_type' => 'Bank kartı',
                 'order_status' => 'ÖDƏNİŞ TAMAMLANIB',
-                'card_number' => $msg['PAN'],
-                'brand' => $msg['Brand'],
+                'card_number' => '',
+                'brand' => '',
                 'status' => 'Your order has been received',
-                'order_date' => $msg['TranDateTime'],
-                'payment_date' => date('Y-m-d H:i:s'),
+                'order_date' => Carbon::now()->format('d-m-Y H:i:s'),
+                'payment_date' => Carbon::now()->format('d-m-Y H:i:s'),
                 'client_firstname' => $order['first_name'],
                 'client_lastname' => $order['last_name'],
                 'client_email' => $order['email'],
@@ -681,30 +547,21 @@ class PaymentController extends Controller
                 'cart_products' => $cart->cart_products,
             ];
 
-
-
             Mail::to($order['email'])->send(new InvoiceSend($data));
-            return redirect()->route('orders')
-                ->with(['message' => __('content.Your payment has been successful.') . ' Məlumatlar emailə göndərildi.']);
-        } else if ($msg['OrderStatus'] === 'CANCELED') {
-            
-            if($quickpay){
-                $cart = CartModel::where('id', $order->cart_id)->first();
-                $user = User::find($cart->user_id);
-                $user->forceDelete();
-                $cart->forceDelete();
-            }
+        }
+
+        else {
 
             $data = [
                 'order_amount' => $order['order_amount'],
                 'bonus_amount' => $order['bonus_amount'],
                 'shipping' => $order['shipping'],
                 'payment_type' => 'Bank kartı',
-                'order_status' => $quickpay ? '' :'ÖDƏNİŞ GÖZLƏNİLİR',
+                'order_status' => $order->quickpay ? '' : 'ÖDƏNİŞ GÖZLƏNİLİR',
                 'card_number' => '',
                 'brand' => '',
-                'order_date' => $msg['TranDateTime'],
-                'payment_date' => date('Y-m-d H:i:s'),
+                'order_date' => Carbon::now()->format('d-m-Y H:i:s'),
+                'payment_date' => Carbon::now()->format('d-m-Y H:i:s'),
                 'client_firstname' => $order['first_name'],
                 'client_lastname' => $order['last_name'],
                 'client_email' => $order['email'],
@@ -714,77 +571,14 @@ class PaymentController extends Controller
                 'cart_products' => $cart->cart_products,
             ];
 
-
-
-            Mail::to($order['email'])->send(new InvoiceSend($data));
-            return redirect()->route('orders')
-                ->with(['error' => 'Sifariş imtina edildi.']);
-        } else if ($msg['OrderStatus'] === 'DECLINED') {
-
-            if($quickpay){
+            if($order->quickpay){
                 $cart = CartModel::where('id', $order->cart_id)->first();
                 $user = User::find($cart->user_id);
                 $user->forceDelete();
                 $cart->forceDelete();
             }
 
-            $data = [
-                'order_amount' => $order['order_amount'],
-                'bonus_amount' => $order['bonus_amount'],
-                'shipping' => $order['shipping'],
-                'payment_type' => 'Bank kartı',
-                'order_status' => $quickpay ? '' : 'ÖDƏNİŞ GÖZLƏNİLİR',
-                'card_number' => '',
-                'brand' => '',
-                'order_date' => $msg['TranDateTime'],
-                'payment_date' => date('Y-m-d H:i:s'),
-                'client_firstname' => $order['first_name'],
-                'client_lastname' => $order['last_name'],
-                'client_email' => $order['email'],
-                'client_tel' => $order['mobile'],
-                'client_address' => $order['address'],
-                'discount' => '',
-                'cart_products' => $cart->cart_products,
-            ];
-
-
-
             Mail::to($order['email'])->send(new InvoiceSend($data));
-            return redirect()->route('orders')
-                ->with(['error' => 'Yenidən yoxlayın. Status: ' . __('content.' . $msg['ResponseDescription'])]);
-        } else {
-
-            $data = [
-                'order_amount' => $order['order_amount'],
-                'bonus_amount' => $order['bonus_amount'],
-                'shipping' => $order['shipping'],
-                'payment_type' => 'Bank kartı',
-                'order_status' => $quickpay ? '' : 'ÖDƏNİŞ GÖZLƏNİLİR',
-                'card_number' => '',
-                'brand' => '',
-                'order_date' => $msg['TranDateTime'],
-                'payment_date' => date('Y-m-d H:i:s'),
-                'client_firstname' => $order['first_name'],
-                'client_lastname' => $order['last_name'],
-                'client_email' => $order['email'],
-                'client_tel' => $order['mobile'],
-                'client_address' => $order['address'],
-                'discount' => '',
-                'cart_products' => $cart->cart_products,
-            ];
-
-            if($quickpay){
-                $cart = CartModel::where('id', $order->cart_id)->first();
-                $user = User::find($cart->user_id);
-                $user->forceDelete();
-                $cart->forceDelete();
-            }
-
-
-
-            Mail::to($order['email'])->send(new InvoiceSend($data));
-            return redirect()->route('orders')
-                ->with(['error' => 'Sifariş uğursuz oldu.']);
         }
     }
 }

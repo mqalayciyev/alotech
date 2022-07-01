@@ -89,7 +89,7 @@ class UserController extends Controller
                                 $cartProduct->amount,
                                 ['slug' => $product->slug,
                                 'discount' => $product->discount,
-                                'image' => $product->image->main_name,
+                                'image' => $product->image ? $product->image->main_name : '',
                                 'price_id' => $cartProduct->price_id,
                                 'size' => $cartProduct->size_id,
                                 'color' => $cartProduct->color_id]);
@@ -126,7 +126,7 @@ class UserController extends Controller
             'password.min'  => 'Şifrə minimum 8 simvol omalıdır.',
             'password.confirmed'  => 'Şifrələr uyğun deyil.',
         ];
-        
+
         $this->validate(request(), [
             'first_name' => 'required|min:3',
             'last_name' => 'required|min:3',

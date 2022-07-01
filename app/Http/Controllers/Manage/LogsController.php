@@ -21,7 +21,7 @@ class LogsController extends Controller
             ->addColumn('content', function ($row) {
                 $content = json_decode($row->content);
                 $text = "<div class='logs-content' style='max-height: 300px; overflow: auto; border: 1px solid silver; padding: 5px'>";
-                $text .= "<p>". json_encode($content) ."</p>";
+                $text .= "<pre>". json_encode($content, JSON_PRETTY_PRINT) ."</pre>";
                 $text .= "</div>";
                 return $text;
             })
