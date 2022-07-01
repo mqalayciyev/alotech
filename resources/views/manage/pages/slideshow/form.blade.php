@@ -232,14 +232,14 @@
                 height: 220,
             }
         });
-        
+
         @if($flight->id > 0)
         image_crop.croppie('bind', {
             url: "{{ asset('assets/img/sliders/' . $flight->slider_image) }}",
         });
         @endif
 
-        
+
 
         let url = false;
 

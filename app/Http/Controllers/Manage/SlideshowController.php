@@ -90,8 +90,8 @@ class SlideshowController extends Controller
                 return response()->json(['status' => 'error', 'message' => 'Şəkil boş ola bilməz']);
             }
         }
-        
-        
+
+
         $data = request()->only('slider_slug', 'slider_name', 'slider_active');
 
         // return request();

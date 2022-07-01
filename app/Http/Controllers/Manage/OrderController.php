@@ -110,12 +110,12 @@ class OrderController extends Controller
                             $stock = $priceList->stock_piece + $value->piece;
                             PriceList::where('id', $value->price_id)->update(['stock_piece' => $stock]);
                         }
-                        
+
                     }
                 }
 
-                
-                
+
+
                 if($entry->status != 'Your order is canceled'){
                     $user = User::find($entry->cart->user_id);
                     if($entry->bonus_value > 0){
